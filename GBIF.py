@@ -83,7 +83,7 @@ def gbif_species_counts_in_area(lat: float, lon: float, radius_miles: float) -> 
         "decimalLatitude": f"{min_lat},{max_lat}",
         "decimalLongitude": f"{min_lon},{max_lon}",
         "hasCoordinate": "true",
-        "year": "2015,2026",
+        "year": "2000,2026",
         "facet": "speciesKey",
         "facetMincount": 1,
         "speciesKey.facetLimit": 1000,
