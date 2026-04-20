@@ -3,7 +3,7 @@ MSPgen.py:
 
 Generates a Project Planner (like Microsoft Project or ProjectLibre) .xml file from the OpenAI species context module.
 
-1. Parses species context for dates/seasons (unfinished til I look into free LLMs)
+1. Parses species context for dates/seasons (needs to be checked to see it works with OpenAI)
 2. Writes these restricted times into a .xml file
 3. Can use .XML file in ProjectLibre or MicrosoftProject to schedule construction times around endangered species constraints
 
@@ -146,6 +146,7 @@ def generateXML(
                 f"Restricted Period:\n"
                 f"{MONTH_NAMES[w['start_month']]} {w['start_day']} "
                 f"to {MONTH_NAMES[w['end_month']]} {w['end_day']}\n\n"
+                f"Seasonal Conerns:\n{w.get('seasonal_concerns', '')}\n"
             ),
         )
 
@@ -164,7 +165,3 @@ def saveXML(critical_windows: List[Dict], output_path: str):
         f.write(xml)
 
     return output_path
-
-if __name__ == "__main__":
-    out = saveXML(CRITICAL_WINDOWS, "environmental_constraints.xml")
-    print(f"Saved: {out}")
