@@ -25,4 +25,3 @@ dependencies:
     - pytest-anyio
     - anyio>=4.0
     - fakeredis>=2.0
-prefix: C:\Users\jacob\miniconda3\envs\GBIF_env

@@ -150,7 +150,7 @@ def run_scan(lat, lon, radius_miles, progress_callback=None):
             "lat": lat,
             "lon": lon,
             "radius_miles": radius_miles,
-            "year_start": 2015,
+            "year_start": 2000,
             "year_end": 2026,
         },
         "hits": [

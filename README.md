@@ -30,7 +30,8 @@ This version focuses on the **data pipeline / detection logic / additional ecolo
 
 # System Workflow
 ### Precomputed
-1. Parses Illinois Endangered list
+1. Scrape the latest Illinois Natural Heritage species-by-county dataset into `data/IsEndangered.csv`
+    - Script located at `scripts/unfiltered_species.py`
 2. Translate Illinois Endangered list to taxonIDs saving a CSV with scientific names and their corresponding taxonID
     - Script located at `scripts/build_taxon_lookup.py`, output written to `data/IllinoisTaxonLookup.csv`
 
@@ -38,9 +39,9 @@ This version focuses on the **data pipeline / detection logic / additional ecolo
 3. Supply an address or coordinates and a radius in miles (address search powered by MapTiler Geocoding API)
 4. The program then computes a bounding box (note this bounding box is currently square for simplicity)
 5. Check Redis cache — if a matching scan exists for the same location and radius, return the cached result immediately
-6. Make a GBIF call to return all species within the given bounding box
+6. Make a GBIF call to return all species within the given bounding box (occurrences filtered to year 2000–2026)
 7. Cross checks returned species with **precomputed** `data/IllinoisTaxonLookup.csv`
-8. Send batch request to openAI for additional construction and species context (capped with .env MAX_AI_... default=3)
+8. Send batch request to OpenAI for additional construction and species context (capped with `.env` `MAX_SPECIES_FOR_AI`, default=3)
 9. Store result in Redis cache (24-hour TTL)
 10. Display flagged results to user
 
@@ -65,7 +66,7 @@ https://api.gbif.org/v1/species/match
 ---   
 
 ## Illinois Endangered Species List
-> Currently local. Ideal to datascrape new list daily and run `scripts/build_taxon_lookup.py` along with it to update our table.
+> Scraped from the Illinois Natural Heritage species-by-county dataset via `scripts/unfiltered_species.py`, which writes `data/IsEndangered.csv`. Re-run this script (followed by `scripts/build_taxon_lookup.py`) to refresh the dataset.
 - Local CSV dataset containing endangered and threatened species observed in Illinois.
 
 Example structure:   
@@ -173,24 +174,28 @@ This tool is intended for **early stage environmental screening**, not regulator
 
 ```
 Senior-Project/
-├── app.py                        # FastAPI application entry point
-├── scan.py                       # Scan endpoint + background job runner
-├── geocode.py                    # Geocode / reverse-geocode endpoints
-├── GBIF.py                       # GBIF API interaction + species matching logic
-├── openai_species_context.py     # OpenAI batch context analysis
-├── redis_client.py               # Redis wrapper (cache_get / cache_set / cache_delete)
-├── limiter.py                    # SlowAPI rate limiter configuration
+├── app.py                          # FastAPI application entry point
+├── scan.py                         # Scan endpoint + background job runner
+├── geocode.py                      # Geocode / reverse-geocode endpoints
+├── GBIF.py                         # GBIF API interaction + species matching logic
+├── openai_species_context.py       # OpenAI batch context analysis
+├── redis_client.py                 # Redis wrapper (cache_get / cache_set / cache_delete)
+├── limiter.py                      # SlowAPI rate limiter configuration
 ├── data/
-│   ├── IsEndangered.csv          # Raw Illinois Endangered Species list
-│   └── IllinoisTaxonLookup.csv   # Precomputed scientific name → taxonID lookup
+│   ├── IsEndangered.csv            # Raw Illinois Endangered Species list
+│   └── IllinoisTaxonLookup.csv     # Precomputed scientific name → taxonID lookup
 ├── scripts/
-│   └── build_taxon_lookup.py     # Script to regenerate IllinoisTaxonLookup.csv
+│   ├── unfiltered_species.py       # Scrapes Illinois Natural Heritage → data/IsEndangered.csv
+│   └── build_taxon_lookup.py       # Script to regenerate IllinoisTaxonLookup.csv
+├── frontend/                       # React + Vite frontend (Leaflet map, scan UI)
 ├── tests/
 │   ├── test_scan.py
 │   ├── test_geocode.py
 │   ├── test_GBIF.py
 │   └── test_openai_species_context.py
-├── conftest.py                   # Pytest fixtures (fakeredis autouse)
+├── .github/workflows/test.yml      # GitHub Actions CI workflow
+├── conftest.py                     # Pytest fixtures (fakeredis autouse)
+├── pytest.ini                      # Pytest configuration + custom markers
 ├── requirements.txt
 ├── requirements-dev.txt
 ├── environment.yml
@@ -225,9 +230,17 @@ To run the backend locally:
 uvicorn app:app --reload
 ```
 
-To regenerate the taxon lookup CSV after updating `data/IsEndangered.csv`:
+To refresh the Illinois Endangered Species dataset from the Illinois Natural Heritage source, then regenerate the taxon lookup:
 ```
+python scripts/unfiltered_species.py
 python scripts/build_taxon_lookup.py
+```
+
+To run the frontend locally (Vite dev server, default port 5173):
+```
+cd frontend
+npm install
+npm run dev
 ```
 
 ---
@@ -240,7 +253,11 @@ The project uses **pytest** with **fakeredis** for test isolation — no real Re
 pytest tests/
 ```
 
-A GitHub Actions CI workflow (`.github/workflows/test.yml`) runs the full test suite automatically on every push and pull request to `main`.
+Custom markers are defined in `pytest.ini`:
+- `integration` — tests that hit live external APIs. Skip with `-m "not integration"` (this is what CI runs).
+- `slow` — marks slow-running tests.
+
+A GitHub Actions CI workflow (`.github/workflows/test.yml`) runs the non-integration test suite automatically on every push and pull request to `main`.
 
 ---
 
@@ -264,7 +281,7 @@ A GitHub Actions CI workflow (`.github/workflows/test.yml`) runs the full test s
 
 # Future Improvements
 
-- Implement species key / taxonID translation daily with updated IllinoisIsEndangered.csv
+- Schedule daily runs of `scripts/unfiltered_species.py` + `scripts/build_taxon_lookup.py` to keep `IsEndangered.csv` and `IllinoisTaxonLookup.csv` current
 - Export construction timeline recommendations
 - Improve AI ecological analysis using external species data sources (Wikipedia, species databases)
 - Expand coverage beyond Illinois to other state endangered species lists
