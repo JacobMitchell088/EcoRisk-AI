@@ -1,3 +1,4 @@
+import pathlib
 import requests
 import pandas as pd
 
@@ -11,8 +12,9 @@ headers = {
 }
 
 
-#graab data
+#grab data
 response = requests.get(url, headers=headers)
+response.raise_for_status()
 data = response.json()
 
 
@@ -29,6 +31,7 @@ columns = [
 
 df = pd.DataFrame(data["data"], columns=columns)    #convert
 
-df.to_csv("illinois_unfiltered_species.csv", index=False)  #save
+output_path = pathlib.Path(__file__).parent.parent / "data" / "IsEndangered.csv"
+df.to_csv(output_path, index=False, encoding="utf-8")  #save
 
-print("Saved to illinois_species.csv")
+print(f"Saved to {output_path}")
