@@ -3,6 +3,15 @@ openai_species_context.py
 
 Generate short species-specific construction context for screening using the OpenAI Responses API.
 
+Called from GBIF.py after the endangered-species search is done. Takes the list of
+flagged species hits, sends them all to OpenAI in one prompt, and gets back structured
+JSON with ecological context (seasonal concerns, disruptive activities, etc.) for each
+species. The frontend uses this to populate the report cards.
+
+This module is designed to never raise on API failures — every error path returns a
+degraded result so the rest of the scan can still complete and show species names
+even if OpenAI is unreachable.
+
 Requirements
     conda activate GBIF_env
 
@@ -30,6 +39,7 @@ logger = logging.getLogger(__name__)
 DEFAULT_MODEL = "gpt-5.4"
 
 
+# All species go into one prompt — we don't make a separate API call per species
 def _build_batch_prompt(gbif_result: Dict[str, Any]) -> str:
     input_data = gbif_result.get("input", {})
     hits = gbif_result.get("hits", [])
@@ -51,6 +61,7 @@ def _build_batch_prompt(gbif_result: Dict[str, Any]) -> str:
 
     species_block = "\n".join(species_lines)
 
+    # double braces ({{ }}) below are just f-string escaping — they render as { } in the actual prompt
     return f"""
 You are helping with an early-stage construction planning tool for Illinois.
 
@@ -73,6 +84,12 @@ For EACH species, provide:
 5. seasonal_concerns: a short paragraph on the most relevant seasonal sensitivities (breeding, nesting, migration, roosting, dormancy, spawning, etc.) and approximately when they occur
 6. disruptive_activities: a short paragraph on which construction activities are most likely to cause disturbance (noise, tree clearing, grading, vibration, water disturbance, nighttime lighting, etc.)
 7. recommendation: a cautious 1–2 sentence suggestion for when or how construction might be less disruptive, if reasonable — do not frame this as approval or a guarantee
+8. critical_window: an object with:
+   - start_month: integer (1–12) when the most sensitive period begins
+   - start_day: integer, day of that month
+   - end_month: integer (1–12) when the sensitive period ends
+   - end_day: integer, day of that month
+   Base this on the primary concern (nesting, breeding, migration, etc.).
 
 Important rules:
 - Do not invent legal requirements
@@ -91,13 +108,20 @@ Return ONLY valid JSON in this exact format:
       "overview": "Brief general context here.",
       "seasonal_concerns": "Seasonal sensitivity paragraph here.",
       "disruptive_activities": "Disruptive activities paragraph here.",
-      "recommendation": "Cautious timing suggestion here."
+      "recommendation": "Cautious timing suggestion here.",
+      "critical_window": {{
+        "start_month": 4,
+        "start_day": 1,
+        "end_month": 8,
+        "end_day": 31
+        }}
     }}
   ]
 }}
 """.strip()
 
 
+# Main entry point — client param exists so tests can inject a mock without patching
 def enrich_gbif_results_with_openai_batch(
     gbif_result: Dict[str, Any],
     *,
@@ -107,6 +131,7 @@ def enrich_gbif_results_with_openai_batch(
     if client is None:
         client = OpenAI()
 
+    # no hits = no point burning an API call, just return an empty result
     hits = gbif_result.get("hits", [])
     if not hits:
         return {
@@ -120,13 +145,15 @@ def enrich_gbif_results_with_openai_batch(
 
     prompt = _build_batch_prompt(gbif_result)
 
+    # every response (success or failure) gets this — the frontend always shows it
     _DISCLAIMER = (
         "These summaries are AI-generated planning aids based on species names and site context. "
         "They are not regulatory determinations and should be validated with qualified environmental professionals."
     )
 
+    # Strategy: degrade, don't crash. Return skeleton entries with ai_error set so the
+    # UI can still show species names and the disclaimer even when OpenAI is down
     def _error_result(error_tag: str, message: str) -> Dict[str, Any]:
-        """Return a gracefully-degraded result when the AI call fails."""
         logger.error("OpenAI enrichment failed [%s]: %s", error_tag, message)
         return {
             "input": gbif_result.get("input", {}),
@@ -180,6 +207,7 @@ def enrich_gbif_results_with_openai_batch(
 
     raw_text = response.output_text.strip()
 
+    # if OpenAI returns garbage instead of JSON, stash the raw text so it's debuggable
     try:
         parsed = json.loads(raw_text)
     except json.JSONDecodeError:
@@ -198,3 +226,20 @@ def enrich_gbif_results_with_openai_batch(
         "species_context": parsed.get("species_context", []),
         "disclaimer": _DISCLAIMER,
     }
+
+def extract_critical_windows(ai_result: Dict[str, Any]) -> List[Dict]:
+    # Convert AI enrichment output into the CRITICAL_WINDOWS format for MSPgen
+    windows = []
+    for species in ai_result.get("species_context", []):
+        cw = species.get("critical_window")
+        name = species.get("common_name") or species.get("scientific_name")
+        if cw and name:
+            windows.append({
+                "name": name,
+                "start_month": cw["start_month"],
+                "start_day":   cw["start_day"],
+                "end_month":   cw["end_month"],
+                "end_day":     cw["end_day"],
+                "seasonal_concerns":    species.get("seasonal_concerns", ""),
+            })
+    return windows
