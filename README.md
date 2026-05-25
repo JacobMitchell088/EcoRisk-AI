@@ -123,6 +123,13 @@ The program precomputes a translated list, scientific name followed by taxonID, 
     - Backend validates token with Cloudflare
     - If valid proceed, if not reject
 
+## In-App Feedback
+- A **Provide Feedback** button lives in the bottom-right of the site, themed to match the rest of the UI.
+- Users can submit a title, a body (what's good, bad, or wanted), an optional 1–5 star rating, and an optional contact email for a reply.
+- Submissions are auto-populated into the repository's **GitHub Issues** (labeled `feedback`).
+- The GitHub Personal Access Token is held **only on the backend** (`GITHUB_FEEDBACK_PAT`) — never shipped to the browser. The frontend posts to the `/feedback` endpoint, which calls the GitHub Issues API server-side.
+- Like `/scan/start`, the endpoint is protected by **Cloudflare Turnstile** verification and a per-IP rate limit (5/hour) to prevent abuse.
+
 ## Precomputed species lookup for Illinois Endangered Species List
 - Species names are resolved to their taxonIDs prior to user input to improve performance.
 
@@ -274,6 +281,8 @@ A GitHub Actions CI workflow (`.github/workflows/test.yml`) runs the non-integra
 | `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile secret for bot protection | — |
 | `FRONTEND_ORIGIN` | Allowed CORS origin | `http://localhost:5173` |
 | `REDIS_URL` | Redis connection URL | `redis://localhost:6379` |
+| `GITHUB_FEEDBACK_PAT` | Fine-grained GitHub PAT used **server-side** to open feedback issues (scope: Issues → Read and write, on the target repo only) | — |
+| `GITHUB_FEEDBACK_REPO` | Target repo for feedback issues, in `owner/repo` form | — |
 
 > For Render.com deployments, set `REDIS_URL` to the **internal** Redis URL provided by your Render Redis service — `localhost` will not work in a hosted environment.
 
