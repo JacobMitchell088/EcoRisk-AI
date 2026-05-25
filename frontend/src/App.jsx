@@ -3,6 +3,7 @@ import { Toaster, toast } from "react-hot-toast";
 import "leaflet/dist/leaflet.css";
 import ScreeningMap from "./ScreeningMap";
 import FeedbackWidget from "./FeedbackWidget";
+import ColdStartOverlay from "./ColdStartOverlay";
 import gbifLogo from "./assets/gbif-dot-org-green-logo.svg";
 import inhsLogo from "./assets/dnr-nav-logo.png";
 import ourLogo from "./assets/environment_screening_logo.png";
@@ -1248,6 +1249,7 @@ function downloadReport(scanData, meta, formValues) {
         </footer>
 
         <FeedbackWidget />
+        <ColdStartOverlay />
       </div>
     </>
   );
