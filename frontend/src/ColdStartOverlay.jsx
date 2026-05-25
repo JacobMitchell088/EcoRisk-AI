@@ -55,6 +55,10 @@ export default function ColdStartOverlay() {
       return nativeFetch(input, init)
         .then((res) => {
           if (timer) clearTimeout(timer);
+          // Any response at all means the instance is awake and CORS is
+          // working — dismiss immediately rather than waiting on /health
+          // polling, which can keep failing during/after a cold start.
+          if (coldRef.current && !FORCE_COLDSTART) setCold(false);
           return res;
         })
         .catch((err) => {
