@@ -401,7 +401,7 @@ function pollScanStatus(scanJobId) {
       setGeneralError("Polling failed.");
       setLoading(false);
     }
-  }, 1000); // Poll every 1 second
+  }, 2000); // Poll every 2 seconds
 }
 
 const lastPickedRef = useRef(null);

@@ -176,6 +176,7 @@ def enrich_gbif_results_with_openrouter_batch(
                     "content": prompt,
                 }
             ],
+            response_format={"type": "json_object"},
         )
     except AuthenticationError:
         return _error_result(
@@ -203,7 +204,34 @@ def enrich_gbif_results_with_openrouter_batch(
             f"OpenRouter API returned an error (HTTP {exc.status_code}). AI ecological context is unavailable.",
         )
 
-    raw_text = response.choices[0].message.content.strip()
+    try:
+        if not response.choices:
+            return _error_result(
+                "empty_response",
+                "OpenRouter returned no choices. AI ecological context is unavailable.",
+            )
+
+        raw_content = response.choices[0].message.content
+
+        if not raw_content:
+            return _error_result(
+                "empty_content",
+                "OpenRouter returned an empty response. AI ecological context is unavailable.",
+            )
+
+        raw_text = raw_content.strip()
+
+    except Exception as exc:
+        logger.exception("Unexpected OpenRouter response format")
+        return _error_result(
+            "response_parse",
+            f"Unexpected OpenRouter response format: {exc}",
+        )
+
+    logger.info("========== OPENROUTER RESPONSE ==========")
+    logger.info("MODEL: %s", response.model)
+    logger.info("CONTENT: %r", response.choices[0].message.content)
+    logger.info("==========================================")
 
     # if OpenRouter returns garbage instead of JSON, stash the raw text so it's debuggable
     try:
