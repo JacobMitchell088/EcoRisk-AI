@@ -16,7 +16,7 @@ Requirements
     conda activate GBIF_env
 
 Environment
-    OpenRouter_API_KEY must be set in your environment.
+    OPENROUTER_API_KEY must be set in your environment.
 """
 
 from __future__ import annotations
