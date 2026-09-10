@@ -980,7 +980,7 @@ function downloadReport(scanData, meta, formValues) {
                       <div className="address-label-with-info">
                         <label className="field-label">Street Address</label>
 
-                        <InfoButton>
+                        <InfoButton title="Resolve Address">
                           Enter a street address/coordinates and click <strong>Resolve Address</strong> to
                           find its geographic coordinates/street address. The coordinates are then used as the
                           project site for the environmental screening and the address to confirm site location.
