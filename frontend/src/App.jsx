@@ -7,7 +7,7 @@ import ColdStartOverlay from "./ColdStartOverlay";
 import gbifLogo from "./assets/gbif-dot-org-green-logo.svg";
 import inhsLogo from "./assets/dnr-nav-logo.png";
 import ourLogo from "./assets/environment_screening_logo.png";
-import openAILogo from "./assets/openailogo.png";
+import openRouterLogo from "./assets/openrouterlogo.png";
 import mapTilerLogo from "./assets/mapTilerLogo.svg";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -1232,8 +1232,8 @@ function downloadReport(scanData, meta, formValues) {
               <a href="https://www.maptiler.com" target="_blank" rel="noreferrer" className="footer-logo-link">
                 <img src={mapTilerLogo} alt="MapTiler" className="footer-logo footer-logo--maptiler" />
               </a>
-              <a href="https://openai.com" target="_blank" rel="noreferrer" className="footer-logo-link">
-                <img src={openAILogo} alt="OpenAI" className="footer-logo footer-logo--openai" />
+              <a href="https://openrouter.ai" target="_blank" rel="noreferrer" className="footer-logo-link">
+                <img src={openRouterLogo} alt="OpenRouter" className="footer-logo footer-logo--openrouter" />
               </a>
             </div>
             <p className="footer-attribution">
