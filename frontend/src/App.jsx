@@ -1066,7 +1066,7 @@ function downloadReport(scanData, meta, formValues) {
                       This controls how far from the project site the screening searches
                       for species observations. A larger radius covers more area and may
                       identify more observations, while a smaller radius focuses the
-                      screening closer to the project site.
+                      screening closer to the project site. The default radius is 2 mi.
                     </InfoButton>
                   </div>
 
