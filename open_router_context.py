@@ -117,10 +117,17 @@ def enrich_gbif_results_with_openrouter_batch(
     *,
     model: str = DEFAULT_MODEL,
     client: Optional[OpenAI] = None,
+    api_key: Optional[str] = None,
 ) -> Dict[str, Any]:
     if client is None:
+        if not api_key:
+            return _error_result(
+                "missing_key",
+                "OpenRouter API key is not set. AI ecological context is unavailable.",
+            )
+
         client = OpenAI(
-            api_key=os.environ["OPENROUTER_API_KEY"],
+            api_key=api_key,
             base_url="https://openrouter.ai/api/v1/"
         )
 
@@ -176,7 +183,6 @@ def enrich_gbif_results_with_openrouter_batch(
                     "content": prompt,
                 }
             ],
-            response_format={"type": "json_object"},
         )
     except AuthenticationError:
         return _error_result(
