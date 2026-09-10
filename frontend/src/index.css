@@ -1480,3 +1480,9 @@ body {
   align-items: center;
   gap: 6px;
 }
+
+.address-label-with-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}

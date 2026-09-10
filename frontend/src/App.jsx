@@ -976,12 +976,17 @@ function downloadReport(scanData, meta, formValues) {
               {inputMode === "address" ? (
                 <div className="field-group">
                   <div className="field">
-                    <label className="field-label">Street Address</label>
-                    <InfoButton>
-                      Enter a street address/coordinates and click <strong>Resolve Address</strong> to
-                      find its geographic coordinates/street address. The coordinates are then used as the
-                      project site for the environmental screening and the address to confirm site location.
-                    </InfoButton>
+                    <div className="address-label-row">
+                      <div className="address-label-with-info">
+                        <label className="field-label">Street Address</label>
+
+                        <InfoButton>
+                          Enter a street address/coordinates and click <strong>Resolve Address</strong> to
+                          find its geographic coordinates/street address. The coordinates are then used as the
+                          project site for the environmental screening and the address to confirm site location.
+                        </InfoButton>
+                      </div>
+                    </div>
 
                     <input
                       className="field-input"
