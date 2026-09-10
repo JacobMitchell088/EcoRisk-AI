@@ -183,6 +183,7 @@ def enrich_gbif_results_with_openrouter_batch(
                     "content": prompt,
                 }
             ],
+            response_format={"type": "json_object"},
         )
     except AuthenticationError:
         return _error_result(
