@@ -1445,3 +1445,38 @@ body {
   .coldstart-spinner,
   .coldstart-dots span { animation: none; }
 }
+
+
+.info-button {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  box-shadow: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.info-button img {
+  height: 14px;
+  width: 14px;
+  display: block;
+  border: 0;
+}
+
+.radius-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.radius-label-with-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}

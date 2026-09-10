@@ -9,9 +9,50 @@ import inhsLogo from "./assets/dnr-nav-logo.png";
 import ourLogo from "./assets/environment_screening_logo.png";
 import openRouterLogo from "./assets/openrouterlogo.png";
 import mapTilerLogo from "./assets/mapTilerLogo.svg";
+import infoIcon from "./assets/infobutton.png"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || "";
+
+function InfoButton({ title, children }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (ref.current && !ref.current.contains(event.target)) {
+        setOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  return (
+    <div className="info-button-wrapper" ref={ref}>
+      <button
+        type="button"
+        className="info-button"
+        onClick={() => setOpen((prev) => !prev)}
+        aria-label={`Information about ${title}`}
+        aria-expanded={open}
+      >
+        <img src={infoIcon} alt="" />
+      </button>
+
+      {open && (
+        <div className="info-popover">
+          <div className="info-popover-title">{title}</div>
+          <div className="info-popover-text">{children}</div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function SpeciesCard({ hit, context }) {
   const [thumb, setThumb] = useState(null);
@@ -936,6 +977,12 @@ function downloadReport(scanData, meta, formValues) {
                 <div className="field-group">
                   <div className="field">
                     <label className="field-label">Street Address</label>
+                    <InfoButton>
+                      Enter a street address/coordinates and click <strong>Resolve Address</strong> to
+                      find its geographic coordinates/street address. The coordinates are then used as the
+                      project site for the environmental screening and the address to confirm site location.
+                    </InfoButton>
+
                     <input
                       className="field-input"
                       name="address"
@@ -998,6 +1045,7 @@ function downloadReport(scanData, meta, formValues) {
                       ? `Wait ${formatCooldown(cooldowns.coordinateLookup)}`
                       : "Resolve Coordinates"}
                   </button>
+
                   {form.address && (
                     <p className="coord-preview">{form.address}</p>
                   )}
@@ -1006,7 +1054,17 @@ function downloadReport(scanData, meta, formValues) {
 
               <div className="field">
                 <div className="radius-label-row">
-                  <label className="field-label">Search Radius</label>
+                  <div className="radius-label-with-info">
+                    <label className="field-label">Search Radius</label>
+
+                    <InfoButton title="Search Radius">
+                      This controls how far from the project site the screening searches
+                      for species observations. A larger radius covers more area and may
+                      identify more observations, while a smaller radius focuses the
+                      screening closer to the project site.
+                    </InfoButton>
+                  </div>
+
                   <span className="radius-value">{form.radius_miles} mi</span>
                 </div>
                 <input
