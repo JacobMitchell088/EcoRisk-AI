@@ -24,7 +24,7 @@ Our program automates this first step by:
 4. Returning flagged species that may impact a project plan   
 5. Provide additional context to flagged species to user with additional information on how it may interact with their construction process     
 
-This version focuses on the **data pipeline / detection logic / additional ecological analysis by openai api calls / frontend**     
+This version focuses on the **data pipeline / detection logic / additional ecological analysis by OpenRouter api calls / frontend**     
 
 ---   
 
@@ -41,7 +41,7 @@ This version focuses on the **data pipeline / detection logic / additional ecolo
 5. Check Redis cache — if a matching scan exists for the same location and radius, return the cached result immediately
 6. Make a GBIF call to return all species within the given bounding box (occurrences filtered to year 2000–2026)
 7. Cross checks returned species with **precomputed** `data/IllinoisTaxonLookup.csv`
-8. Send batch request to OpenAI for additional construction and species context (capped with `.env` `MAX_SPECIES_FOR_AI`, default=3)
+8. Send batch request to OpenRouter for additional construction and species context (capped with `.env` `MAX_SPECIES_FOR_AI`, default=3)
 9. Store result in Redis cache (24-hour TTL)
 10. Display flagged results to user
 
@@ -97,7 +97,7 @@ The program precomputes a translated list, scientific name followed by taxonID, 
 
 ## Redis Caching
 > Requires a running Redis instance. See [Environment Variables](#environment-variables) for setup.
-- Scan results are cached by location and radius so repeated requests for the same area skip all GBIF and OpenAI calls entirely.
+- Scan results are cached by location and radius so repeated requests for the same area skip all GBIF and OpenRouter calls entirely.
     - Cache key: `scan:{lat}:{lon}:{radius}` — coordinates rounded to 3 decimal places (~111 m precision), radius rounded to 1 decimal place
     - Cache TTL: 24 hours
 - Geocode and reverse-geocode responses are also cached in Redis (24-hour TTL) so address lookups aren't repeated unnecessarily.
@@ -137,8 +137,8 @@ The program precomputes a translated list, scientific name followed by taxonID, 
 - Species are only considered from the official **Illinois Endangered Species List**, ignoring all other occurences of different species from **GBIF**
 
 ## AI Ecological Context Analysis
-- After endangered species are detected, our system will generate additional context using openAI api to return more information to the user
-- The module `openai_species_context.py` analyzes each flagged species in a batch call with a max count being defined in the .env by the runner
+- After endangered species are detected, our system will generate additional context using OpenRouter api to return more information to the user
+- The module `open_router_context.py` analyzes each flagged species in a batch call with a max count being defined in the .env by the runner
 - The AI analysis may include
     - Important ecological behaviors
     - Breeding / migration seasonal considerations
@@ -155,7 +155,7 @@ during late spring and summer may disrupt these colonies. If possible,
 major disturbance activities may be less disruptive outside the
 maternity season, typically late fall through winter.    
 ```
-- To ensure performance remains high and reduce costs, the program will send **all** detected species in one single openai request rather than a request for each detected animal
+- To ensure performance remains high and reduce costs, the program will send **all** detected species in one single OpenRouter request rather than a request for each detected animal
 
 ---   
 
@@ -186,6 +186,7 @@ Senior-Project/
 ├── geocode.py                      # Geocode / reverse-geocode endpoints
 ├── GBIF.py                         # GBIF API interaction + species matching logic
 ├── openai_species_context.py       # OpenAI batch context analysis
+├── open_router_context.py          # OpenRouter batch context analysis
 ├── redis_client.py                 # Redis wrapper (cache_get / cache_set / cache_delete)
 ├── limiter.py                      # SlowAPI rate limiter configuration
 ├── data/
@@ -199,6 +200,7 @@ Senior-Project/
 │   ├── test_scan.py
 │   ├── test_geocode.py
 │   ├── test_GBIF.py
+│   ├── test_open_router_context.py
 │   └── test_openai_species_context.py
 ├── .github/workflows/test.yml      # GitHub Actions CI workflow
 ├── conftest.py                     # Pytest fixtures (fakeredis autouse)
@@ -276,7 +278,8 @@ A GitHub Actions CI workflow (`.github/workflows/test.yml`) runs the non-integra
 | Variable | Description | Default |
 |---|---|---|
 | `OPENAI_API_KEY` | OpenAI API key for ecological context analysis | — |
-| `MAX_SPECIES_FOR_AI` | Max species sent to OpenAI per scan | `3` |
+| `OPENROUTER_API_KEY` | OpenRouter API key for ecological context analysis | — |
+| `MAX_SPECIES_FOR_AI` | Max species sent to OpenRouter per scan | `3` |
 | `MAPTILER_API_KEY` | MapTiler API key for geocoding | — |
 | `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile secret for bot protection | — |
 | `FRONTEND_ORIGIN` | Allowed CORS origin | `http://localhost:5173` |
