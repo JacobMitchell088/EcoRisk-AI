@@ -1445,3 +1445,85 @@ body {
   .coldstart-spinner,
   .coldstart-dots span { animation: none; }
 }
+
+
+.info-button {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  box-shadow: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.info-button img {
+  height: 14px;
+  width: 14px;
+  display: block;
+  border: 0;
+}
+
+.radius-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.radius-label-with-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.address-label-with-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.info-button-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.info-popover {
+  position: absolute;
+  z-index: 1000;
+
+  width: 300px;
+  max-width: calc(100vw - 60px);
+
+  left: -100px;
+  top: calc(100% + 8px);
+
+  padding: 12px 14px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(27, 25, 22, 0.14);
+}
+
+.info-popover-title {
+  margin-bottom: 5px;
+  color: var(--forest);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.info-popover-text {
+  color: var(--ink-3);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.info-popover-text strong {
+  color: var(--ink-2);
+}
