@@ -38,7 +38,7 @@ from openai import (
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_MODEL = "openrouter/free"
+DEFAULT_MODEL = "liquid/lfm-2.5-2.6b:free"
 
 
 # All species go into one prompt — we don't make a separate API call per species
@@ -259,3 +259,20 @@ def enrich_gbif_results_with_openrouter_batch(
         "species_context": parsed.get("species_context", []),
         "disclaimer": _DISCLAIMER,
     }
+
+def extract_critical_windows(ai_result: Dict[str, Any]) -> List[Dict]:
+    # Convert AI enrichment output into the CRITICAL_WINDOWS format for MSPgen
+    windows = []
+    for species in ai_result.get("species_context", []):
+        cw = species.get("critical_window")
+        name = species.get("common_name") or species.get("scientific_name")
+        if cw and name:
+            windows.append({
+                "name": name,
+                "start_month": cw["start_month"],
+                "start_day":   cw["start_day"],
+                "end_month":   cw["end_month"],
+                "end_day":     cw["end_day"],
+                "seasonal_concerns":    species.get("seasonal_concerns", ""),
+            })
+    return windows

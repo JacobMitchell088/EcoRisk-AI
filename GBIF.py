@@ -5,7 +5,7 @@ import pathlib
 import requests
 import os
 
-from openai_species_context import extract_critical_windows
+from open_router_context import extract_critical_windows
 from MSPgen import saveXML
 from dotenv import load_dotenv
 load_dotenv()
