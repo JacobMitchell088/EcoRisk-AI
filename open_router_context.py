@@ -86,6 +86,12 @@ For EACH species, provide:
 5. seasonal_concerns: a short paragraph on the most relevant seasonal sensitivities (breeding, nesting, migration, roosting, dormancy, spawning, etc.) and approximately when they occur
 6. disruptive_activities: a short paragraph on which construction activities are most likely to cause disturbance (noise, tree clearing, grading, vibration, water disturbance, nighttime lighting, etc.)
 7. recommendation: a cautious 1–2 sentence suggestion for when or how construction might be less disruptive, if reasonable — do not frame this as approval or a guarantee
+8. critical_window: an object with:
+   - start_month: integer (1–12) when the most sensitive period begins
+   - start_day: integer, day of that month
+   - end_month: integer (1–12) when the sensitive period ends
+   - end_day: integer, day of that month
+   Base this on the primary concern (nesting, breeding, migration, etc.).
 
 Important rules:
 - Do not invent legal requirements
@@ -104,7 +110,13 @@ Return ONLY valid JSON in this exact format:
       "overview": "Brief general context here.",
       "seasonal_concerns": "Seasonal sensitivity paragraph here.",
       "disruptive_activities": "Disruptive activities paragraph here.",
-      "recommendation": "Cautious timing suggestion here."
+      "recommendation": "Cautious timing suggestion here.",
+      "critical_window": {{
+        "start_month": 4,
+        "start_day": 1,
+        "end_month": 8,
+        "end_day": 31
+        }}
     }}
   ]
 }}
