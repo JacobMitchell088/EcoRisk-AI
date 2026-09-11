@@ -1,6 +1,6 @@
 # EcoRisk AI
 > Authors: Jacob Mitchell    
-> Date: 3/10/26   
+> Date: 4/19/26   
 
 > Our servers spin down with inactivity, so please be sure to allow for an additional 60 seconds upon making your first request to our backend.    
 https://environmentscreen.onrender.com     
@@ -24,13 +24,14 @@ Our program automates this first step by:
 4. Returning flagged species that may impact a project plan   
 5. Provide additional context to flagged species to user with additional information on how it may interact with their construction process     
 
-This version focuses on the **data pipeline / detection logic / additional ecological analysis by openai api calls / frontend**     
+This version focuses on the **data pipeline / detection logic / additional ecological analysis by OpenRouter api calls / frontend**     
 
 ---   
 
 # System Workflow
 ### Precomputed
-1. Parses Illinois Endangered list
+1. Scrape the latest Illinois Natural Heritage species-by-county dataset into `data/IsEndangered.csv`
+    - Script located at `scripts/unfiltered_species.py`
 2. Translate Illinois Endangered list to taxonIDs saving a CSV with scientific names and their corresponding taxonID
     - Script located at `scripts/build_taxon_lookup.py`, output written to `data/IllinoisTaxonLookup.csv`
 
@@ -38,9 +39,9 @@ This version focuses on the **data pipeline / detection logic / additional ecolo
 3. Supply an address or coordinates and a radius in miles (address search powered by MapTiler Geocoding API)
 4. The program then computes a bounding box (note this bounding box is currently square for simplicity)
 5. Check Redis cache — if a matching scan exists for the same location and radius, return the cached result immediately
-6. Make a GBIF call to return all species within the given bounding box
+6. Make a GBIF call to return all species within the given bounding box (occurrences filtered to year 2000–2026)
 7. Cross checks returned species with **precomputed** `data/IllinoisTaxonLookup.csv`
-8. Send batch request to openAI for additional construction and species context (capped with .env MAX_AI_... default=3)
+8. Send batch request to OpenRouter for additional construction and species context (capped with `.env` `MAX_SPECIES_FOR_AI`, default=3)
 9. Store result in Redis cache (24-hour TTL)
 10. Display flagged results to user
 
@@ -65,7 +66,7 @@ https://api.gbif.org/v1/species/match
 ---   
 
 ## Illinois Endangered Species List
-> Currently local. Ideal to datascrape new list daily and run `scripts/build_taxon_lookup.py` along with it to update our table.
+> Scraped from the Illinois Natural Heritage species-by-county dataset via `scripts/unfiltered_species.py`, which writes `data/IsEndangered.csv`. Re-run this script (followed by `scripts/build_taxon_lookup.py`) to refresh the dataset.
 - Local CSV dataset containing endangered and threatened species observed in Illinois.
 
 Example structure:   
@@ -96,7 +97,7 @@ The program precomputes a translated list, scientific name followed by taxonID, 
 
 ## Redis Caching
 > Requires a running Redis instance. See [Environment Variables](#environment-variables) for setup.
-- Scan results are cached by location and radius so repeated requests for the same area skip all GBIF and OpenAI calls entirely.
+- Scan results are cached by location and radius so repeated requests for the same area skip all GBIF and OpenRouter calls entirely.
     - Cache key: `scan:{lat}:{lon}:{radius}` — coordinates rounded to 3 decimal places (~111 m precision), radius rounded to 1 decimal place
     - Cache TTL: 24 hours
 - Geocode and reverse-geocode responses are also cached in Redis (24-hour TTL) so address lookups aren't repeated unnecessarily.
@@ -122,6 +123,13 @@ The program precomputes a translated list, scientific name followed by taxonID, 
     - Backend validates token with Cloudflare
     - If valid proceed, if not reject
 
+## In-App Feedback
+- A **Provide Feedback** button lives in the bottom-right of the site, themed to match the rest of the UI.
+- Users can submit a title, a body (what's good, bad, or wanted), an optional 1–5 star rating, and an optional contact email for a reply.
+- Submissions are auto-populated into the repository's **GitHub Issues** (labeled `feedback`).
+- The GitHub Personal Access Token is held **only on the backend** (`GITHUB_FEEDBACK_PAT`) — never shipped to the browser. The frontend posts to the `/feedback` endpoint, which calls the GitHub Issues API server-side.
+- Like `/scan/start`, the endpoint is protected by **Cloudflare Turnstile** verification and a per-IP rate limit (5/hour) to prevent abuse.
+
 ## Precomputed species lookup for Illinois Endangered Species List
 - Species names are resolved to their taxonIDs prior to user input to improve performance.
 
@@ -129,8 +137,8 @@ The program precomputes a translated list, scientific name followed by taxonID, 
 - Species are only considered from the official **Illinois Endangered Species List**, ignoring all other occurences of different species from **GBIF**
 
 ## AI Ecological Context Analysis
-- After endangered species are detected, our system will generate additional context using openAI api to return more information to the user
-- The module `openai_species_context.py` analyzes each flagged species in a batch call with a max count being defined in the .env by the runner
+- After endangered species are detected, our system will generate additional context using OpenRouter api to return more information to the user
+- The module `open_router_context.py` analyzes each flagged species in a batch call with a max count being defined in the .env by the runner
 - The AI analysis may include
     - Important ecological behaviors
     - Breeding / migration seasonal considerations
@@ -147,7 +155,7 @@ during late spring and summer may disrupt these colonies. If possible,
 major disturbance activities may be less disruptive outside the
 maternity season, typically late fall through winter.    
 ```
-- To ensure performance remains high and reduce costs, the program will send **all** detected species in one single openai request rather than a request for each detected animal
+- To ensure performance remains high and reduce costs, the program will send **all** detected species in one single OpenRouter request rather than a request for each detected animal
 
 ---   
 
@@ -173,24 +181,30 @@ This tool is intended for **early stage environmental screening**, not regulator
 
 ```
 Senior-Project/
-├── app.py                        # FastAPI application entry point
-├── scan.py                       # Scan endpoint + background job runner
-├── geocode.py                    # Geocode / reverse-geocode endpoints
-├── GBIF.py                       # GBIF API interaction + species matching logic
-├── openai_species_context.py     # OpenAI batch context analysis
-├── redis_client.py               # Redis wrapper (cache_get / cache_set / cache_delete)
-├── limiter.py                    # SlowAPI rate limiter configuration
+├── app.py                          # FastAPI application entry point
+├── scan.py                         # Scan endpoint + background job runner
+├── geocode.py                      # Geocode / reverse-geocode endpoints
+├── GBIF.py                         # GBIF API interaction + species matching logic
+├── openai_species_context.py       # OpenAI batch context analysis
+├── open_router_context.py          # OpenRouter batch context analysis
+├── redis_client.py                 # Redis wrapper (cache_get / cache_set / cache_delete)
+├── limiter.py                      # SlowAPI rate limiter configuration
 ├── data/
-│   ├── IsEndangered.csv          # Raw Illinois Endangered Species list
-│   └── IllinoisTaxonLookup.csv   # Precomputed scientific name → taxonID lookup
+│   ├── IsEndangered.csv            # Raw Illinois Endangered Species list
+│   └── IllinoisTaxonLookup.csv     # Precomputed scientific name → taxonID lookup
 ├── scripts/
-│   └── build_taxon_lookup.py     # Script to regenerate IllinoisTaxonLookup.csv
+│   ├── unfiltered_species.py       # Scrapes Illinois Natural Heritage → data/IsEndangered.csv
+│   └── build_taxon_lookup.py       # Script to regenerate IllinoisTaxonLookup.csv
+├── frontend/                       # React + Vite frontend (Leaflet map, scan UI)
 ├── tests/
 │   ├── test_scan.py
 │   ├── test_geocode.py
 │   ├── test_GBIF.py
+│   ├── test_open_router_context.py
 │   └── test_openai_species_context.py
-├── conftest.py                   # Pytest fixtures (fakeredis autouse)
+├── .github/workflows/test.yml      # GitHub Actions CI workflow
+├── conftest.py                     # Pytest fixtures (fakeredis autouse)
+├── pytest.ini                      # Pytest configuration + custom markers
 ├── requirements.txt
 ├── requirements-dev.txt
 ├── environment.yml
@@ -225,9 +239,17 @@ To run the backend locally:
 uvicorn app:app --reload
 ```
 
-To regenerate the taxon lookup CSV after updating `data/IsEndangered.csv`:
+To refresh the Illinois Endangered Species dataset from the Illinois Natural Heritage source, then regenerate the taxon lookup:
 ```
+python scripts/unfiltered_species.py
 python scripts/build_taxon_lookup.py
+```
+
+To run the frontend locally (Vite dev server, default port 5173):
+```
+cd frontend
+npm install
+npm run dev
 ```
 
 ---
@@ -240,7 +262,11 @@ The project uses **pytest** with **fakeredis** for test isolation — no real Re
 pytest tests/
 ```
 
-A GitHub Actions CI workflow (`.github/workflows/test.yml`) runs the full test suite automatically on every push and pull request to `main`.
+Custom markers are defined in `pytest.ini`:
+- `integration` — tests that hit live external APIs. Skip with `-m "not integration"` (this is what CI runs).
+- `slow` — marks slow-running tests.
+
+A GitHub Actions CI workflow (`.github/workflows/test.yml`) runs the non-integration test suite automatically on every push and pull request to `main`.
 
 ---
 
@@ -252,11 +278,14 @@ A GitHub Actions CI workflow (`.github/workflows/test.yml`) runs the full test s
 | Variable | Description | Default |
 |---|---|---|
 | `OPENAI_API_KEY` | OpenAI API key for ecological context analysis | — |
-| `MAX_SPECIES_FOR_AI` | Max species sent to OpenAI per scan | `3` |
+| `OPENROUTER_API_KEY` | OpenRouter API key for ecological context analysis | — |
+| `MAX_SPECIES_FOR_AI` | Max species sent to OpenRouter per scan | `3` |
 | `MAPTILER_API_KEY` | MapTiler API key for geocoding | — |
 | `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile secret for bot protection | — |
 | `FRONTEND_ORIGIN` | Allowed CORS origin | `http://localhost:5173` |
 | `REDIS_URL` | Redis connection URL | `redis://localhost:6379` |
+| `GITHUB_FEEDBACK_PAT` | Fine-grained GitHub PAT used **server-side** to open feedback issues (scope: Issues → Read and write, on the target repo only) | — |
+| `GITHUB_FEEDBACK_REPO` | Target repo for feedback issues, in `owner/repo` form | — |
 
 > For Render.com deployments, set `REDIS_URL` to the **internal** Redis URL provided by your Render Redis service — `localhost` will not work in a hosted environment.
 
@@ -264,7 +293,7 @@ A GitHub Actions CI workflow (`.github/workflows/test.yml`) runs the full test s
 
 # Future Improvements
 
-- Implement species key / taxonID translation daily with updated IllinoisIsEndangered.csv
+- Schedule daily runs of `scripts/unfiltered_species.py` + `scripts/build_taxon_lookup.py` to keep `IsEndangered.csv` and `IllinoisTaxonLookup.csv` current
 - Export construction timeline recommendations
 - Improve AI ecological analysis using external species data sources (Wikipedia, species databases)
 - Expand coverage beyond Illinois to other state endangered species lists

@@ -2,14 +2,57 @@ import { useMemo, useState, useRef, useEffect } from "react";
 import { Toaster, toast } from "react-hot-toast";
 import "leaflet/dist/leaflet.css";
 import ScreeningMap from "./ScreeningMap";
+import FeedbackWidget from "./FeedbackWidget";
+import ColdStartOverlay from "./ColdStartOverlay";
 import gbifLogo from "./assets/gbif-dot-org-green-logo.svg";
 import inhsLogo from "./assets/dnr-nav-logo.png";
 import ourLogo from "./assets/environment_screening_logo.png";
-import openAILogo from "./assets/openailogo.png";
+import openRouterLogo from "./assets/openrouterlogo.png";
 import mapTilerLogo from "./assets/mapTilerLogo.svg";
+import infoIcon from "./assets/infobutton.png"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || "";
+
+function InfoButton({ title, children }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (ref.current && !ref.current.contains(event.target)) {
+        setOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  return (
+    <div className="info-button-wrapper" ref={ref}>
+      <button
+        type="button"
+        className="info-button"
+        onClick={() => setOpen((prev) => !prev)}
+        aria-label={`Information about ${title}`}
+        aria-expanded={open}
+      >
+        <img src={infoIcon} alt="" />
+      </button>
+
+      {open && (
+        <div className="info-popover">
+          <div className="info-popover-title">{title}</div>
+          <div className="info-popover-text">{children}</div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function SpeciesCard({ hit, context }) {
   const [thumb, setThumb] = useState(null);
@@ -399,7 +442,7 @@ function pollScanStatus(scanJobId) {
       setGeneralError("Polling failed.");
       setLoading(false);
     }
-  }, 1000); // Poll every 1 second
+  }, 2000); // Poll every 2 seconds
 }
 
 const lastPickedRef = useRef(null);
@@ -933,7 +976,18 @@ function downloadReport(scanData, meta, formValues) {
               {inputMode === "address" ? (
                 <div className="field-group">
                   <div className="field">
-                    <label className="field-label">Street Address</label>
+                    <div className="address-label-row">
+                      <div className="address-label-with-info">
+                        <label className="field-label">Street Address</label>
+
+                        <InfoButton title="Resolve Address">
+                          Enter a street address/coordinates and click <strong>Resolve Address</strong> to
+                          find its geographic coordinates/street address. The coordinates are then used as the
+                          project site for the environmental screening and the address to confirm site location.
+                        </InfoButton>
+                      </div>
+                    </div>
+
                     <input
                       className="field-input"
                       name="address"
@@ -996,6 +1050,7 @@ function downloadReport(scanData, meta, formValues) {
                       ? `Wait ${formatCooldown(cooldowns.coordinateLookup)}`
                       : "Resolve Coordinates"}
                   </button>
+
                   {form.address && (
                     <p className="coord-preview">{form.address}</p>
                   )}
@@ -1004,7 +1059,17 @@ function downloadReport(scanData, meta, formValues) {
 
               <div className="field">
                 <div className="radius-label-row">
-                  <label className="field-label">Search Radius</label>
+                  <div className="radius-label-with-info">
+                    <label className="field-label">Search Radius</label>
+
+                    <InfoButton title="Search Radius">
+                      This controls how far from the project site the screening searches
+                      for species observations. A larger radius covers more area and may
+                      identify more observations, while a smaller radius focuses the
+                      screening closer to the project site. The default radius is 2 mi.
+                    </InfoButton>
+                  </div>
+
                   <span className="radius-value">{form.radius_miles} mi</span>
                 </div>
                 <input
@@ -1230,8 +1295,8 @@ function downloadReport(scanData, meta, formValues) {
               <a href="https://www.maptiler.com" target="_blank" rel="noreferrer" className="footer-logo-link">
                 <img src={mapTilerLogo} alt="MapTiler" className="footer-logo footer-logo--maptiler" />
               </a>
-              <a href="https://openai.com" target="_blank" rel="noreferrer" className="footer-logo-link">
-                <img src={openAILogo} alt="OpenAI" className="footer-logo footer-logo--openai" />
+              <a href="https://openrouter.ai" target="_blank" rel="noreferrer" className="footer-logo-link">
+                <img src={openRouterLogo} alt="OpenRouter" className="footer-logo footer-logo--openrouter" />
               </a>
             </div>
             <p className="footer-attribution">
@@ -1245,6 +1310,9 @@ function downloadReport(scanData, meta, formValues) {
             </p>
           </div>
         </footer>
+
+        <FeedbackWidget />
+        <ColdStartOverlay />
       </div>
     </>
   );

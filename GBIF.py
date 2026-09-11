@@ -12,8 +12,7 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
-if "OPENAI_API_KEY" not in os.environ:
-    raise RuntimeError("OPENAI_API_KEY environment variable not set.")
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 GBIF_OCC_SEARCH = "https://api.gbif.org/v1/occurrence/search"
 MAX_SPECIES = int(os.getenv("MAX_SPECIES_FOR_AI", 1))
@@ -85,7 +84,7 @@ def gbif_species_counts_in_area(lat: float, lon: float, radius_miles: float) -> 
         "decimalLatitude": f"{min_lat},{max_lat}",
         "decimalLongitude": f"{min_lon},{max_lon}",
         "hasCoordinate": "true",
-        "year": "2015,2026",
+        "year": "2000,2026",
         "facet": "speciesKey",
         "facetMincount": 1,
         "speciesKey.facetLimit": 1000,
@@ -145,14 +144,14 @@ def run_scan(lat, lon, radius_miles, progress_callback=None):
     if progress_callback:
         progress_callback("Generating AI ecological context", 85)
 
-    from openai_species_context import enrich_gbif_results_with_openai_batch
+    from open_router_context import enrich_gbif_results_with_openrouter_batch
 
     gbif_result = {
         "input": {
             "lat": lat,
             "lon": lon,
             "radius_miles": radius_miles,
-            "year_start": 2015,
+            "year_start": 2000,
             "year_end": 2026,
         },
         "hits": [
@@ -161,7 +160,7 @@ def run_scan(lat, lon, radius_miles, progress_callback=None):
         ],
     }
 
-    enriched = enrich_gbif_results_with_openai_batch(gbif_result)
+    enriched = enrich_gbif_results_with_openrouter_batch(gbif_result,api_key=OPENROUTER_API_KEY)
 
     if progress_callback:
         progress_callback("Finalizing results", 100)
@@ -201,7 +200,12 @@ def main():
     print("\nAI Species Context:\n")
     for item in result["species_context"]:
         print(item["scientific_name"])
-        print(item["analysis"])
+        print(f"Common name: {item.get('common_name')}")
+        print(f"Tags: {', '.join(item.get('tags', []))}")
+        print(f"Overview: {item.get('overview')}")
+        print(f"Seasonal concerns: {item.get('seasonal_concerns')}")
+        print(f"Disruptive activities: {item.get('disruptive_activities')}")
+        print(f"Recommendation: {item.get('recommendation')}")
         print()
 
     critical_windows = extract_critical_windows(result)

@@ -11,6 +11,7 @@ from starlette.responses import JSONResponse
 from limiter import limiter
 from scan import router as scan_router
 from geocode import router as geocode_router
+from feedback import router as feedback_router
 
 load_dotenv()
 
@@ -77,3 +78,4 @@ def health():
 
 app.include_router(scan_router, tags=["scan"])
 app.include_router(geocode_router, prefix="/geocode", tags=["geocode"])
+app.include_router(feedback_router, tags=["feedback"])
