@@ -33,6 +33,14 @@ export const PinIcon = (props) => (
   </Svg>
 );
 
+export const CrosshairIcon = (props) => (
+  <Svg {...props}>
+    <circle cx="12" cy="12" r="7" />
+    <path d="M12 2.5v4M12 17.5v4M2.5 12h4M17.5 12h4" />
+    <circle cx="12" cy="12" r="1" fill="currentColor" />
+  </Svg>
+);
+
 export const BellIcon = (props) => (
   <Svg {...props}>
     <path d="M6 16v-5a6 6 0 1 1 12 0v5l1.5 2h-15z" />

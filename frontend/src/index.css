@@ -1215,6 +1215,41 @@ legend.field-label { margin-bottom: 6px; }
   box-shadow: var(--shadow-float);
 }
 
+/* The circle and its tag fade while the camera flies (see lib/siteFraming.js). */
+.search-radius { transition: opacity 0.3s var(--ease); }
+.search-radius.is-hidden { opacity: 0; transition-duration: 0.15s; }
+.radius-tag span { transition: opacity 0.3s var(--ease); }
+.radius-tag.is-hidden span { opacity: 0; transition-duration: 0.15s; }
+
+/* Appears under the zoom buttons once the site drifts out of frame. */
+.map-recenter {
+  position: absolute;
+  top: 104px;
+  right: 16px;
+  z-index: 960; /* above the scanning lock, so the site can be found mid-screening */
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 0 14px 0 11px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--paper);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--ink);
+  box-shadow: var(--shadow-float);
+  cursor: pointer;
+  animation: tip-in 0.2s var(--ease);
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+.map-recenter svg { color: var(--river); }
+.map-recenter:hover {
+  border-color: var(--river);
+  background: var(--white);
+  color: var(--river-strong);
+}
+
 /* ----------------------------------------------------------------
    Activity tray
 ---------------------------------------------------------------- */

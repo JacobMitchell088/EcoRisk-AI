@@ -129,6 +129,10 @@ The program precomputes a translated list, scientific name followed by taxonID, 
     - Sites can be set by address search, by latitude/longitude, or by clicking the map or dragging the pin. Pressing Enter in the address box searches for the address; it never starts a screening.
     - The search radius is set with a slider (1–50 miles) or quick presets (1, 2, 5, 10, 25 mi).
 - **Map:** MapTiler `dataviz-v4` tiles, a crosshair site marker, and a dashed search-radius circle labeled with its distance. The circle's dashes move while a screening runs, and the map is locked until it finishes so the site can't change mid-screening.
+    - The map always frames the whole search area, centered on the site, at every radius from 1 to 50 miles and at any panel width.
+    - When the site changes (address, coordinates, map click, or dragging the pin), the circle fades out, the map flies to the new site, and the circle grows back in from the pin. Radius changes ease the circle and the zoom together so the circle never spills off the map.
+    - A **Recenter on site** button appears under the zoom controls whenever the site is panned or zoomed out of frame. It re-frames the map without changing the screening location.
+    - The map can pan somewhat past the Illinois border, so sites near the state line stay centered with a large radius.
 - **Report:** when a screening finishes, the panel switches to a report with a verdict ("3 protected species recorded nearby" or "No protected species recorded nearby"), key figures, whether the result was saved (cached) or live, and an expandable entry per species (Wikipedia photo, tags, AI guidance, Wikipedia and GBIF links).
     - **Download report** saves a styled, printable HTML report. It is available for clear results too, and all AI text is HTML-escaped.
 - **Resizable panel:** on desktop, drag the grip on the panel's right edge to make it wider or narrower (or focus it and use the arrow keys; hold Shift for larger steps). Double-click the grip to reset. The steps and the report remember separate widths in the browser, so a report can be read wide without stretching the form. When the panel is wide, species guidance lays out in two columns. The map always keeps at least 360px.
@@ -220,7 +224,7 @@ Senior-Project/
 │       ├── ColdStartOverlay.jsx    # Backend wake-up screen
 │       ├── index.css               # Design system and all styles
 │       ├── components/             # ActivityTray, InfoTip, ScanProgress, SpeciesEntry, BrandMark, Icons
-│       └── lib/                    # API helpers, formatting, report download, Turnstile + panel-width hooks
+│       └── lib/                    # API helpers, formatting, report download, map framing, Turnstile + panel-width hooks
 ├── tests/
 │   ├── test_scan.py
 │   ├── test_geocode.py

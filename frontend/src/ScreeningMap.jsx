@@ -2,26 +2,31 @@ import {
   MapContainer,
   TileLayer,
   Marker,
-  Circle,
   ScaleControl,
   ZoomControl,
   useMap,
   useMapEvents,
 } from "react-leaflet";
 import L from "leaflet";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import "leaflet/dist/leaflet.css";
+import { createSiteFraming } from "./lib/siteFraming";
+import { CrosshairIcon } from "./components/Icons";
 
 const MAPTILER_API_KEY = import.meta.env.VITE_MAPTILER_API_KEY || "";
 const MAP_STYLE = "dataviz-v4";
+const METERS_PER_MILE = 1609.34;
 
 if (!MAPTILER_API_KEY) {
   console.error("Missing VITE_MAPTILER_API_KEY");
 }
 
-const ILLINOIS_BOUNDS = [
-  [36.95, -91.60],
-  [42.55, -87.45],
+// Illinois, padded so a 50-mile search area around a border town can still sit in the
+// middle of the map. Leaflet pushes any view that crosses these bounds back inside,
+// which previously knocked large search areas off-center.
+const MAP_BOUNDS = [
+  [33.9, -95.1],
+  [45.6, -83.95],
 ];
 
 const RADIUS_STYLE = {
@@ -41,49 +46,6 @@ const siteIcon = L.divIcon({
   iconSize: [34, 34],
   iconAnchor: [17, 17],
 });
-
-function FlyToLocation({ lat, lon }) {
-  const map = useMap();
-
-  useEffect(() => {
-    const latNum = Number(lat);
-    const lonNum = Number(lon);
-
-    if (!Number.isFinite(latNum) || !Number.isFinite(lonNum)) return;
-
-    map.flyTo([latNum, lonNum], 13, {
-      duration: 1.5,   // animation speed in seconds
-      easeLinearity: 0.25, // easing function for smoother animation
-    });
-  }, [lat, lon, map]);
-
-  return null;
-}
-
-function ZoomToRadius({ radiusMiles }) {
-  const map = useMap();
-
-  useEffect(() => {
-    const r = Number(radiusMiles);
-    if (!Number.isFinite(r) || r <= 0) return;
-
-    let zoom;
-
-
-    if (r < 0.5) zoom = 15;
-    else if (r < 1) zoom = 14;
-    else if (r < 2) zoom = 13;
-    else if (r < 4) zoom = 12;
-    else if (r < 7) zoom = 11;
-    else if (r < 10) zoom = 10;
-    else if (r < 15) zoom = 9;
-    else zoom = 11;
-
-    map.setZoom(zoom);
-  }, [radiusMiles, map]);
-
-  return null;
-}
 
 function MapClickHandler({ onPickLocation }) {
   const clickTimeoutRef = useRef(null);
@@ -116,18 +78,6 @@ function KeepSized() {
   return null;
 }
 
-// Distance tag sitting on the northern edge of the radius circle.
-function RadiusLabel({ lat, lon, radiusMiles, radiusMeters }) {
-  const miles = Number(radiusMiles);
-  const icon = useMemo(
-    () => L.divIcon({ className: "radius-tag", html: `<span>${miles} mi</span>`, iconSize: [0, 0] }),
-    [miles]
-  );
-  const northLat = lat + (radiusMeters / 40075017) * 360;
-
-  return <Marker position={[northLat, lon]} icon={icon} interactive={false} keyboard={false} />;
-}
-
 export default function ScreeningMap({
   lat,
   lon,
@@ -136,21 +86,42 @@ export default function ScreeningMap({
   scanning = false,
   hint = null,
 }) {
+  const [map, setMap] = useState(null);
+  const [framed, setFramed] = useState(true);
+  const framingRef = useRef(null);
+
   const latNum = Number(lat);
   const lonNum = Number(lon);
-  const radiusMeters = (Number(radiusMiles) || 0) * 1609.34;
+  const miles = Number(radiusMiles) || 0;
+  const radiusMeters = miles * METERS_PER_MILE;
 
   const hasCoords = Number.isFinite(latNum) && Number.isFinite(lonNum);
-  const center = hasCoords ? [latNum, lonNum] : [39.8283, -98.5795];
+  const center = hasCoords ? [latNum, lonNum] : [39.8283, -89.5];
+
+  // One controller owns the camera and the search-radius circle (see lib/siteFraming.js).
+  useEffect(() => {
+    if (!map) return;
+    const framing = createSiteFraming(map, { circleStyle: RADIUS_STYLE, onFramedChange: setFramed });
+    framingRef.current = framing;
+    return () => {
+      framing.destroy();
+      framingRef.current = null;
+    };
+  }, [map]);
+
+  useEffect(() => {
+    framingRef.current?.setTarget({ lat: latNum, lon: lonNum, radiusMeters, radiusMiles: miles });
+  }, [map, latNum, lonNum, radiusMeters, miles]);
 
   return (
     <div className={`map-shell${scanning ? " is-scanning" : ""}`}>
       <MapContainer
+        ref={setMap}
         center={center}
         zoom={10}
         minZoom={6}
         maxZoom={17}
-        maxBounds={ILLINOIS_BOUNDS}
+        maxBounds={MAP_BOUNDS}
         maxBoundsViscosity={1.0}
         scrollWheelZoom={false}
         dragging={true}
@@ -169,39 +140,30 @@ export default function ScreeningMap({
         <ScaleControl position="bottomleft" imperial={true} metric={false} />
 
         <KeepSized />
-        <FlyToLocation lat={latNum} lon={lonNum} />
-        <ZoomToRadius radiusMiles={radiusMiles} />
         <MapClickHandler onPickLocation={onPickLocation} />
 
         {hasCoords && (
-          <>
-            <Marker
-              position={[latNum, lonNum]}
-              icon={siteIcon}
-              title="Project site. Drag to move."
-              draggable={true}
-              eventHandlers={{
-                dragend: (e) => {
-                  const pos = e.target.getLatLng();
-                  onPickLocation(pos.lat, pos.lng);
-                },
-              }}
-            />
-
-            {radiusMeters > 0 && (
-              <>
-                <Circle center={[latNum, lonNum]} radius={radiusMeters} pathOptions={RADIUS_STYLE} />
-                <RadiusLabel
-                  lat={latNum}
-                  lon={lonNum}
-                  radiusMiles={radiusMiles}
-                  radiusMeters={radiusMeters}
-                />
-              </>
-            )}
-          </>
+          <Marker
+            position={[latNum, lonNum]}
+            icon={siteIcon}
+            title="Project site. Drag to move."
+            draggable={true}
+            eventHandlers={{
+              dragend: (e) => {
+                const pos = e.target.getLatLng();
+                onPickLocation(pos.lat, pos.lng);
+              },
+            }}
+          />
         )}
       </MapContainer>
+
+      {hasCoords && !framed && (
+        <button type="button" className="map-recenter" onClick={() => framingRef.current?.recenter()}>
+          <CrosshairIcon size={18} />
+          Recenter on site
+        </button>
+      )}
 
       {hint && <p className="map-hint">{hint}</p>}
 

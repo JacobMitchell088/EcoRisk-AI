@@ -44,7 +44,7 @@ These values are bundled into the browser build, so only put public keys here.
 src/
 ├── main.jsx                 # Entry; loads Leaflet CSS before index.css so overrides win
 ├── App.jsx                  # Header, guided steps, report view, scan + geocode logic, notifications
-├── ScreeningMap.jsx         # Leaflet map: tiles, site marker, radius circle + label, resize handling
+├── ScreeningMap.jsx         # Leaflet map: tiles, bounds, site marker, Recenter on site button, resize handling
 ├── FeedbackWidget.jsx       # Feedback side panel (validation, focus trap, Turnstile)
 ├── ColdStartOverlay.jsx     # Watches backend fetches; shows the wake-up screen during Render cold starts
 ├── index.css                # Design tokens and every style in the app
@@ -59,6 +59,7 @@ src/
     ├── api.js               # Env config, error-message parsing, network-error detection
     ├── format.js            # Coordinates, times, miles, verdict copy, guidance section labels
     ├── report.js            # Builds and downloads the HTML report (all text escaped)
+    ├── siteFraming.js       # Owns the camera and radius circle: fit-to-radius zoom, animations, recenter
     ├── useTurnstile.js      # Renders the invisible Turnstile widget and issues tokens
     └── usePanelWidth.js     # Resizable left panel: drag, keyboard, clamping, saved widths
 ```
@@ -83,6 +84,18 @@ On screens wider than 880px, the left panel has a grip on its right edge (`.pane
 - The steps and the report store separate widths in `localStorage` under `ecorisk.panelWidths`. The report defaults to 540px, or the steps width if that is wider.
 - The width is applied as the `--panel-w` custom property on `.workspace`. `.panel-scroll` is a CSS container named `panel`, so styles can respond to the panel's width: at 680px and wider, species guidance switches to two columns. Step content is capped at 560px so form lines stay readable.
 - The map calls `invalidateSize()` through a `ResizeObserver`, so tiles fill the new size during and after a drag.
+
+### Map framing
+
+`lib/siteFraming.js` creates one controller per map (from `ScreeningMap.jsx`). It draws the search-radius circle and its distance tag imperatively rather than through react-leaflet props, because Leaflet only re-projects SVG paths when a move ends: a circle that changes during a flight is drawn at the wrong scale and clipped.
+
+- **Zoom:** `fitZoomFor()` uses `map.getBoundsZoom()` on the circle's extent plus padding (56px, less on small maps), capped at zoom 15. This replaces the old radius lookup table, which broke above 15 miles, and the fixed zoom-13 fly-to used for new sites (issues #40 and #50).
+- **New site:** fade the circle out (150ms), `flyTo` the site at the fitted zoom, then grow the circle from 0 to the radius.
+- **New radius:** wait 220ms for the slider to settle. When growing, zoom out first and then ease the circle outward; when shrinking, ease inward first and then zoom in. The circle always fits the view while it animates, and the camera always zooms around the site (the old `setZoom` zoomed around wherever the view happened to be).
+- **Cancellation:** every change starts a new run and makes older runs stop at their next step, so rapid clicks or a radius change mid-flight never leave the map half-moved.
+- **Recenter on site:** after any move the controller checks whether the site is still framed (near the center, whole circle visible, not zoomed far out). If not, `ScreeningMap` shows the button, which calls `recenter()`.
+- **Bounds:** `MAP_BOUNDS` is Illinois padded by about 3° so Leaflet's bounds limit never pushes a large search area near the state line off-center (issue #47).
+- `prefers-reduced-motion` skips the fades, flights, and easing.
 
 ### Notifications
 
