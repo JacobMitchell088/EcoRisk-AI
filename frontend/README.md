@@ -69,8 +69,8 @@ src/
 ## User flow
 
 1. **Choose your site.** Search by address (Enter searches), switch to latitude/longitude, or click the map / drag the pin. The "Map pin" box always shows where the screening will run. If the typed address hasn't been looked up yet, the main button reads **Find this address** instead of **Use this site**.
-2. **Set the search area.** Slider from 1 to 50 miles, plus presets. The backend searches a square around the circle, which the info button explains.
-3. **Run the screening.** A review of the site and area, then **Run screening**. While it runs, the checklist tracks backend progress, the map is locked, and the radius line animates.
+2. **Set the search area.** Slider from 1 to 50 miles, plus presets. **5 mi** is the default and is labeled Recommended (`RECOMMENDED_RADIUS` in `App.jsx`). The backend searches a square around the circle, which the info button explains.
+3. **Run the screening.** A review of the site and area, then **Run screening**. While it runs, a pulsing mark and the checklist track backend progress, pulses radiate from the site on the map, and the radius line animates. The map re-frames the site and is locked until the screening ends: `ScreeningMap` disables Leaflet's drag, zoom, box-zoom, and keyboard handlers, turns off pin dragging, marks the map container `inert` (so the zoom buttons can't be clicked), and hides **Recenter on site**.
 4. **Report.** Verdict, key figures, saved vs. live result, **Download report**, **Screen another site**, and one expandable entry per flagged species. **Back to screening steps** keeps the report available via **View the last report**.
 
 Changing the site or radius clears the current results. Rate limits disable the relevant button with a countdown.

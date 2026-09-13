@@ -28,7 +28,7 @@ const initialForm = { // SIUE engineering building
   address: "Engineering Building, Southern Illinois University Edwardsville",
   lat: "38.792",
   lon: "-90.002",
-  radius_miles: "2"
+  radius_miles: "5"
 };
 
 const emptyErrors = { addressLookup: "", coordinateLookup: "", environmentScan: "" };
@@ -36,6 +36,7 @@ const emptyData = { gbif_hits: [], species_context: [] };
 const RADIUS_MIN = 1;
 const RADIUS_MAX = 50;
 const RADIUS_PRESETS = [1, 2, 5, 10, 25];
+const RECOMMENDED_RADIUS = 5;
 
 function coordKey(lat, lon) {
   return `${Number(lat).toFixed(3)},${Number(lon).toFixed(3)}`;
@@ -655,7 +656,7 @@ export default function App() {
           <InfoTip title="Search radius">
             This sets how far from the site the screening looks for species sightings. A larger radius
             covers more ground and may turn up more sightings, while a smaller one focuses on the area
-            closest to the project. The default is 2 miles. The search covers a square around this
+            closest to the project. We recommend 5 miles, the default. The search covers a square around this
             circle, so sightings just past its edge can be included.
           </InfoTip>
           <output className="radius-readout" htmlFor="radius">
@@ -690,7 +691,8 @@ export default function App() {
             aria-pressed={radius === miles}
             onClick={() => setRadius(miles)}
           >
-            {miles} mi
+            {miles} mi{miles === RECOMMENDED_RADIUS && " "}
+            {miles === RECOMMENDED_RADIUS && <span className="chip-note">Recommended</span>}
           </button>
         ))}
       </div>

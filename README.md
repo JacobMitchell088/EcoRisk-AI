@@ -127,8 +127,8 @@ The program precomputes a translated list, scientific name followed by taxonID, 
 > Designed for planners who are not technical. See [`frontend/README.md`](frontend/README.md) for implementation details and the design system.
 - **Guided three-step flow:** the left panel walks users through *1. Choose your site*, *2. Set the search area*, and *3. Run the screening*. Only the current step is open; finished steps collapse to a summary with a **Change** link.
     - Sites can be set by address search, by latitude/longitude, or by clicking the map or dragging the pin. Pressing Enter in the address box searches for the address; it never starts a screening.
-    - The search radius is set with a slider (1–50 miles) or quick presets (1, 2, 5, 10, 25 mi).
-- **Map:** MapTiler `dataviz-v4` tiles, a crosshair site marker, and a dashed search-radius circle labeled with its distance. The circle's dashes move while a screening runs, and the map is locked until it finishes so the site can't change mid-screening.
+    - The search radius is set with a slider (1–50 miles) or quick presets (1, 2, 5, 10, 25 mi). **5 miles** is the default and is labeled Recommended.
+- **Map:** MapTiler `dataviz-v4` tiles, a crosshair site marker, and a dashed search-radius circle labeled with its distance. While a screening runs, pulses radiate from the site and the circle's dashes move, and the map is locked (no panning, zooming, keyboard control, or pin dragging) until it finishes. The map re-frames the site when the screening starts.
     - The map always frames the whole search area, centered on the site, at every radius from 1 to 50 miles and at any panel width.
     - When the site changes (address, coordinates, map click, or dragging the pin), the circle fades out, the map flies to the new site, and the circle grows back in from the pin. Radius changes ease the circle and the zoom together so the circle never spills off the map.
     - A **Recenter on site** button appears under the zoom controls whenever the site is panned or zoomed out of frame. It re-frames the map without changing the screening location.

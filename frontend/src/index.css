@@ -709,6 +709,9 @@ legend.field-label { margin-bottom: 6px; }
 }
 
 .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   min-height: 38px;
   padding: 0 14px;
   border: 1px solid var(--line-strong);
@@ -727,6 +730,15 @@ legend.field-label { margin-bottom: 6px; }
   background: var(--river-tint);
   color: var(--river-strong);
 }
+.chip-note {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--sedge-tint);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--sedge-ink);
+}
+.chip[aria-pressed="true"] .chip-note { background: var(--white); }
 
 /* Review */
 .review {
@@ -766,11 +778,14 @@ legend.field-label { margin-bottom: 6px; }
 
 .progress-head {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
+  align-items: center;
   gap: 12px;
 }
-.progress-status { font-weight: 600; }
+.progress-status {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+}
 .progress-pct {
   font-size: var(--text-sm);
   color: var(--ink-3);
@@ -1137,6 +1152,7 @@ legend.field-label { margin-bottom: 6px; }
 .leaflet-dragging .site-pin { cursor: grabbing; }
 .site-pin-mark {
   position: absolute;
+  z-index: 1;
   inset: 0;
   border: 3px solid var(--river);
   border-radius: 50%;
@@ -1175,6 +1191,31 @@ legend.field-label { margin-bottom: 6px; }
 @keyframes survey-march {
   to { stroke-dashoffset: -17; }
 }
+
+/* ...and survey pulses radiate from the site, echoing the cold-start signal. */
+.map-shell.is-scanning .site-pin::before,
+.map-shell.is-scanning .site-pin::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 2.5px dashed var(--river);
+  border-radius: 50%;
+  background: rgba(37, 88, 106, 0.14);
+  opacity: 0;
+  pointer-events: none;
+  animation: site-pulse 2.2s cubic-bezier(0.15, 0.6, 0.3, 1) infinite;
+}
+.map-shell.is-scanning .site-pin::after { animation-delay: 1.1s; }
+
+@keyframes site-pulse {
+  0% { inset: 0; opacity: 1; }
+  70% { opacity: 0.35; }
+  100% { inset: -120px; opacity: 0; }
+}
+
+/* Zoom buttons read as unavailable while the map is locked. */
+.screening-map .leaflet-control-zoom { transition: opacity 0.2s; }
+.map-shell.is-scanning .leaflet-control-zoom { opacity: 0.4; }
 
 .map-hint {
   position: absolute;
@@ -1226,7 +1267,7 @@ legend.field-label { margin-bottom: 6px; }
   position: absolute;
   top: 104px;
   right: 16px;
-  z-index: 960; /* above the scanning lock, so the site can be found mid-screening */
+  z-index: 960;
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -1469,15 +1510,23 @@ legend.field-label { margin-bottom: 6px; }
 }
 
 /* Echo of the map's search area: rings widening from the mark. */
-.coldstart-signal {
+.coldstart-signal,
+.scan-signal {
   position: relative;
   display: grid;
   place-items: center;
+  flex-shrink: 0;
   width: 56px;
   height: 56px;
 }
+.scan-signal {
+  width: 40px;
+  height: 40px;
+}
 .coldstart-signal::before,
-.coldstart-signal::after {
+.coldstart-signal::after,
+.scan-signal::before,
+.scan-signal::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -1486,7 +1535,8 @@ legend.field-label { margin-bottom: 6px; }
   opacity: 0;
   animation: ripple 2.8s var(--ease) infinite;
 }
-.coldstart-signal::after { animation-delay: 1.4s; }
+.coldstart-signal::after,
+.scan-signal::after { animation-delay: 1.4s; }
 
 @keyframes ripple {
   0% { transform: scale(0.55); opacity: 0.7; }

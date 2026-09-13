@@ -113,6 +113,19 @@ export default function ScreeningMap({
     framingRef.current?.setTarget({ lat: latNum, lon: lonNum, radiusMeters, radiusMiles: miles });
   }, [map, latNum, lonNum, radiusMeters, miles]);
 
+  // Lock the map while a screening runs: no panning, zooming, keyboard control, or pin
+  // dragging. The camera re-frames the site first so the area being searched is in view.
+  useEffect(() => {
+    if (!map) return;
+    for (const handler of [map.dragging, map.touchZoom, map.doubleClickZoom, map.boxZoom, map.keyboard]) {
+      if (!handler) continue;
+      if (scanning) handler.disable();
+      else handler.enable();
+    }
+    map.getContainer().inert = scanning;
+    if (scanning) framingRef.current?.recenter();
+  }, [map, scanning]);
+
   return (
     <div className={`map-shell${scanning ? " is-scanning" : ""}`}>
       <MapContainer
@@ -147,7 +160,7 @@ export default function ScreeningMap({
             position={[latNum, lonNum]}
             icon={siteIcon}
             title="Project site. Drag to move."
-            draggable={true}
+            draggable={!scanning}
             eventHandlers={{
               dragend: (e) => {
                 const pos = e.target.getLatLng();
@@ -158,7 +171,7 @@ export default function ScreeningMap({
         )}
       </MapContainer>
 
-      {hasCoords && !framed && (
+      {hasCoords && !framed && !scanning && (
         <button type="button" className="map-recenter" onClick={() => framingRef.current?.recenter()}>
           <CrosshairIcon size={18} />
           Recenter on site

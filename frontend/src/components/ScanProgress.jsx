@@ -1,3 +1,4 @@
+import BrandMark from "./BrandMark";
 import { CheckIcon } from "./Icons";
 
 // Thresholds mirror the progress values reported by GBIF.run_scan.
@@ -26,6 +27,9 @@ export default function ScanProgress({ progress, finalizing }) {
   return (
     <div className="progress">
       <div className="progress-head">
+        <span className="scan-signal" aria-hidden="true">
+          <BrandMark size={24} />
+        </span>
         <p className="progress-status" aria-live="polite">
           {statusText}
         </p>
