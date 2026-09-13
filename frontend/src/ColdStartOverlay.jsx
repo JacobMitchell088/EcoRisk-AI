@@ -1,14 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
-const backendUrl = API_BASE_URL ? API_BASE_URL.replace(/\/$/, "") : "";
+import BrandMark from "./components/BrandMark";
+import { backendUrl } from "./lib/api";
 
 // Render free-tier instances sleep when idle; the first request can hang while
 // the server spins back up ~60s If a backend request stays pending past this
 // threshold — or fails outright — we treat it as a cold start and show the overlay.
 const SLOW_THRESHOLD_MS = 4000;
 const HEALTH_POLL_MS = 3000;
-const MESSAGE_ROTATE_MS = 5000;
+const MESSAGE_ROTATE_S = 6;
 
 // Captured before we patch window.fetch, so health polling bypasses the wrapper.
 const nativeFetch = typeof window !== "undefined" ? window.fetch.bind(window) : null;
@@ -20,17 +19,14 @@ const FORCE_COLDSTART =
   new URLSearchParams(window.location.search).get("coldstart") === "1";
 
 const MESSAGES = [
-  "Waking up the server…",
-  "Warming up…",
-  "Spinning up resources…",
-  "Almost there…",
-  "Just a little more…",
-  "Nearly ready…",
+  "Waking up the server",
+  "Starting the screening service",
+  "Still starting, this is normal",
+  "Almost ready",
 ];
 
 export default function ColdStartOverlay() {
   const [cold, setCold] = useState(FORCE_COLDSTART);
-  const [msgIndex, setMsgIndex] = useState(0);
   const coldRef = useRef(false);
 
   useEffect(() => {
@@ -94,37 +90,52 @@ export default function ColdStartOverlay() {
     };
   }, [cold]);
 
-  // Rotate the reassurance messages while the overlay is up.
-  useEffect(() => {
-    if (!cold) {
-      setMsgIndex(0);
-      return;
-    }
-    const id = setInterval(
-      () => setMsgIndex((i) => (i + 1) % MESSAGES.length),
-      MESSAGE_ROTATE_MS
-    );
-    return () => clearInterval(id);
-  }, [cold]);
-
   if (!cold) return null;
+  return <ColdStartSheet />;
+}
+
+// Mounted fresh each time the overlay opens, so the timer always starts at zero.
+function ColdStartSheet() {
+  const [elapsed, setElapsed] = useState(0);
+
+  useEffect(() => {
+    const started = Date.now();
+    const id = setInterval(() => setElapsed(Math.floor((Date.now() - started) / 1000)), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const message = MESSAGES[Math.floor(elapsed / MESSAGE_ROTATE_S) % MESSAGES.length];
+  // Eases toward (never reaches) the end, since the true wake time is unknown.
+  const meter = Math.round(95 * (1 - Math.exp(-elapsed / 28)));
+  const clock = `${Math.floor(elapsed / 60)}:${String(elapsed % 60).padStart(2, "0")}`;
 
   return (
-    <div className="coldstart-overlay" role="status" aria-live="polite">
-      <div className="coldstart-card">
-        <div className="coldstart-spinner" aria-hidden="true" />
-        <span className="coldstart-eyebrow">EcoRisk AI</span>
-        <h2 className="coldstart-title">Backend is starting up</h2>
-        <p className="coldstart-message">{MESSAGES[msgIndex]}</p>
-        <p className="coldstart-note">
-          Our free-tier server sleeps when idle, so the first request is expected to take
-          ~60 seconds while it spins back up. Hang tight — this will clear automatically.
-        </p>
-        <div className="coldstart-dots" aria-hidden="true">
-          <span />
-          <span />
-          <span />
+    <div className="coldstart" role="dialog" aria-modal="true" aria-labelledby="coldstart-title">
+      <div className="coldstart-sheet">
+        <div className="coldstart-signal" aria-hidden="true">
+          <BrandMark size={32} />
         </div>
+
+        <div className="coldstart-copy">
+          <h2 id="coldstart-title" className="coldstart-title">
+            Starting the screening service
+          </h2>
+          <p className="coldstart-message" aria-live="polite" key={message}>
+            {message}
+          </p>
+        </div>
+
+        <div className="coldstart-meter" aria-hidden="true">
+          <span style={{ width: `${meter}%` }} />
+        </div>
+        <p className="coldstart-time">
+          <span className="coldstart-clock">{clock}</span> so far. This usually takes about a minute.
+        </p>
+
+        <p className="coldstart-note">
+          The service goes to sleep when nobody has used it for a while. It wakes up on its own, and
+          this page continues automatically once it's ready.
+        </p>
       </div>
     </div>
   );

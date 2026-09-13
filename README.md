@@ -43,7 +43,7 @@ This version focuses on the **data pipeline / detection logic / additional ecolo
 7. Cross checks returned species with **precomputed** `data/IllinoisTaxonLookup.csv`
 8. Send batch request to OpenRouter for additional construction and species context (capped with `.env` `MAX_SPECIES_FOR_AI`, default=3)
 9. Store result in Redis cache (24-hour TTL)
-10. Display flagged results to user
+10. Display the results as a report: a plain-language verdict, each flagged species with its AI construction guidance, and a downloadable HTML report
 
 ---   
 
@@ -123,9 +123,28 @@ The program precomputes a translated list, scientific name followed by taxonID, 
     - Backend validates token with Cloudflare
     - If valid proceed, if not reject
 
+## Frontend Experience
+> Designed for planners who are not technical. See [`frontend/README.md`](frontend/README.md) for implementation details and the design system.
+- **Guided three-step flow:** the left panel walks users through *1. Choose your site*, *2. Set the search area*, and *3. Run the screening*. Only the current step is open; finished steps collapse to a summary with a **Change** link.
+    - Sites can be set by address search, by latitude/longitude, or by clicking the map or dragging the pin. Pressing Enter in the address box searches for the address; it never starts a screening.
+    - The search radius is set with a slider (1–50 miles) or quick presets (1, 2, 5, 10, 25 mi). **5 miles** is the default and is labeled Recommended.
+- **Map:** MapTiler `dataviz-v4` tiles, a crosshair site marker, and a dashed search-radius circle labeled with its distance. While a screening runs, pulses radiate from the site and the circle's dashes move, and the map is locked (no panning, zooming, keyboard control, or pin dragging) until it finishes. The map re-frames the site when the screening starts.
+    - The map always frames the whole search area, centered on the site, at every radius from 1 to 50 miles and at any panel width.
+    - When the site changes (address, coordinates, map click, or dragging the pin), the circle fades out, the map flies to the new site, and the circle grows back in from the pin. Radius changes ease the circle and the zoom together so the circle never spills off the map.
+    - A **Recenter on site** button appears under the zoom controls whenever the site is panned or zoomed out of frame. It re-frames the map without changing the screening location.
+    - The map can pan somewhat past the Illinois border, so sites near the state line stay centered with a large radius.
+- **Report:** when a screening finishes, the panel switches to a report with a verdict ("3 protected species recorded nearby" or "No protected species recorded nearby"), key figures, whether the result was saved (cached) or live, and an expandable entry per species (Wikipedia photo, tags, AI guidance, Wikipedia and GBIF links).
+    - **Download report** saves a styled, printable HTML report. It is available for clear results too, and all AI text is HTML-escaped.
+- **Resizable panel:** on desktop, drag the grip on the panel's right edge to make it wider or narrower (or focus it and use the arrow keys; hold Shift for larger steps). Double-click the grip to reset. The steps and the report remember separate widths in the browser, so a report can be read wide without stretching the form. When the panel is wide, species guidance lays out in two columns. The map always keeps at least 360px.
+- **Activity tray:** the bell in the header lists recent messages (address lookups, screenings, errors) with an unread count. Most messages also appear briefly as a toast in the bottom-right.
+- **Info buttons:** the ⓘ buttons next to *Project address*, *Coordinates*, *Search radius*, *All species*, and *Saved result* explain each control in plain language. They close with Escape or a click elsewhere.
+- **Cold-start screen:** if the backend is asleep, a full-screen notice shows elapsed time and explains that the service is waking up. It clears on its own once the backend responds.
+- **Responsive:** on phones, the map sits above the panel and the page scrolls normally.
+
 ## In-App Feedback
-- A **Provide Feedback** button lives in the bottom-right of the site, themed to match the rest of the UI.
+- A **Feedback** button in the header opens a side panel, themed to match the rest of the UI.
 - Users can submit a title, a body (what's good, bad, or wanted), an optional 1–5 star rating, and an optional contact email for a reply.
+- Missing or invalid fields are flagged inline, and a draft is kept if the panel is closed without sending.
 - Submissions are auto-populated into the repository's **GitHub Issues** (labeled `feedback`).
 - The GitHub Personal Access Token is held **only on the backend** (`GITHUB_FEEDBACK_PAT`) — never shipped to the browser. The frontend posts to the `/feedback` endpoint, which calls the GitHub Issues API server-side.
 - Like `/scan/start`, the endpoint is protected by **Cloudflare Turnstile** verification and a per-IP rate limit (5/hour) to prevent abuse.
@@ -195,7 +214,17 @@ Senior-Project/
 ├── scripts/
 │   ├── unfiltered_species.py       # Scrapes Illinois Natural Heritage → data/IsEndangered.csv
 │   └── build_taxon_lookup.py       # Script to regenerate IllinoisTaxonLookup.csv
-├── frontend/                       # React + Vite frontend (Leaflet map, scan UI)
+├── frontend/                       # React + Vite frontend (see frontend/README.md)
+│   ├── index.html                  # Fonts, Turnstile script, favicon
+│   ├── public/favicon.svg          # EcoRisk AI mark
+│   └── src/
+│       ├── App.jsx                 # Guided steps, report, header, scan/geocode logic
+│       ├── ScreeningMap.jsx        # Leaflet map, site marker, search-radius circle
+│       ├── FeedbackWidget.jsx      # Feedback side panel
+│       ├── ColdStartOverlay.jsx    # Backend wake-up screen
+│       ├── index.css               # Design system and all styles
+│       ├── components/             # ActivityTray, InfoTip, ScanProgress, SpeciesEntry, BrandMark, Icons
+│       └── lib/                    # API helpers, formatting, report download, map framing, Turnstile + panel-width hooks
 ├── tests/
 │   ├── test_scan.py
 │   ├── test_geocode.py
@@ -251,6 +280,7 @@ cd frontend
 npm install
 npm run dev
 ```
+> The frontend reads `VITE_API_BASE_URL`, `VITE_TURNSTILE_SITE_KEY`, and `VITE_MAPTILER_API_KEY` from `frontend/.env` (see `frontend/.env.example`). Add `?coldstart=1` to the URL to preview the cold-start screen. More in [`frontend/README.md`](frontend/README.md).
 
 ---
 
