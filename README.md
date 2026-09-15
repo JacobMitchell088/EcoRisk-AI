@@ -37,9 +37,9 @@ This version focuses on the **data pipeline / detection logic / additional ecolo
 
 ### User Interface
 3. Supply an address or coordinates and a radius in miles (address search powered by MapTiler Geocoding API)
-4. The program then computes a bounding box (note this bounding box is currently square for simplicity)
+4. The program converts the radius from miles to meters for use in the GBIF query
 5. Check Redis cache — if a matching scan exists for the same location and radius, return the cached result immediately
-6. Make a GBIF call to return all species within the given bounding box (occurrences filtered to year 2000–2026)
+6. Make a GBIF call using a `geoDistance` filter to return all species within the given radius (occurrences filtered to year 2000–2026)
 7. Cross checks returned species with **precomputed** `data/IllinoisTaxonLookup.csv`
 8. Send batch request to OpenRouter for additional construction and species context (capped with `.env` `MAX_SPECIES_FOR_AI`, default=3)
 9. Store result in Redis cache (24-hour TTL)
@@ -93,7 +93,7 @@ The program precomputes a translated list, scientific name followed by taxonID, 
 - Both endpoints are Redis-cached (24-hour TTL) to avoid duplicate lookups.
 
 ## Geometry based queries
-- A bounding box is generated from the radius to perform more reliable GBIF searches.
+- The search radius (in miles) is converted to meters and passed to GBIF's `geoDistance` parameter, giving a true circular search area instead of the previous square bounding-box approximation.
 
 ## Redis Caching
 > Requires a running Redis instance. See [Environment Variables](#environment-variables) for setup.

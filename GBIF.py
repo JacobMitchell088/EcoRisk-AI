@@ -22,22 +22,6 @@ def miles_to_km(mi: float) -> float:
     return mi * 1.609344
 
 
-def get_bounding_box(lat: float, lon: float, radius_miles: float):
-    radius_km = miles_to_km(radius_miles)
-
-    lat_delta = radius_km / 111.0
-    lon_delta = radius_km / (111.0 * math.cos(math.radians(lat)) + 1e-12)
-
-    min_lat = lat - lat_delta
-    max_lat = lat + lat_delta
-    min_lon = lon - lon_delta
-    max_lon = lon + lon_delta
-
-    logger.debug("Bounding box = [min_lat: %s, max_lat: %s, min_lon: %s, max_lon: %s]", min_lat, max_lat, min_lon, max_lon)
-
-    return min_lat, max_lat, min_lon, max_lon
-
-
 def load_precomputed_taxon_keys(path: str) -> dict[str, int]:
     """
     Reads IllinoisTaxonLookup.csv and returns two dicts:
@@ -75,12 +59,11 @@ def load_precomputed_taxon_keys(path: str) -> dict[str, int]:
 
 
 def gbif_species_counts_in_area(lat: float, lon: float, radius_miles: float) -> list[tuple[int, int]]:
-    """Facet search returning all (taxon_key, count) pairs in the bounding box."""
-    min_lat, max_lat, min_lon, max_lon = get_bounding_box(lat, lon, radius_miles)
+    """Facet search returning all (taxon_key, count) pairs within true circular radius."""
+    radius_mtr = miles_to_km(radius_miles) * 1000
 
     params = {
-        "decimalLatitude": f"{min_lat},{max_lat}",
-        "decimalLongitude": f"{min_lon},{max_lon}",
+        "geoDistance": f"{lat},{lon},{radius_mtr}m",
         "hasCoordinate": "true",
         "year": "2000,2026",
         "facet": "speciesKey",
@@ -175,7 +158,7 @@ def run_scan(lat, lon, radius_miles, progress_callback=None):
 
 
 def main():
-    lat, lon = 38.617110, -90.207191
+    lat, lon = 38.792, -90.002
     radius_miles = 5
 
     result = run_scan(lat, lon, radius_miles)
