@@ -38,7 +38,7 @@ from openai import (
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_MODEL = "openrouter/free"
+DEFAULT_MODEL = "liquid/lfm-2.5-2.6b:free"
 
 
 # All species go into one prompt — we don't make a separate API call per species
