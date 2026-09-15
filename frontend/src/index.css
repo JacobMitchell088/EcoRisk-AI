@@ -1037,6 +1037,23 @@ legend.field-label { margin-bottom: 6px; }
   color: var(--ink-2);
 }
 
+.species-badge {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 2px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.species-badge--unreviewed {
+  background: var(--gold-tint);
+  border-color: var(--gold);
+  color: var(--gold-ink);
+}
+
 .guidance {
   display: grid;
   gap: 14px;

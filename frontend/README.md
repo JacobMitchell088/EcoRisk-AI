@@ -54,7 +54,7 @@ src/
 │   ├── Icons.jsx            # Inline SVG icon set (stroke = currentColor)
 │   ├── InfoTip.jsx          # ⓘ button with an explanatory popover
 │   ├── ScanProgress.jsx     # Progress bar + checklist while a screening runs
-│   └── SpeciesEntry.jsx     # Expandable species entry in the report
+│   └── SpeciesEntry.jsx     # Expandable species entry; shows a "Not AI-reviewed" badge for species beyond AI context limit
 └── lib/
     ├── api.js               # Env config, error-message parsing, network-error detection
     ├── format.js            # Coordinates, times, miles, verdict copy, guidance section labels
@@ -71,7 +71,7 @@ src/
 1. **Choose your site.** Search by address (Enter searches), switch to latitude/longitude, or click the map / drag the pin. The "Map pin" box always shows where the screening will run. If the typed address hasn't been looked up yet, the main button reads **Find this address** instead of **Use this site**.
 2. **Set the search area.** Slider from 1 to 50 miles, plus presets. **5 mi** is the default and is labeled Recommended (`RECOMMENDED_RADIUS` in `App.jsx`). The backend searches a square around the circle, which the info button explains.
 3. **Run the screening.** A review of the site and area, then **Run screening**. While it runs, a pulsing mark and the checklist track backend progress, pulses radiate from the site on the map, and the radius line animates. The map re-frames the site and is locked until the screening ends: `ScreeningMap` disables Leaflet's drag, zoom, box-zoom, and keyboard handlers, turns off pin dragging, marks the map container `inert` (so the zoom buttons can't be clicked), and hides **Recenter on site**.
-4. **Report.** Verdict, key figures, saved vs. live result, **Download report**, **Screen another site**, and one expandable entry per flagged species. **Back to screening steps** keeps the report available via **View the last report**.
+4. **Report.** Verdict, key figures, saved vs. live result, **Download report**, **Screen another site**, and one expandable entry per flagged species — only the highest-sighting species get AI-generated guidance, the rest are shown with links to Wikipedia and GBIF instead.
 
 Changing the site or radius clears the current results. Rate limits disable the relevant button with a countdown.
 
@@ -117,7 +117,7 @@ The look borrows from land-survey site plans: a crosshair site marker, a dashed 
 | `--paper` | `#F9FAF7` | Panels, header, sheets |
 | `--ink` | `#1C2925` | Primary text |
 | `--river` | `#25586A` | Buttons, links, site marker, search radius |
-| `--gold` / `--gold-ink` | `#C08A1E` / `#7C5710` | Protected species found |
+| `--gold` / `--gold-ink` | `#C08A1E` / `#7C5710` | Protected species found; also used for the "Not AI-reviewed" species badge|
 | `--sedge` / `--sedge-ink` | `#4E7A45` / `#3D6136` | Clear result, success |
 | `--brick` | `#A33A32` | Errors |
 
