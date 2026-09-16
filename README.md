@@ -41,7 +41,7 @@ This version focuses on the **data pipeline / detection logic / additional ecolo
 5. Check Redis cache — if a matching scan exists for the same location and radius, return the cached result immediately
 6. Make a GBIF call using a `geoDistance` filter to return all species within the given radius (occurrences filtered to year 2000–2026)
 7. Cross checks returned species with **precomputed** `data/IllinoisTaxonLookup.csv`
-8. Send batch request to OpenRouter for additional construction and species context (capped with `.env` `MAX_SPECIES_FOR_AI`, default=3)
+8. Send batch request to OpenRouter for additional construction and species context, limited to the top `MAX_SPECIES_FOR_AI` species by sighting count (`.env`, default=3) — this only caps which species get AI context, not which species are detected or shown in the report
 9. Store result in Redis cache (24-hour TTL)
 10. Display the results as a report: a plain-language verdict, each flagged species with its AI construction guidance, and a downloadable HTML report
 
@@ -133,7 +133,7 @@ The program precomputes a translated list, scientific name followed by taxonID, 
     - When the site changes (address, coordinates, map click, or dragging the pin), the circle fades out, the map flies to the new site, and the circle grows back in from the pin. Radius changes ease the circle and the zoom together so the circle never spills off the map.
     - A **Recenter on site** button appears under the zoom controls whenever the site is panned or zoomed out of frame. It re-frames the map without changing the screening location.
     - The map can pan somewhat past the Illinois border, so sites near the state line stay centered with a large radius.
-- **Report:** when a screening finishes, the panel switches to a report with a verdict ("3 protected species recorded nearby" or "No protected species recorded nearby"), key figures, whether the result was saved (cached) or live, and an expandable entry per species (Wikipedia photo, tags, AI guidance, Wikipedia and GBIF links).
+- **Report:** when a screening finishes, the panel switches to a report with a verdict ("3 protected species recorded nearby" or "No protected species recorded nearby"), key figures, whether the result was saved (cached) or live, and an expandable entry per species (Wikipedia photo, Wikipedia and GBIF links). The species with the most sightings also include AI-generated tags and construction guidance; species beyond the AI limit are marked "Not AI-reviewed" and link out to background reading instead.
     - **Download report** saves a styled, printable HTML report. It is available for clear results too, and all AI text is HTML-escaped.
 - **Resizable panel:** on desktop, drag the grip on the panel's right edge to make it wider or narrower (or focus it and use the arrow keys; hold Shift for larger steps). Double-click the grip to reset. The steps and the report remember separate widths in the browser, so a report can be read wide without stretching the form. When the panel is wide, species guidance lays out in two columns. The map always keeps at least 360px.
 - **Activity tray:** the bell in the header lists recent messages (address lookups, screenings, errors) with an unread count. Most messages also appear briefly as a toast in the bottom-right.
@@ -174,7 +174,7 @@ during late spring and summer may disrupt these colonies. If possible,
 major disturbance activities may be less disruptive outside the
 maternity season, typically late fall through winter.    
 ```
-- To ensure performance remains high and reduce costs, the program will send **all** detected species in one single OpenRouter request rather than a request for each detected animal
+- To ensure performance remains high and reduce costs, only the top `MAX_SPECIES_FOR_AI` detected species (ranked by sighting count) are sent to OpenRouter in a single batched request. All matched species are still returned and shown in the report — species beyond that limit are displayed without AI-generated guidance, alongside links to Wikipedia and GBIF.
 
 ---   
 

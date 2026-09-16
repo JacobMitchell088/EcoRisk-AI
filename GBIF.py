@@ -68,7 +68,7 @@ def gbif_species_counts_in_area(lat: float, lon: float, radius_miles: float) -> 
         "year": "2000,2026",
         "facet": "speciesKey",
         "facetMincount": 1,
-        "speciesKey.facetLimit": 1000,
+        "speciesKey.facetLimit": 10000,
         "limit": 0,
     }
 
@@ -104,6 +104,7 @@ def run_scan(lat, lon, radius_miles, progress_callback=None):
         progress_callback("Querying GBIF species in area", 35)
 
     area_species = gbif_species_counts_in_area(lat, lon, radius_miles)
+    total_species_count = len(area_species)
 
     if progress_callback:
         progress_callback("Cross-referencing Illinois endangered species", 60)
@@ -115,11 +116,11 @@ def run_scan(lat, lon, radius_miles, progress_callback=None):
             hits.append((name, count, taxon_key))
 
     hits.sort(key=lambda x: x[1], reverse=True)
-    found_species_count = len(hits)
-    hits = hits[:MAX_SPECIES]
+    matched_species_count = len(hits)
+    ai_hits = hits[:MAX_SPECIES]
 
     logger.info("AI context will be generated for %d species", len(hits))
-    for name, count, key in hits:
+    for name, count, key in ai_hits:
         logger.info("  - %s (%d occurrences)", name, count)
 
     if progress_callback:
@@ -137,7 +138,7 @@ def run_scan(lat, lon, radius_miles, progress_callback=None):
         },
         "hits": [
             {"scientific_name": nm, "gbif_count": cnt, "taxon_key": key}
-            for nm, cnt, key in hits
+            for nm, cnt, key in ai_hits
         ],
     }
 
@@ -148,7 +149,8 @@ def run_scan(lat, lon, radius_miles, progress_callback=None):
 
     return {
         "input": gbif_result["input"],
-        "found_species_count": found_species_count,
+        "total_species_count": total_species_count,
+        "matched_species_count": matched_species_count,
         "gbif_hits": [
             {"scientific_name": nm, "gbif_count": cnt, "taxon_key": key}
             for nm, cnt, key in hits

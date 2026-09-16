@@ -32,7 +32,7 @@ const initialForm = { // SIUE engineering building
 };
 
 const emptyErrors = { addressLookup: "", coordinateLookup: "", environmentScan: "" };
-const emptyData = { gbif_hits: [], species_context: [] };
+const emptyData = { gbif_hits: [], species_context: [], total_species_count: 0 };
 const RADIUS_MIN = 1;
 const RADIUS_MAX = 50;
 const RADIUS_PRESETS = [1, 2, 5, 10, 25];
@@ -832,7 +832,7 @@ export default function App() {
           <dd>{hits.length}</dd>
         </div>
         <div className="figure">
-          <dt>Their sightings</dt>
+          <dt>Protected Sightings</dt>
           <dd>{totalSightings}</dd>
         </div>
         <div className="figure">
@@ -844,7 +844,7 @@ export default function App() {
               protected.
             </InfoTip>
           </dt>
-          <dd>{data.found_species_count ?? 0}</dd>
+          <dd>{data.total_species_count ?? 0}</dd>
         </div>
       </dl>
 

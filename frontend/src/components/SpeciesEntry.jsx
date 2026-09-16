@@ -39,14 +39,28 @@ export default function SpeciesEntry({ hit, context, defaultOpen = false }) {
         aria-controls={bodyId}
       >
         <span className="species-thumb">
-          {thumb ? <img src={thumb} alt="" loading="lazy" /> : <LeafIcon size={22} />}
+          {thumb ? (
+            <img src={thumb} alt="" loading="lazy" />
+          ) : (
+            <LeafIcon size={22} />
+          )}
         </span>
         <span className="species-names">
-          <span className="species-common">{context?.common_name || hit.scientific_name}</span>
-          {context?.common_name && <span className="species-sci">{hit.scientific_name}</span>}
-          <span className="species-count">
-            {sightings} {sightings === 1 ? "sighting" : "sightings"} on record nearby
+          <span className="species-common">
+            {context?.common_name || hit.scientific_name}
           </span>
+          {context?.common_name && (
+            <span className="species-sci">{hit.scientific_name}</span>
+          )}
+          <span className="species-count">
+            {sightings} {sightings === 1 ? "sighting" : "sightings"} on record
+            nearby
+          </span>
+          {!context && (
+            <span className="species-badge species-badge--unreviewed">
+              Not AI-reviewed
+            </span>
+          )}
         </span>
         <ChevronDownIcon className="species-chevron" size={20} />
       </button>
@@ -71,10 +85,15 @@ export default function SpeciesEntry({ hit, context, defaultOpen = false }) {
               </div>
             ))}
           </div>
+        ) : context ? (
+          <p className="guidance-text guidance-missing">
+            No construction guidance was generated for this species. The links
+            below have background on its habitat and behavior.
+          </p>
         ) : (
           <p className="guidance-text guidance-missing">
-            No construction guidance was generated for this species. The links below have background
-            on its habitat and behavior.
+            This species wasn't included in the AI review for this screening.
+            The links below have background on its habitat and behavior.
           </p>
         )}
 
