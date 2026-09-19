@@ -1008,6 +1008,8 @@ export default function App() {
             radiusMiles={radius}
             onPickLocation={handlePickLocation}
             scanning={loading}
+            locked={view === "report"}
+            onReset={startOver}
             hint={view === "steps" && step === 1 ? "Click the map or drag the pin to move your site" : null}
           />
         </section>

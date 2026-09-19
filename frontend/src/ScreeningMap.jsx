@@ -11,7 +11,7 @@ import L from "leaflet";
 import { useEffect, useRef, useState } from "react";
 import "leaflet/dist/leaflet.css";
 import { createSiteFraming } from "./lib/siteFraming";
-import { CrosshairIcon } from "./components/Icons";
+import { CrosshairIcon, LockIcon, ResetIcon } from "./components/Icons";
 
 const MAPTILER_API_KEY = import.meta.env.VITE_MAPTILER_API_KEY || "";
 const MAP_STYLE = "dataviz-v4";
@@ -47,16 +47,25 @@ const siteIcon = L.divIcon({
   iconAnchor: [17, 17],
 });
 
-function MapClickHandler({ onPickLocation }) {
+function MapClickHandler({ onPickLocation, disabled }) {
   const clickTimeoutRef = useRef(null);
+  const disabledRef = useRef(disabled);
+
+  // A click queued just before the map locked must not land after it.
+  useEffect(() => {
+    disabledRef.current = disabled;
+    if (disabled) clearTimeout(clickTimeoutRef.current);
+  }, [disabled]);
 
   useMapEvents({
     click(e) {
+      if (disabledRef.current) return;
       if (clickTimeoutRef.current) {
         clearTimeout(clickTimeoutRef.current);
       }
 
       clickTimeoutRef.current = setTimeout(() => {
+        if (disabledRef.current) return;
         onPickLocation(e.latlng.lat, e.latlng.lng);
       }, 300); // Delay to distinguish single click from double click
     },
@@ -84,6 +93,8 @@ export default function ScreeningMap({
   radiusMiles,
   onPickLocation,
   scanning = false,
+  locked = false,
+  onReset,
   hint = null,
 }) {
   const [map, setMap] = useState(null);
@@ -113,21 +124,27 @@ export default function ScreeningMap({
     framingRef.current?.setTarget({ lat: latNum, lon: lonNum, radiusMeters, radiusMiles: miles });
   }, [map, latNum, lonNum, radiusMeters, miles]);
 
-  // Lock the map while a screening runs: no panning, zooming, keyboard control, or pin
-  // dragging. The camera re-frames the site first so the area being searched is in view.
+  // Lock the map while a screening runs, and keep it locked while the report is open so a
+  // stray click (e.g. while dragging the panel resizer) can't move the site and wipe them.
+  // No panning, zooming, keyboard control, or pin dragging. The camera re-frames the site
+  // first so the area that was searched is in view.
+  const frozen = scanning || locked;
+
   useEffect(() => {
     if (!map) return;
     for (const handler of [map.dragging, map.touchZoom, map.doubleClickZoom, map.boxZoom, map.keyboard]) {
       if (!handler) continue;
-      if (scanning) handler.disable();
+      if (frozen) handler.disable();
       else handler.enable();
     }
-    map.getContainer().inert = scanning;
-    if (scanning) framingRef.current?.recenter();
-  }, [map, scanning]);
+    map.getContainer().inert = frozen;
+    if (frozen) framingRef.current?.recenter();
+  }, [map, frozen]);
+
+  const shellClass = `map-shell${scanning ? " is-scanning" : ""}${locked && !scanning ? " is-locked" : ""}`;
 
   return (
-    <div className={`map-shell${scanning ? " is-scanning" : ""}`}>
+    <div className={shellClass}>
       <MapContainer
         ref={setMap}
         center={center}
@@ -153,14 +170,14 @@ export default function ScreeningMap({
         <ScaleControl position="bottomleft" imperial={true} metric={false} />
 
         <KeepSized />
-        <MapClickHandler onPickLocation={onPickLocation} />
+        <MapClickHandler onPickLocation={onPickLocation} disabled={frozen} />
 
         {hasCoords && (
           <Marker
             position={[latNum, lonNum]}
             icon={siteIcon}
-            title="Project site. Drag to move."
-            draggable={!scanning}
+            title={frozen ? "Project site" : "Project site. Drag to move."}
+            draggable={!frozen}
             eventHandlers={{
               dragend: (e) => {
                 const pos = e.target.getLatLng();
@@ -171,14 +188,27 @@ export default function ScreeningMap({
         )}
       </MapContainer>
 
-      {hasCoords && !framed && !scanning && (
+      {hasCoords && !framed && !frozen && (
         <button type="button" className="map-recenter" onClick={() => framingRef.current?.recenter()}>
           <CrosshairIcon size={18} />
           Recenter on site
         </button>
       )}
 
-      {hint && <p className="map-hint">{hint}</p>}
+      {hint && !frozen && <p className="map-hint">{hint}</p>}
+
+      {locked && !scanning && (
+        <div className="map-locked" role="group" aria-label="Map locked">
+          <p className="map-locked-status">
+            <LockIcon size={16} />
+            <span className="map-locked-text">Map locked to these results</span>
+          </p>
+          <button type="button" className="map-locked-reset" onClick={onReset}>
+            <ResetIcon size={16} />
+            Reset scan
+          </button>
+        </div>
+      )}
 
       {scanning && (
         <div className="map-lock">

@@ -112,6 +112,20 @@ export const AlertIcon = (props) => (
   </Svg>
 );
 
+export const LockIcon = (props) => (
+  <Svg {...props}>
+    <rect x="5" y="10.5" width="14" height="10" rx="2" />
+    <path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" />
+  </Svg>
+);
+
+export const ResetIcon = (props) => (
+  <Svg {...props}>
+    <path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3" />
+    <path d="M4.5 4v4h4" />
+  </Svg>
+);
+
 export const ChevronDownIcon = (props) => (
   <Svg {...props}>
     <path d="M6 9l6 6 6-6" />
