@@ -1232,7 +1232,8 @@ legend.field-label { margin-bottom: 6px; }
 
 /* Zoom buttons read as unavailable while the map is locked. */
 .screening-map .leaflet-control-zoom { transition: opacity 0.2s; }
-.map-shell.is-scanning .leaflet-control-zoom { opacity: 0.4; }
+.map-shell.is-scanning .leaflet-control-zoom,
+.map-shell.is-locked .leaflet-control-zoom { opacity: 0.4; }
 
 .map-hint {
   position: absolute;
@@ -1271,6 +1272,63 @@ legend.field-label { margin-bottom: 6px; }
   font-weight: 600;
   color: var(--ink-2);
   box-shadow: var(--shadow-float);
+}
+
+/* After a screening, the map stays locked to the searched area until the user resets. */
+.map-locked {
+  position: absolute;
+  left: 50%;
+  bottom: 36px;
+  z-index: 960;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: calc(100% - 32px);
+  padding: 5px 5px 5px 14px;
+  border-radius: 999px;
+  background: rgba(28, 41, 37, 0.9);
+  color: #EEF2EF;
+  transform: translateX(-50%);
+  box-shadow: var(--shadow-float);
+  animation: tip-in 0.2s var(--ease);
+}
+.map-locked-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  font-size: var(--text-sm);
+  white-space: nowrap;
+}
+.map-locked-status svg { flex: none; }
+.map-locked-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.map-locked-reset {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 14px 0 11px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--paper);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+.map-locked-reset svg { color: var(--river); }
+.map-locked-reset:hover {
+  background: var(--white);
+  color: var(--river-strong);
+}
+.map-locked-reset:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: 2px;
 }
 
 /* The circle and its tag fade while the camera flies (see lib/siteFraming.js). */
@@ -1677,6 +1735,7 @@ legend.field-label { margin-bottom: 6px; }
 /* A narrow map (wide panel or small window) has no room for the hint. */
 @container map (max-width: 460px) {
   .map-hint { display: none; }
+  .map-locked-text { display: none; }
 }
 
 @container panel (min-width: 680px) {
@@ -1736,7 +1795,8 @@ legend.field-label { margin-bottom: 6px; }
 
   .panel-title { font-size: var(--text-xl); }
 
-  .map-hint { bottom: 30px; }
+  .map-hint,
+  .map-locked { bottom: 30px; }
 
   .tray-pop {
     position: fixed;
