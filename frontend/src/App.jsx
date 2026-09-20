@@ -370,6 +370,9 @@ export default function App() {
     if (lastPickedRef.current === newKey) return;
     lastPickedRef.current = newKey;
     resetResults();
+    // Moving the pin makes the confirmed site stale, so send them back to step 1 to
+    // confirm the new one. The radius they already picked is left alone.
+    setStep(1);
     setForm((prev) => ({ ...prev, lat: roundedLat, lon: roundedLon }));
     try {
       const response = await fetch(`${backendUrl}/geocode/reverse?lat=${roundedLat}&lon=${roundedLon}`);
