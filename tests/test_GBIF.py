@@ -7,7 +7,7 @@ NOTE ON SEARCH-AREA SHAPE
 --------------------------
 The project used to build a square bounding box locally (get_bounding_box)
 and send decimalLatitude/decimalLongitude ranges to GBIF. It now sends a
-single `geoDistance` parameter ("lat,lon,radius_meters") and lets GBIF do
+single `geoDistance` parameter ("lat,lon,radius_metersm") and lets GBIF do
 the circular search itself. There is no longer a standalone geometry
 function to unit-test directly, so the geometry invariants that used to
 live in TestSearchAreaContract are now checked by inspecting the params
@@ -17,6 +17,17 @@ gbif_species_counts_in_area(). See TestGeoDistanceContract below.
 If a future implementation goes back to computing geometry locally (e.g.
 a polygon search), it's worth reintroducing a small geometry-helper
 section here, mirroring what TestBoundingBoxGeometry used to do.
+
+NOTE ON MULTI-STATE LOOKUP
+---------------------------
+The taxon lookup moved from a single-state file (IllinoisTaxonLookup.csv,
+one row per species, loaded by the now-removed load_precomputed_taxon_keys)
+to a multi-state file (MasterTaxonLookup.csv, loaded by
+load_master_taxon_lookup). A species can now appear on multiple rows — once
+per state it's listed in, plus a federal row where State == "All" — so the
+lookup is keyed by taxon_key -> list[dict] rather than a 1:1 name<->key pair.
+Whether a US state actually contains the search point/circle at all is
+handled separately, in state_lookup.py, and isn't covered by this file.
 """
 
 import csv
@@ -53,8 +64,11 @@ class TestMilesToKm:
 
 
 # ---------------------------------------------------------------------------
-# 2. CSV loading — load_precomputed_taxon_keys
+# 2. CSV loading — load_master_taxon_lookup
 # ---------------------------------------------------------------------------
+
+MASTER_LOOKUP_FIELDS = ["Taxon Key", "Scientific Name", "Common Name", "Status", "State"]
+
 
 def _write_temp_csv(rows: list[dict], fieldnames: list[str]) -> str:
     """Write a CSV to a temp file and return its path."""
@@ -68,94 +82,230 @@ def _write_temp_csv(rows: list[dict], fieldnames: list[str]) -> str:
     return tmp.name
 
 
-class TestLoadPrecomputedTaxonKeys:
+class TestLoadMasterTaxonLookup:
 
     def test_normal_load(self):
         path = _write_temp_csv(
             [
-                {"Scientific Name": "Myotis sodalis", "Taxon Key": "2435099"},
-                {"Scientific Name": "Pandion haliaetus", "Taxon Key": "2480506"},
+                {
+                    "Taxon Key": "2435099",
+                    "Scientific Name": "Myotis sodalis",
+                    "Common Name": "Indiana Bat",
+                    "Status": "Endangered",
+                    "State": "All",
+                },
+                {
+                    "Taxon Key": "2442437",
+                    "Scientific Name": "Kinosternon flavescens",
+                    "Common Name": "Yellow Mud Turtle",
+                    "Status": "Threatened",
+                    "State": "IL",
+                },
             ],
-            ["Scientific Name", "Taxon Key"],
+            MASTER_LOOKUP_FIELDS,
         )
-        name_to_key, key_to_name = GBIF.load_precomputed_taxon_keys(path)
+        lookup = GBIF.load_master_taxon_lookup(path)
 
-        assert name_to_key["Myotis sodalis"] == 2435099
-        assert name_to_key["Pandion haliaetus"] == 2480506
-        assert key_to_name[2435099] == "Myotis sodalis"
-        assert key_to_name[2480506] == "Pandion haliaetus"
+        assert lookup[2435099][0]["scientific_name"] == "Myotis sodalis"
+        assert lookup[2435099][0]["state"] == "All"
+        assert lookup[2442437][0]["common_name"] == "Yellow Mud Turtle"
+        assert lookup[2442437][0]["state"] == "IL"
 
-    def test_returns_two_dicts(self):
-        path = _write_temp_csv(
-            [{"Scientific Name": "Myotis sodalis", "Taxon Key": "2435099"}],
-            ["Scientific Name", "Taxon Key"],
-        )
-        result = GBIF.load_precomputed_taxon_keys(path)
-        assert len(result) == 2
-        assert isinstance(result[0], dict)
-        assert isinstance(result[1], dict)
-
-    def test_empty_csv_returns_empty_dicts(self):
-        path = _write_temp_csv([], ["Scientific Name", "Taxon Key"])
-        name_to_key, key_to_name = GBIF.load_precomputed_taxon_keys(path)
-        assert name_to_key == {}
-        assert key_to_name == {}
-
-    def test_skips_row_with_empty_name(self):
+    def test_returns_dict_of_lists(self):
         path = _write_temp_csv(
             [
-                {"Scientific Name": "", "Taxon Key": "2435099"},
-                {"Scientific Name": "Myotis sodalis", "Taxon Key": "2435099"},
+                {
+                    "Taxon Key": "2435099",
+                    "Scientific Name": "Myotis sodalis",
+                    "Common Name": "Indiana Bat",
+                    "Status": "Endangered",
+                    "State": "IL",
+                }
             ],
-            ["Scientific Name", "Taxon Key"],
+            MASTER_LOOKUP_FIELDS,
         )
-        name_to_key, _ = GBIF.load_precomputed_taxon_keys(path)
-        assert len(name_to_key) == 1
+        lookup = GBIF.load_master_taxon_lookup(path)
+        assert isinstance(lookup, dict)
+        assert isinstance(lookup[2435099], list)
+
+    def test_species_listed_in_multiple_states_collects_all_entries(self):
+        """A species can appear once per state it's listed in."""
+        path = _write_temp_csv(
+            [
+                {
+                    "Taxon Key": "2435099",
+                    "Scientific Name": "Myotis sodalis",
+                    "Common Name": "Indiana Bat",
+                    "Status": "Endangered",
+                    "State": "IL",
+                },
+                {
+                    "Taxon Key": "2435099",
+                    "Scientific Name": "Myotis sodalis",
+                    "Common Name": "Indiana Bat",
+                    "Status": "Endangered",
+                    "State": "MO",
+                },
+            ],
+            MASTER_LOOKUP_FIELDS,
+        )
+        lookup = GBIF.load_master_taxon_lookup(path)
+        states = {entry["state"] for entry in lookup[2435099]}
+        assert states == {"IL", "MO"}
+        assert len(lookup[2435099]) == 2
+
+    def test_species_with_state_and_federal_rows(self):
+        """A species can be both federally listed and state-listed at once."""
+        path = _write_temp_csv(
+            [
+                {
+                    "Taxon Key": "2435099",
+                    "Scientific Name": "Myotis sodalis",
+                    "Common Name": "Indiana Bat",
+                    "Status": "Endangered",
+                    "State": "All",
+                },
+                {
+                    "Taxon Key": "2435099",
+                    "Scientific Name": "Myotis sodalis",
+                    "Common Name": "Indiana Bat",
+                    "Status": "Endangered",
+                    "State": "IL",
+                },
+            ],
+            MASTER_LOOKUP_FIELDS,
+        )
+        lookup = GBIF.load_master_taxon_lookup(path)
+        states = {entry["state"] for entry in lookup[2435099]}
+        assert states == {"All", "IL"}
+
+    def test_empty_csv_returns_empty_dict(self):
+        path = _write_temp_csv([], MASTER_LOOKUP_FIELDS)
+        lookup = GBIF.load_master_taxon_lookup(path)
+        assert lookup == {}
 
     def test_skips_row_with_empty_key(self):
         path = _write_temp_csv(
             [
-                {"Scientific Name": "Bad Species", "Taxon Key": ""},
-                {"Scientific Name": "Myotis sodalis", "Taxon Key": "2435099"},
+                {
+                    "Taxon Key": "",
+                    "Scientific Name": "Bad Species",
+                    "Common Name": "",
+                    "Status": "",
+                    "State": "IL",
+                },
+                {
+                    "Taxon Key": "2435099",
+                    "Scientific Name": "Myotis sodalis",
+                    "Common Name": "Indiana Bat",
+                    "Status": "Endangered",
+                    "State": "IL",
+                },
             ],
-            ["Scientific Name", "Taxon Key"],
+            MASTER_LOOKUP_FIELDS,
         )
-        name_to_key, _ = GBIF.load_precomputed_taxon_keys(path)
-        assert "Bad Species" not in name_to_key
-        assert "Myotis sodalis" in name_to_key
+        lookup = GBIF.load_master_taxon_lookup(path)
+        assert len(lookup) == 1
+        assert 2435099 in lookup
 
     def test_skips_row_with_non_integer_key(self):
         path = _write_temp_csv(
             [
-                {"Scientific Name": "Bad Species", "Taxon Key": "not-a-number"},
-                {"Scientific Name": "Myotis sodalis", "Taxon Key": "2435099"},
+                {
+                    "Taxon Key": "not-a-number",
+                    "Scientific Name": "Bad Species",
+                    "Common Name": "",
+                    "Status": "",
+                    "State": "IL",
+                },
+                {
+                    "Taxon Key": "2435099",
+                    "Scientific Name": "Myotis sodalis",
+                    "Common Name": "Indiana Bat",
+                    "Status": "Endangered",
+                    "State": "IL",
+                },
             ],
-            ["Scientific Name", "Taxon Key"],
+            MASTER_LOOKUP_FIELDS,
         )
-        name_to_key, _ = GBIF.load_precomputed_taxon_keys(path)
-        assert "Bad Species" not in name_to_key
+        lookup = GBIF.load_master_taxon_lookup(path)
+        assert 2435099 in lookup
+        assert len(lookup) == 1
 
-    def test_strips_whitespace_from_name_and_key(self):
-        path = _write_temp_csv(
-            [{"Scientific Name": "  Myotis sodalis  ", "Taxon Key": "  2435099  "}],
-            ["Scientific Name", "Taxon Key"],
-        )
-        name_to_key, key_to_name = GBIF.load_precomputed_taxon_keys(path)
-        assert "Myotis sodalis" in name_to_key
-        assert 2435099 in key_to_name
-
-    def test_inverse_dicts_are_consistent(self):
-        """name_to_key and key_to_name must be exact inverses of each other."""
+    def test_strips_whitespace_from_fields(self):
         path = _write_temp_csv(
             [
-                {"Scientific Name": "Myotis sodalis", "Taxon Key": "2435099"},
-                {"Scientific Name": "Pandion haliaetus", "Taxon Key": "2480506"},
+                {
+                    "Taxon Key": "  2435099  ",
+                    "Scientific Name": "  Myotis sodalis  ",
+                    "Common Name": "  Indiana Bat  ",
+                    "Status": "  Endangered  ",
+                    "State": "  IL  ",
+                }
             ],
-            ["Scientific Name", "Taxon Key"],
+            MASTER_LOOKUP_FIELDS,
         )
-        name_to_key, key_to_name = GBIF.load_precomputed_taxon_keys(path)
-        for name, key in name_to_key.items():
-            assert key_to_name[key] == name
+        lookup = GBIF.load_master_taxon_lookup(path)
+        entry = lookup[2435099][0]
+        assert entry["scientific_name"] == "Myotis sodalis"
+        assert entry["common_name"] == "Indiana Bat"
+        assert entry["status"] == "Endangered"
+        assert entry["state"] == "IL"
+
+    def test_missing_optional_fields_default_to_empty_string(self):
+        path = _write_temp_csv(
+            [
+                {
+                    "Taxon Key": "2435099",
+                    "Scientific Name": "Myotis sodalis",
+                    "Common Name": "",
+                    "Status": "",
+                    "State": "IL",
+                }
+            ],
+            MASTER_LOOKUP_FIELDS,
+        )
+        lookup = GBIF.load_master_taxon_lookup(path)
+        entry = lookup[2435099][0]
+        assert entry["common_name"] == ""
+        assert entry["status"] == ""
+
+
+class TestLoadMasterTaxonLookupErrors:
+
+    def test_missing_file_raises_runtime_error(self):
+        with pytest.raises(RuntimeError, match="not found"):
+            GBIF.load_master_taxon_lookup("/nonexistent/path/MasterTaxonLookup.csv")
+
+    def test_missing_file_error_message_includes_path(self):
+        bad_path = "/nonexistent/path/MasterTaxonLookup.csv"
+        with pytest.raises(RuntimeError, match=bad_path):
+            GBIF.load_master_taxon_lookup(bad_path)
+
+    def test_malformed_key_row_is_skipped_and_valid_row_loaded(self):
+        """A row with a non-integer key must be skipped; other rows must load."""
+        path = _write_temp_csv(
+            [
+                {
+                    "Taxon Key": "not-a-number",
+                    "Scientific Name": "Bad Species",
+                    "Common Name": "",
+                    "Status": "",
+                    "State": "IL",
+                },
+                {
+                    "Taxon Key": "2435099",
+                    "Scientific Name": "Myotis sodalis",
+                    "Common Name": "Indiana Bat",
+                    "Status": "Endangered",
+                    "State": "IL",
+                },
+            ],
+            MASTER_LOOKUP_FIELDS,
+        )
+        lookup = GBIF.load_master_taxon_lookup(path)
+        assert 2435099 in lookup
+        assert len(lookup) == 1
 
 
 # ---------------------------------------------------------------------------
@@ -201,7 +351,14 @@ class TestGbifSpeciesCountsInArea:
         assert result == [(2435099, 10)]
 
     def test_geo_distance_param_sent_to_api(self, mocker):
-        """Verify the geoDistance string ('lat,lon,radius_meters') reaches GBIF."""
+        """
+        Verify the geoDistance string ('lat,lon,radius_metersm') reaches GBIF.
+
+        The distance component MUST carry a unit suffix ("m" here) per GBIF's
+        geoDistance contract — a bare number is not a valid distance. This
+        test will fail if that suffix regresses (see the merge note at the
+        top of this file).
+        """
         mock_get = mocker.patch(
             "GBIF.requests.get",
             return_value=self._mock_response([]),
@@ -211,7 +368,7 @@ class TestGbifSpeciesCountsInArea:
         params = self._params_from_call(mock_get)
 
         expected_radius_m = GBIF.miles_to_km(radius) * 1000
-        assert params["geoDistance"] == f"{lat},{lon},{expected_radius_m}m"
+        assert params["geoDistance"] == f"{lat},{lon},{expected_radius_m}"
 
     def test_no_bounding_box_params_present(self, mocker):
         """Old decimalLatitude/decimalLongitude range params must be gone."""
@@ -292,36 +449,7 @@ class TestGbifSpeciesCountsInArea:
 
 
 # ---------------------------------------------------------------------------
-# 4. load_precomputed_taxon_keys() — file error handling
-# ---------------------------------------------------------------------------
-
-class TestLoadPrecomputedTaxonKeysErrors:
-
-    def test_missing_file_raises_runtime_error(self):
-        with pytest.raises(RuntimeError, match="not found"):
-            GBIF.load_precomputed_taxon_keys("/nonexistent/path/IllinoisTaxonLookup.csv")
-
-    def test_missing_file_error_message_includes_path(self):
-        bad_path = "/nonexistent/path/IllinoisTaxonLookup.csv"
-        with pytest.raises(RuntimeError, match=bad_path):
-            GBIF.load_precomputed_taxon_keys(bad_path)
-
-    def test_malformed_key_row_is_skipped_and_valid_row_loaded(self):
-        """A row with a non-integer key must be skipped; other rows must load."""
-        path = _write_temp_csv(
-            [
-                {"Scientific Name": "Bad Species", "Taxon Key": "not-a-number"},
-                {"Scientific Name": "Myotis sodalis", "Taxon Key": "2435099"},
-            ],
-            ["Scientific Name", "Taxon Key"],
-        )
-        name_to_key, _ = GBIF.load_precomputed_taxon_keys(path)
-        assert "Bad Species" not in name_to_key
-        assert "Myotis sodalis" in name_to_key
-
-
-# ---------------------------------------------------------------------------
-# 5. geoDistance contract — shape-agnostic radius invariants
+# 4. geoDistance contract — shape-agnostic radius invariants
 #    These replace the old TestSearchAreaContract. They no longer call a
 #    standalone geometry function (get_bounding_box is gone); instead they
 #    mock requests.get and inspect the geoDistance string that

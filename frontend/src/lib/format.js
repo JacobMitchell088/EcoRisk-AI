@@ -45,17 +45,17 @@ export function verdictCopy(count, radius, yearStart) {
   if (count === 0) {
     return {
       title: "No protected species recorded nearby",
-      text: `No species on the Illinois endangered and threatened list have sightings on record ${area}.`,
+      text: `No species on the United States endangered and threatened list have sightings on record ${area}.`,
     };
   }
   if (count === 1) {
     return {
       title: "1 protected species recorded nearby",
-      text: `This species is on the Illinois endangered and threatened list and has sightings on record ${area}. Review it before planning site work.`,
+      text: `This species is on the United States endangered and threatened list and has sightings on record ${area}. Review it before planning site work.`,
     };
   }
   return {
     title: `${count} protected species recorded nearby`,
-    text: `These species are on the Illinois endangered and threatened list and have sightings on record ${area}. Review each one before planning site work.`,
+    text: `These species are on the United States endangered and threatened list and have sightings on record ${area}. Review each one before planning site work.`,
   };
 }

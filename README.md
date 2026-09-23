@@ -1,14 +1,14 @@
 # EcoRisk AI
-> Authors: Jacob Mitchell    
-> Date: 4/19/26   
+> Authors: Jacob Mitchell, Hayden Shubert    
+> Date: 9/22/26   
 
 > Our servers spin down with inactivity, so please be sure to allow for an additional 60 seconds upon making your first request to our backend.    
 https://environmentscreen.onrender.com     
 
 
-This program is a prototype application designed to help construction planners identify potential environmental risks **before** beginning a project. The system analyzes biodiversity data from the **Global Biodiversity Information Facility (GBIF)** and cross references it with the **Illinois Endangered Species list** to identify protected species near a proposed construction site.    
+This program is a prototype application designed to help construction planners identify potential environmental risks **before** beginning a project. The system analyzes biodiversity data from the **Global Biodiversity Information Facility (GBIF)** and cross references it with **state and federal endangered and threatened species lists** to identify protected species near a proposed construction site.    
 
-This tool performs a **preliminary environmental screening** by checking for documented or sighted species occurrences within a specified geographic radius.    
+This tool performs a **preliminary environmental screening** by checking for documented or sighted species occurrences within a specified geographic radius. Screenings are currently limited to sites within the **United States** — a location outside the US (e.g. across the Mexican or Canadian border, or over open water) is rejected before any lookup runs, since there's no species data to check against it.
 
 ---      
 
@@ -20,7 +20,7 @@ Our program automates this first step by:
 
 1. Accepting a project location    
 2. Searching GBIF biodiversity databases for species sightings    
-3. Comparing detected species with the Illinois endangered species list    
+3. Comparing detected species with state and federal endangered/threatened species lists for every state the search radius touches    
 4. Returning flagged species that may impact a project plan   
 5. Provide additional context to flagged species to user with additional information on how it may interact with their construction process     
 
@@ -30,20 +30,21 @@ This version focuses on the **data pipeline / detection logic / additional ecolo
 
 # System Workflow
 ### Precomputed
-1. Scrape the latest Illinois Natural Heritage species-by-county dataset into `data/IsEndangered.csv`
-    - Script located at `scripts/unfiltered_species.py`
-2. Translate Illinois Endangered list to taxonIDs saving a CSV with scientific names and their corresponding taxonID
-    - Script located at `scripts/build_taxon_lookup.py`, output written to `data/IllinoisTaxonLookup.csv`
+1. Build the multi-state endangered/threatened species dataset into `data/MasterTaxonLookup.csv` — one row per species per state it's listed in, plus a federal row (`State` = `All`) for species with federal protection
+   - This file was generated locally in a separate project. The scripts that produce it (an update to `scripts/unfiltered_species.py` and `scripts/build_taxon_lookup.py`, or their replacements) will be added to this repo in a future commit — for now, `data/MasterTaxonLookup.csv` should be treated as a precomputed asset checked in on its own.
+2. Download the Census Bureau's `cb_2022_us_state_20m` state boundary shapefile into `data/cb_2022_us_state_20m/` — this is geometry only (state outlines), not species data, and is used solely to answer "which state(s) is this point/circle in."
 
 ### User Interface
 3. Supply an address or coordinates and a radius in miles (address search powered by MapTiler Geocoding API)
-4. The program converts the radius from miles to meters for use in the GBIF query
-5. Check Redis cache — if a matching scan exists for the same location and radius, return the cached result immediately
-6. Make a GBIF call using a `geoDistance` filter to return all species within the given radius (occurrences filtered to year 2000–2026)
-7. Cross checks returned species with **precomputed** `data/IllinoisTaxonLookup.csv`
-8. Send batch request to OpenRouter for additional construction and species context, limited to the top `MAX_SPECIES_FOR_AI` species by sighting count (`.env`, default=3) — this only caps which species get AI context, not which species are detected or shown in the report
-9. Store result in Redis cache (24-hour TTL)
-10. Display the results as a report: a plain-language verdict, each flagged species with its AI construction guidance, and a downloadable HTML report
+4. Check Redis cache — if a matching scan exists for the same location and radius, return the cached result immediately
+5. Confirm the search center falls inside a US state (`state_lookup.state_containing_point`) — if not, the scan fails fast with a message asking the user to move the pin
+6. Determine every state the search radius overlaps (`state_lookup.states_touching_circle`) — a site near a state line can pull in more than one state's list
+7. Convert the radius from miles to meters for use in the GBIF query
+8. Make a GBIF call using a `geoDistance` filter to return all species within the given radius (occurrences filtered to year 2000–2026)
+9. Cross-check returned species against `data/MasterTaxonLookup.csv`, flagging a hit if it's federally listed (`All`) or listed in any state the search radius touches
+10. Send batch request to OpenRouter for additional construction and species context, limited to the top `MAX_SPECIES_FOR_AI` species by sighting count (`.env`, default=3) — this only caps which species get AI context, not which species are detected or shown in the report
+11. Store result in Redis cache (24-hour TTL)
+12. Display the results as a report: a plain-language verdict, which states were searched, each flagged species (with the state(s) it's protected in and AI construction guidance where available), and a downloadable HTML report
 
 ---   
 
@@ -60,28 +61,25 @@ Occurrence Search
 https://api.gbif.org/v1/occurrence/search   
 
 Species Name Matching  
-- Only used during precomputed `IllinoisTaxonLookup.csv`   
+- Only used during precomputed `MasterTaxonLookup.csv` build   
 https://api.gbif.org/v1/species/match   
 
 ---   
 
-## Illinois Endangered Species List
-> Scraped from the Illinois Natural Heritage species-by-county dataset via `scripts/unfiltered_species.py`, which writes `data/IsEndangered.csv`. Re-run this script (followed by `scripts/build_taxon_lookup.py`) to refresh the dataset.
-- Local CSV dataset containing endangered and threatened species observed in Illinois.
+## State & Federal Endangered Species Data
+- Local CSV mapping each species to the state(s) it's listed as endangered/threatened in, with a separate row for a federal listing (`State` = `All`): `data/MasterTaxonLookup.csv`.
+- This file was built locally in a separate project rather than from the scripts currently checked into this repo. The generation scripts will be added here in a future update.
 
-Example structure:   
+Example structure:
 
-"County","Scientific Name","Common Name","State Status","Informal Taxonomy","Last Observed","# of Records"   
+`"Common Name","Scientific Name","Status","State","Taxon Key"`
 
-**Example entries:**   
+**Example entries:**
 
-- Pulaski, Tilia americana var. heterophylla, White Basswood, LE, Dicots, 5/7/2005, 1  
-- Piatt, Phlox pilosa ssp. sangamonensis, Sangamon Phlox, LE, Dicots, 6/4/2020, 4
+- Yellow Mud Turtle, Kinosternon flavescens, Threatened, IL, 2442437
+- Indiana Bat, Myotis sodalis, Endangered, All, 2435099
 
-The program precomputes a translated list, scientific name followed by taxonID, prior to user input to allow for faster runtimes   
-**Example entries in precomputed translation csv:**    
-- Justicia ovata,2393
-- Kinosternon flavescens,2442437
+A species can appear on multiple rows — once per state it's listed in, plus possibly a federal row. The program precomputes taxon keys ahead of time so a scan doesn't need a GBIF name-lookup call per species.
 
 ---   
 
@@ -93,7 +91,12 @@ The program precomputes a translated list, scientific name followed by taxonID, 
 - Both endpoints are Redis-cached (24-hour TTL) to avoid duplicate lookups.
 
 ## Geometry based queries
-- The search radius (in miles) is converted to meters and passed to GBIF's `geoDistance` parameter, giving a true circular search area instead of the previous square bounding-box approximation.
+- The search radius (in miles) is converted to meters and passed to GBIF's `geoDistance` parameter, giving a true circular search area instead of a square bounding-box approximation.
+
+## US State Detection
+- Before a scan runs, `state_lookup.py` checks whether the search center falls inside a US state boundary (Census Bureau `cb_2022_us_state_20m` shapefile). If the center point isn't inside any state, the scan fails before making any GBIF or OpenRouter calls.
+- Separately, `state_lookup.py` finds every state the search *radius* overlaps — not just the state containing the center — so a site near a state line pulls in endangered species lists from both states, not just the one the pin happens to sit in.
+- The report shows the abbreviated list of states searched (`input.states_searched`) next to the total species count, and each flagged species shows which state(s) (or **Federal**) it's protected in.
 
 ## Redis Caching
 > Requires a running Redis instance. See [Environment Variables](#environment-variables) for setup.
@@ -132,7 +135,7 @@ The program precomputes a translated list, scientific name followed by taxonID, 
     - The map always frames the whole search area, centered on the site, at every radius from 1 to 50 miles and at any panel width.
     - When the site changes (address, coordinates, map click, or dragging the pin), the circle fades out, the map flies to the new site, and the circle grows back in from the pin. Radius changes ease the circle and the zoom together so the circle never spills off the map.
     - A **Recenter on site** button appears under the zoom controls whenever the site is panned or zoomed out of frame. It re-frames the map without changing the screening location.
-    - The map can pan somewhat past the Illinois border, so sites near the state line stay centered with a large radius.
+- **States searched / protected in:** the report shows the abbreviated states the search radius touched next to the protected species count, and each species card shows a small badge for every state (or **Federal**) it's protected in.
 - **Report:** when a screening finishes, the panel switches to a report with a verdict ("3 protected species recorded nearby" or "No protected species recorded nearby"), key figures, whether the result was saved (cached) or live, and an expandable entry per species (Wikipedia photo, Wikipedia and GBIF links). The species with the most sightings also include AI-generated tags and construction guidance; species beyond the AI limit are marked "Not AI-reviewed" and link out to background reading instead.
     - **Download report** saves a styled, printable HTML report. It is available for clear results too, and all AI text is HTML-escaped.
 - **Resizable panel:** on desktop, drag the grip on the panel's right edge to make it wider or narrower (or focus it and use the arrow keys; hold Shift for larger steps). Double-click the grip to reset. The steps and the report remember separate widths in the browser, so a report can be read wide without stretching the form. When the panel is wide, species guidance lays out in two columns. The map always keeps at least 360px.
@@ -149,11 +152,11 @@ The program precomputes a translated list, scientific name followed by taxonID, 
 - The GitHub Personal Access Token is held **only on the backend** (`GITHUB_FEEDBACK_PAT`) — never shipped to the browser. The frontend posts to the `/feedback` endpoint, which calls the GitHub Issues API server-side.
 - Like `/scan/start`, the endpoint is protected by **Cloudflare Turnstile** verification and a per-IP rate limit (5/hour) to prevent abuse.
 
-## Precomputed species lookup for Illinois Endangered Species List
-- Species names are resolved to their taxonIDs prior to user input to improve performance.
+## Precomputed species lookup
+- Species names and their state/federal listing status are resolved to taxon keys ahead of time, so a scan doesn't need a per-species GBIF name-lookup call.
 
 ## Endangered species detection
-- Species are only considered from the official **Illinois Endangered Species List**, ignoring all other occurences of different species from **GBIF**
+- A species is only flagged as protected if it's listed federally, or listed in a state the search radius touches. Species GBIF returns that aren't listed anywhere applicable still count toward the total species figure, just not as protected.
 
 ## AI Ecological Context Analysis
 - After endangered species are detected, our system will generate additional context using OpenRouter api to return more information to the user
@@ -180,7 +183,7 @@ maternity season, typically late fall through winter.
 
 # Current Limitations
 > [!WARNING]
-> GBIF sightings may not always include subspecies names as seen in **Illinois Endangered Species List**   
+> GBIF sightings may not always include subspecies names as seen on state endangered species lists
 
 Example:   
 
@@ -191,6 +194,12 @@ Illinois listing:
 Tilia americana var. heterophylla   
 
 In these cases the species level occurrence is used   
+
+> [!WARNING]
+> Only species lists for the states currently included in `data/MasterTaxonLookup.csv` are checked. If a state hasn't been added to that file yet, GBIF sightings there still count toward the total species figure, but nothing in that state will be flagged as protected.
+
+> [!WARNING]
+> `data/MasterTaxonLookup.csv` was generated locally in a separate project. The build scripts that produce it are not yet part of this repo, so the file currently can't be regenerated from source here — it should be treated as a static precomputed asset until that tooling is added.
 
 This tool is intended for **early stage environmental screening**, not regulatory compliance, as we **cannot guarantee** the absence of false positives or false negatives.
 
@@ -209,11 +218,11 @@ Senior-Project/
 ├── redis_client.py                 # Redis wrapper (cache_get / cache_set / cache_delete)
 ├── limiter.py                      # SlowAPI rate limiter configuration
 ├── data/
-│   ├── IsEndangered.csv            # Raw Illinois Endangered Species list
-│   └── IllinoisTaxonLookup.csv     # Precomputed scientific name → taxonID lookup
+│   ├── MasterTaxonLookup.csv       # Precomputed scientific name → taxon key → state(s) listed lookup ("All" = federally listed). Generated locally in a separate project — build scripts not yet in this repo.
+│   └── cb_2022_us_state_20m/       # Census Bureau US state boundary shapefile, used by state_lookup.py (geometry only, not species data)
 ├── scripts/
-│   ├── unfiltered_species.py       # Scrapes Illinois Natural Heritage → data/IsEndangered.csv
-│   └── build_taxon_lookup.py       # Script to regenerate IllinoisTaxonLookup.csv
+│   ├── state_lookup.py                 # US state-boundary geometry: confirms the search center is inside a US state, and finds every state the search radius overlaps
+│   └── build_taxon_lookup.py       # Legacy: regenerated the old Illinois-only taxon lookup. Superseded by MasterTaxonLookup.csv for scans; kept for reference until the multi-state build scripts are added.
 ├── frontend/                       # React + Vite frontend (see frontend/README.md)
 │   ├── index.html                  # Fonts, Turnstile script, favicon
 │   ├── public/favicon.svg          # EcoRisk AI mark
@@ -255,6 +264,10 @@ pip install -r requirements.txt
 pip install -r requirements-dev.txt   # for development / testing
 ```
 
+Before running scans locally, download the Census Bureau's [`cb_2022_us_state_20m`](https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html) cartographic boundary shapefile and unzip it into `data/cb_2022_us_state_20m/`. `state_lookup.py` reads this file to determine which state(s) a point or search circle falls in — it isn't fetched at runtime.
+
+You will also need `data/MasterTaxonLookup.csv` present locally to run a scan (see [Current Limitations](#current-limitations) — this file isn't yet buildable from scripts in this repo).
+
 ---
 
 # Running the Prototype
@@ -266,12 +279,6 @@ To run the backend locally:
 > Within conda GBIF_env (and with `.env` file keys / parameters set):
 ```
 uvicorn app:app --reload
-```
-
-To refresh the Illinois Endangered Species dataset from the Illinois Natural Heritage source, then regenerate the taxon lookup:
-```
-python scripts/unfiltered_species.py
-python scripts/build_taxon_lookup.py
 ```
 
 To run the frontend locally (Vite dev server, default port 5173):
@@ -323,10 +330,11 @@ A GitHub Actions CI workflow (`.github/workflows/test.yml`) runs the non-integra
 
 # Future Improvements
 
-- Schedule daily runs of `scripts/unfiltered_species.py` + `scripts/build_taxon_lookup.py` to keep `IsEndangered.csv` and `IllinoisTaxonLookup.csv` current
+- Bring the `data/MasterTaxonLookup.csv` build scripts into this repo so the dataset can be regenerated and extended without relying on the separate local project it was built in
+- Add remaining US states' endangered/threatened species data to `data/MasterTaxonLookup.csv` — multi-state screening logic is in place (`state_lookup.py`, `GBIF.py`), but coverage depends on which states are populated in that file
+- Schedule daily/periodic runs of the (future) build scripts to keep `MasterTaxonLookup.csv` current
 - Export construction timeline recommendations
 - Improve AI ecological analysis using external species data sources (Wikipedia, species databases)
-- Expand coverage beyond Illinois to other state endangered species lists
 
 ---   
 
@@ -338,4 +346,4 @@ A GitHub Actions CI workflow (`.github/workflows/test.yml`) runs the non-integra
 
 ---    
 
-https://environmentscreen.onrender.com    
+https://environmentscreen.onrender.com

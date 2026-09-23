@@ -129,25 +129,36 @@ export default function App() {
   }, []);
 
   // Every message goes to the activity tray; most also show as a toast.
-  const notify = useCallback((message, type = "error", { toast: showToast = true } = {}) => {
-    if (!message) return;
+  const notify = useCallback(
+    (message, type = "error", { toast: showToast = true } = {}) => {
+      if (!message) return;
 
-    setNotifications((prev) =>
-      [
-        { id: `${Date.now()}-${Math.random()}`, message, type, time: new Date(), read: false },
-        ...prev,
-      ].slice(0, 20)
-    );
+      setNotifications((prev) =>
+        [
+          {
+            id: `${Date.now()}-${Math.random()}`,
+            message,
+            type,
+            time: new Date(),
+            read: false,
+          },
+          ...prev,
+        ].slice(0, 20),
+      );
 
-    if (!showToast) return;
-    if (type === "success") toast.success(message);
-    else if (type === "info") toast(message);
-    else toast.error(message);
-  }, []);
+      if (!showToast) return;
+      if (type === "success") toast.success(message);
+      else if (type === "info") toast(message);
+      else toast.error(message);
+    },
+    [],
+  );
 
   const markNotificationsRead = useCallback(() => {
     setNotifications((prev) =>
-      prev.some((item) => !item.read) ? prev.map((item) => ({ ...item, read: true })) : prev
+      prev.some((item) => !item.read)
+        ? prev.map((item) => ({ ...item, read: true }))
+        : prev,
     );
   }, []);
 
@@ -174,9 +185,11 @@ export default function App() {
     const lat = parseFloat(form.lat);
     const lon = parseFloat(form.lon);
 
-    if (isNaN(lat) || isNaN(lon)) return "Latitude and longitude must be numbers.";
+    if (isNaN(lat) || isNaN(lon))
+      return "Latitude and longitude must be numbers.";
     if (lat < -90 || lat > 90) return "Latitude must be between -90 and 90.";
-    if (lon < -180 || lon > 180) return "Longitude must be between -180 and 180.";
+    if (lon < -180 || lon > 180)
+      return "Longitude must be between -180 and 180.";
 
     const radius = parseFloat(form.radius_miles);
     if (isNaN(radius) || radius <= 0 || radius > 100) {
@@ -195,7 +208,12 @@ export default function App() {
       throw new Error("Rate limited");
     }
 
-    throw new Error(await readErrorMessage(response, "The request didn't go through. Try again in a moment."));
+    throw new Error(
+      await readErrorMessage(
+        response,
+        "The request didn't go through. Try again in a moment.",
+      ),
+    );
   }
 
   function handleRateLimit(action, retryAfter = null) {
@@ -225,7 +243,9 @@ export default function App() {
   function pollScanStatus(scanJobId) {
     const interval = setInterval(async () => {
       try {
-        const statusResponse = await fetch(`${backendUrl}/scan/status/${scanJobId}`);
+        const statusResponse = await fetch(
+          `${backendUrl}/scan/status/${scanJobId}`,
+        );
 
         if (!statusResponse.ok) {
           throw new Error("Failed to fetch scan status.");
@@ -254,9 +274,17 @@ export default function App() {
             setLoading(false);
 
             if (isCached) {
-              notify(time ? `Screening complete. Showing a saved result from ${time}.` : "Screening complete. Showing a saved result.", "success");
+              notify(
+                time
+                  ? `Screening complete. Showing a saved result from ${time}.`
+                  : "Screening complete. Showing a saved result.",
+                "success",
+              );
             } else {
-              notify(time ? `Screening complete at ${time}.` : "Screening complete.", "success");
+              notify(
+                time ? `Screening complete at ${time}.` : "Screening complete.",
+                "success",
+              );
             }
           }, 4000);
 
@@ -265,13 +293,19 @@ export default function App() {
 
         if (statusJson.status === "error") {
           clearInterval(interval);
-          reportError("environmentScan", "The screening couldn't finish. Run it again in a moment.");
+          const message =
+            statusJson.error ||
+            "The screening couldn't finish. Run it again in a moment.";
+          reportError("environmentScan", message);
           setLoading(false);
           return;
         }
       } catch {
         clearInterval(interval);
-        reportError("environmentScan", "Lost contact with the screening service while it was running. Run the screening again.");
+        reportError(
+          "environmentScan",
+          "Lost contact with the screening service while it was running. Run the screening again.",
+        );
         setLoading(false);
       }
     }, 2000); // Poll every 2 seconds
@@ -286,17 +320,23 @@ export default function App() {
         throw new Error("Enter an address to search for.");
       }
       if (!backendUrl) {
-        throw new Error("The screening service isn't configured. Set VITE_API_BASE_URL.");
+        throw new Error(
+          "The screening service isn't configured. Set VITE_API_BASE_URL.",
+        );
       }
 
-      const response = await fetch(`${backendUrl}/geocode/search?q=${encodeURIComponent(query)}`);
+      const response = await fetch(
+        `${backendUrl}/geocode/search?q=${encodeURIComponent(query)}`,
+      );
 
       await checkApiResponse(response, "addressLookup");
 
       const json = await response.json();
 
       if (!json.best_match) {
-        throw new Error(`No match for "${query}". Add a city or ZIP code, or click the map to place the pin.`);
+        throw new Error(
+          `No match for "${query}". Add a city or ZIP code, or click the map to place the pin.`,
+        );
       }
 
       const best = json.best_match;
@@ -324,21 +364,32 @@ export default function App() {
       const lat = Number(form.lat);
       const lon = Number(form.lon);
 
-      if (form.lat === "" || form.lon === "" || Number.isNaN(lat) || Number.isNaN(lon)) {
+      if (
+        form.lat === "" ||
+        form.lon === "" ||
+        Number.isNaN(lat) ||
+        Number.isNaN(lon)
+      ) {
         throw new Error("Latitude and longitude must be numbers.");
       }
       if (!backendUrl) {
-        throw new Error("The screening service isn't configured. Set VITE_API_BASE_URL.");
+        throw new Error(
+          "The screening service isn't configured. Set VITE_API_BASE_URL.",
+        );
       }
 
-      const response = await fetch(`${backendUrl}/geocode/reverse?lat=${lat}&lon=${lon}`);
+      const response = await fetch(
+        `${backendUrl}/geocode/reverse?lat=${lat}&lon=${lon}`,
+      );
 
       await checkApiResponse(response, "coordinateLookup");
 
       const json = await response.json();
 
       if (!json.best_match) {
-        throw new Error("No address was found for those coordinates. You can still screen this location.");
+        throw new Error(
+          "No address was found for those coordinates. You can still screen this location.",
+        );
       }
 
       const best = json.best_match;
@@ -352,7 +403,8 @@ export default function App() {
         lon: bestLon,
       }));
       resetResults();
-      if (best.label) setSite({ label: best.label, key: coordKey(bestLat, bestLon) });
+      if (best.label)
+        setSite({ label: best.label, key: coordKey(bestLat, bestLon) });
       notify(`Address found: ${best.label}`, "success");
     } catch (err) {
       if (err.message !== "Rate limited") {
@@ -375,12 +427,19 @@ export default function App() {
     setStep(1);
     setForm((prev) => ({ ...prev, lat: roundedLat, lon: roundedLon }));
     try {
-      const response = await fetch(`${backendUrl}/geocode/reverse?lat=${roundedLat}&lon=${roundedLon}`);
+      const response = await fetch(
+        `${backendUrl}/geocode/reverse?lat=${roundedLat}&lon=${roundedLon}`,
+      );
       if (!response.ok) return;
       const json = await response.json();
       if (!json.best_match) return;
       const best = json.best_match;
-      setForm((prev) => ({ ...prev, lat: roundedLat, lon: roundedLon, address: best.label || prev.address }));
+      setForm((prev) => ({
+        ...prev,
+        lat: roundedLat,
+        lon: roundedLon,
+        address: best.label || prev.address,
+      }));
       if (best.label) {
         setSite({ label: best.label, key: coordKey(roundedLat, roundedLon) });
         notify(`Site moved to ${best.label}`, "info", { toast: false });
@@ -418,7 +477,9 @@ export default function App() {
         throw new Error("Missing VITE_API_BASE_URL. Add it to a .env file.");
       }
       if (!TURNSTILE_SITE_KEY) {
-        throw new Error("Missing VITE_TURNSTILE_SITE_KEY. Add it to a .env file.");
+        throw new Error(
+          "Missing VITE_TURNSTILE_SITE_KEY. Add it to a .env file.",
+        );
       }
       const invalid = validateInputs();
       if (invalid) {
@@ -427,20 +488,22 @@ export default function App() {
 
       const token = await getToken();
       if (!token) {
-        throw new Error("We couldn't verify you're a person. Refresh the page and try again.");
+        throw new Error(
+          "We couldn't verify you're a person. Refresh the page and try again.",
+        );
       }
 
       const startResponse = await fetch(`${backendUrl}/scan/start`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           lat: Number(form.lat),
           lon: Number(form.lon),
           radius_miles: Number(form.radius_miles),
-          captcha_token: token
-        })
+          captcha_token: token,
+        }),
       });
 
       await checkApiResponse(startResponse, "environmentScan");
@@ -448,7 +511,9 @@ export default function App() {
       const startJson = await startResponse.json();
 
       if (!startJson.job_id) {
-        throw new Error("The screening service didn't start the screening. Try again.");
+        throw new Error(
+          "The screening service didn't start the screening. Try again.",
+        );
       }
 
       resetTurnstile();
@@ -474,32 +539,48 @@ export default function App() {
     Number.isFinite(lonNum) &&
     Math.abs(latNum) <= 90 &&
     Math.abs(lonNum) <= 180;
-  const labelIsCurrent = siteValid && Boolean(site.label) && site.key === coordKey(form.lat, form.lon);
+  const labelIsCurrent =
+    siteValid &&
+    Boolean(site.label) &&
+    site.key === coordKey(form.lat, form.lon);
   const siteName = labelIsCurrent ? site.label : "Pinned location";
   const coordsText = formatCoords(form.lat, form.lon);
-  const addressDirty = inputMode === "address" && form.address.trim() !== (site.label || "").trim();
+  const addressDirty =
+    inputMode === "address" &&
+    form.address.trim() !== (site.label || "").trim();
 
   const radius = Number(form.radius_miles) || RADIUS_MIN;
   const radiusFill = `${((radius - RADIUS_MIN) / (RADIUS_MAX - RADIUS_MIN)) * 100}%`;
 
-  const view = loading ? "scanning" : scanMeta && reportOpen ? "report" : "steps";
+  const view = loading
+    ? "scanning"
+    : scanMeta && reportOpen
+      ? "report"
+      : "steps";
   const activeStep = view === "scanning" ? 3 : step;
-  const statusFor = (n) => (n === activeStep ? "current" : n < activeStep ? "done" : "upcoming");
+  const statusFor = (n) =>
+    n === activeStep ? "current" : n < activeStep ? "done" : "upcoming";
   const canChange = view === "steps";
   const panel = usePanelWidth(view);
 
   const hits = data?.gbif_hits || [];
   const reportRadius = data?.input?.radius_miles ?? radius;
   const yearStart = data?.input?.year_start ?? 2000;
+  const statesSearched = data?.input?.states_searched ?? [];
   const verdict = verdictCopy(hits.length, reportRadius, yearStart);
-  const totalSightings = hits.reduce((sum, hit) => sum + (Number(hit.gbif_count) || 0), 0);
+  const totalSightings = hits.reduce(
+    (sum, hit) => sum + (Number(hit.gbif_count) || 0),
+    0,
+  );
   const scanError = error.environmentScan;
 
   // ---- Step content --------------------------------------------------------
 
   const siteStep = (
     <>
-      <p className="step-lede">Search for the project's address, or click the map to place the pin.</p>
+      <p className="step-lede">
+        Search for the project's address, or click the map to place the pin.
+      </p>
 
       {inputMode === "address" ? (
         <form
@@ -514,9 +595,10 @@ export default function App() {
               Project address
             </label>
             <InfoTip title="Finding your site">
-              Type the project's street address and press <strong>Find this address</strong>. The map
-              pin moves to that address, and the screening uses the pin's location. You can also click
-              the map or drag the pin to set the site by hand.
+              Type the project's street address and press{" "}
+              <strong>Find this address</strong>. The map pin moves to that
+              address, and the screening uses the pin's location. You can also
+              click the map or drag the pin to set the site by hand.
             </InfoTip>
           </div>
           <input
@@ -548,9 +630,9 @@ export default function App() {
           <div className="field-label-row tip-anchor">
             <span className="field-label">Coordinates</span>
             <InfoTip title="Using coordinates">
-              Enter the site's latitude and longitude in decimal degrees, such as 38.792 and -90.002.
-              Longitudes in Illinois are negative. Select <strong>Find address</strong> to confirm the
-              location by name.
+              Enter the site's latitude and longitude in decimal degrees, such
+              as 38.792 and -90.002. Longitudes in Illinois are negative. Select{" "}
+              <strong>Find address</strong> to confirm the location by name.
             </InfoTip>
           </div>
           <div className="field-pair">
@@ -587,13 +669,15 @@ export default function App() {
           <button
             type="submit"
             className="btn btn-secondary btn-block"
-            disabled={cooldowns.coordinateLookup > 0 || lookingUpCoords || !siteValid}
+            disabled={
+              cooldowns.coordinateLookup > 0 || lookingUpCoords || !siteValid
+            }
           >
             {lookingUpCoords
               ? "Finding address…"
               : cooldowns.coordinateLookup > 0
-              ? `Address lookup available in ${formatCooldown(cooldowns.coordinateLookup)}`
-              : "Find address"}
+                ? `Address lookup available in ${formatCooldown(cooldowns.coordinateLookup)}`
+                : "Find address"}
           </button>
         </form>
       )}
@@ -608,7 +692,9 @@ export default function App() {
               <p className="site-coords">{coordsText}</p>
             </>
           ) : (
-            <p className="site-label">Enter a valid latitude and longitude, or click the map.</p>
+            <p className="site-label">
+              Enter a valid latitude and longitude, or click the map.
+            </p>
           )}
         </div>
       </div>
@@ -623,8 +709,8 @@ export default function App() {
           {lookingUpAddress
             ? "Finding address…"
             : cooldowns.addressLookup > 0
-            ? `Address search available in ${formatCooldown(cooldowns.addressLookup)}`
-            : "Find this address"}
+              ? `Address search available in ${formatCooldown(cooldowns.addressLookup)}`
+              : "Find this address"}
         </button>
       ) : (
         <button
@@ -640,16 +726,24 @@ export default function App() {
       <button
         type="button"
         className="link-btn"
-        onClick={() => setInputMode((mode) => (mode === "address" ? "coordinates" : "address"))}
+        onClick={() =>
+          setInputMode((mode) =>
+            mode === "address" ? "coordinates" : "address",
+          )
+        }
       >
-        {inputMode === "address" ? "Enter coordinates instead" : "Search by address instead"}
+        {inputMode === "address"
+          ? "Enter coordinates instead"
+          : "Search by address instead"}
       </button>
     </>
   );
 
   const areaStep = (
     <>
-      <p className="step-lede">How far around the site should we look for recorded sightings?</p>
+      <p className="step-lede">
+        How far around the site should we look for recorded sightings?
+      </p>
 
       <div className="field">
         <div className="field-label-row tip-anchor">
@@ -657,10 +751,12 @@ export default function App() {
             Search radius
           </label>
           <InfoTip title="Search radius">
-            This sets how far from the site the screening looks for species sightings. A larger radius
-            covers more ground and may turn up more sightings, while a smaller one focuses on the area
-            closest to the project. We recommend 5 miles, the default. The search covers a square around this
-            circle, so sightings just past its edge can be included.
+            This sets how far from the site the screening looks for species
+            sightings. A larger radius covers more ground and may turn up more
+            sightings, while a smaller one focuses on the area closest to the
+            project. We recommend 5 miles, the default. The search covers a
+            square around this circle, so sightings just past its edge can be
+            included.
           </InfoTip>
           <output className="radius-readout" htmlFor="radius">
             {milesLabel(radius)}
@@ -695,12 +791,18 @@ export default function App() {
             onClick={() => setRadius(miles)}
           >
             {miles} mi{miles === RECOMMENDED_RADIUS && " "}
-            {miles === RECOMMENDED_RADIUS && <span className="chip-note">Recommended</span>}
+            {miles === RECOMMENDED_RADIUS && (
+              <span className="chip-note">Recommended</span>
+            )}
           </button>
         ))}
       </div>
 
-      <button type="button" className="btn btn-primary btn-block" onClick={() => setStep(3)}>
+      <button
+        type="button"
+        className="btn btn-primary btn-block"
+        onClick={() => setStep(3)}
+      >
         Continue
       </button>
     </>
@@ -725,8 +827,8 @@ export default function App() {
         <div>
           <dt>What we check</dt>
           <dd>
-            Sightings recorded on GBIF since 2000, compared with the Illinois list of endangered and
-            threatened species
+            Sightings recorded on GBIF since 2000, compared with the United States
+            list of endangered and threatened species
           </dd>
         </div>
       </dl>
@@ -749,7 +851,11 @@ export default function App() {
       </button>
 
       {scanMeta && (
-        <button type="button" className="link-btn" onClick={() => setReportOpen(true)}>
+        <button
+          type="button"
+          className="link-btn"
+          onClick={() => setReportOpen(true)}
+        >
           View the last report
         </button>
       )}
@@ -763,8 +869,8 @@ export default function App() {
       <div className="panel-intro">
         <h1 className="panel-title">Screen a construction site</h1>
         <p className="panel-lede">
-          Check whether any Illinois endangered or threatened species have been recorded near your
-          project.
+          Check whether any U.S. endangered or threatened species have been
+          recorded near your project.
         </p>
       </div>
 
@@ -791,14 +897,20 @@ export default function App() {
           onChange={canChange ? () => setStep(2) : undefined}
           summary={
             statusFor(2) === "done" ? (
-              <span className="summary-main">{milesLabel(radius)} around the site</span>
+              <span className="summary-main">
+                {milesLabel(radius)} around the site
+              </span>
             ) : null
           }
         >
           {areaStep}
         </Step>
 
-        <Step number={3} title={loading ? "Screening your site" : "Run the screening"} status={statusFor(3)}>
+        <Step
+          number={3}
+          title={loading ? "Screening your site" : "Run the screening"}
+          status={statusFor(3)}
+        >
           {runStep}
         </Step>
       </ol>
@@ -807,11 +919,17 @@ export default function App() {
 
   const reportView = scanMeta && (
     <div className="report">
-      <button type="button" className="link-btn report-back" onClick={() => setReportOpen(false)}>
+      <button
+        type="button"
+        className="link-btn report-back"
+        onClick={() => setReportOpen(false)}
+      >
         <ArrowLeftIcon size={16} /> Back to screening steps
       </button>
 
-      <header className={`verdict ${hits.length ? "verdict--flagged" : "verdict--clear"}`}>
+      <header
+        className={`verdict ${hits.length ? "verdict--flagged" : "verdict--clear"}`}
+      >
         <span className="verdict-icon" aria-hidden="true">
           {hits.length ? <FlagIcon size={22} /> : <CheckCircleIcon size={24} />}
         </span>
@@ -836,15 +954,18 @@ export default function App() {
         </div>
         <div className="figure">
           <dt>Protected Sightings</dt>
+          {statesSearched.length > 0 && (
+            <span className="figure-sub">in {statesSearched.join(", ")}</span>
+          )}
           <dd>{totalSightings}</dd>
         </div>
         <div className="figure">
           <dt>
             All species
             <InfoTip title="All species recorded">
-              The number of different species with GBIF sightings inside the search area since{" "}
-              {yearStart}. Only species on the Illinois endangered and threatened list are flagged as
-              protected.
+              The number of different species with GBIF sightings inside the
+              search area since {yearStart}. Only species on the endangered and
+              threatened list are flagged as protected.
             </InfoTip>
           </dt>
           <dd>{data.total_species_count ?? 0}</dd>
@@ -855,10 +976,11 @@ export default function App() {
         <p className="report-stamp tip-anchor">
           {scanMeta.cached ? (
             <>
-              Saved result from {formatClock(scanMeta.scannedAt) || "earlier today"}
+              Saved result from{" "}
+              {formatClock(scanMeta.scannedAt) || "earlier today"}
               <InfoTip title="Saved results">
-                Screenings of the same site and radius are saved for 24 hours, so a repeat check returns
-                right away instead of searching again.
+                Screenings of the same site and radius are saved for 24 hours,
+                so a repeat check returns right away instead of searching again.
               </InfoTip>
             </>
           ) : (
@@ -880,7 +1002,11 @@ export default function App() {
           >
             <DownloadIcon size={18} /> Download report
           </button>
-          <button type="button" className="btn btn-secondary" onClick={startOver}>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={startOver}
+          >
             Screen another site
           </button>
         </div>
@@ -892,24 +1018,29 @@ export default function App() {
             Species to plan around
           </h2>
           <p className="section-lede">
-            Open a species to see when it's most sensitive and which activities disturb it. Guidance is
-            written by AI from public sources.
+            Open a species to see when it's most sensitive and which activities
+            disturb it. Guidance is written by AI from public sources.
           </p>
           <div className="species-list">
             {hits.map((hit, index) => {
               const context = (data.species_context || []).find(
-                (item) => item.scientific_name === hit.scientific_name
+                (item) => item.scientific_name === hit.scientific_name,
               );
               return (
-                <SpeciesEntry key={hit.taxon_key} hit={hit} context={context} defaultOpen={index === 0} />
+                <SpeciesEntry
+                  key={hit.taxon_key}
+                  hit={hit}
+                  context={context}
+                  defaultOpen={index === 0}
+                />
               );
             })}
           </div>
         </section>
       ) : (
         <p className="section-lede">
-          A clear result doesn't guarantee that no protected species are present. Sightings only appear
-          here if someone recorded them on GBIF.
+          A clear result doesn't guarantee that no protected species are
+          present. Sightings only appear here if someone recorded them on GBIF.
         </p>
       )}
     </div>
@@ -933,10 +1064,14 @@ export default function App() {
             fontSize: "15px",
             lineHeight: "1.45",
             maxWidth: "380px",
-            boxShadow: "0 1px 2px rgba(28,41,37,.08), 0 10px 28px -8px rgba(28,41,37,.22)",
+            boxShadow:
+              "0 1px 2px rgba(28,41,37,.08), 0 10px 28px -8px rgba(28,41,37,.22)",
           },
           success: { iconTheme: { primary: "#4E7A45", secondary: "#FFFFFF" } },
-          error: { duration: 8000, iconTheme: { primary: "#A33A32", secondary: "#FFFFFF" } },
+          error: {
+            duration: 8000,
+            iconTheme: { primary: "#A33A32", secondary: "#FFFFFF" },
+          },
         }}
       />
 
@@ -945,7 +1080,9 @@ export default function App() {
           <BrandMark />
           <span className="brand-name">EcoRisk AI</span>
         </a>
-        <p className="masthead-tagline">Endangered species screening for Illinois construction sites</p>
+        <p className="masthead-tagline">
+          Endangered species screening for United States construction sites
+        </p>
         <div className="masthead-actions">
           <ActivityTray
             items={notifications}
@@ -974,7 +1111,10 @@ export default function App() {
             {!backendUrl && (
               <div className="notice notice--error config-notice" role="alert">
                 <AlertIcon size={18} />
-                <p>The screening service isn't configured. Set VITE_API_BASE_URL in a .env file.</p>
+                <p>
+                  The screening service isn't configured. Set VITE_API_BASE_URL
+                  in a .env file.
+                </p>
               </div>
             )}
             {view === "report" ? reportView : stepsView}
@@ -984,18 +1124,37 @@ export default function App() {
 
           <footer className="panel-foot">
             <p className="fine-print">
-              Preliminary screening only. Results come from public sighting records and AI summaries,
-              not a regulatory review. Confirm findings with a qualified environmental professional
-              before construction.
+              Preliminary screening only. Results come from public sighting
+              records and AI summaries, not a regulatory review. Confirm
+              findings with a qualified environmental professional before
+              construction.
             </p>
             <p className="sources">
               Data from{" "}
-              <a href="https://www.gbif.org" target="_blank" rel="noreferrer">GBIF</a>,{" "}
-              <a href="https://naturalheritage.illinois.gov/dataresearch/access-our-data.html" target="_blank" rel="noreferrer">
+              <a href="https://www.gbif.org" target="_blank" rel="noreferrer">
+                GBIF
+              </a>
+              ,{" "}
+              <a
+                href="https://naturalheritage.illinois.gov/dataresearch/access-our-data.html"
+                target="_blank"
+                rel="noreferrer"
+              >
                 Illinois Natural Heritage Database
               </a>
-              , <a href="https://www.maptiler.com" target="_blank" rel="noreferrer">MapTiler</a>, and{" "}
-              <a href="https://openrouter.ai" target="_blank" rel="noreferrer">OpenRouter</a>.
+              ,{" "}
+              <a
+                href="https://www.maptiler.com"
+                target="_blank"
+                rel="noreferrer"
+              >
+                MapTiler
+              </a>
+              , and{" "}
+              <a href="https://openrouter.ai" target="_blank" rel="noreferrer">
+                OpenRouter
+              </a>
+              .
             </p>
           </footer>
 
@@ -1013,12 +1172,20 @@ export default function App() {
             scanning={loading}
             locked={view === "report"}
             onReset={startOver}
-            hint={view === "steps" && step === 1 ? "Click the map or drag the pin to move your site" : null}
+            hint={
+              view === "steps" && step === 1
+                ? "Click the map or drag the pin to move your site"
+                : null
+            }
           />
         </section>
       </main>
 
-      <FeedbackWidget open={feedbackOpen} onClose={closeFeedback} onNotify={notify} />
+      <FeedbackWidget
+        open={feedbackOpen}
+        onClose={closeFeedback}
+        onNotify={notify}
+      />
       <ColdStartOverlay />
     </div>
   );

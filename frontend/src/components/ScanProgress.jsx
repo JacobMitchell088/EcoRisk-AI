@@ -4,7 +4,7 @@ import { CheckIcon } from "./Icons";
 // Thresholds mirror the progress values reported by GBIF.run_scan.
 const SCAN_STEPS = [
   { label: "Verifying you're a person", threshold: 1 },
-  { label: "Loading the Illinois protected species list", threshold: 10 },
+  { label: "Loading the U.S. protected species list", threshold: 10 },
   { label: "Searching GBIF sighting records", threshold: 35 },
   { label: "Checking sightings against the state list", threshold: 60 },
   { label: "Summarizing construction guidance with AI", threshold: 86 },
