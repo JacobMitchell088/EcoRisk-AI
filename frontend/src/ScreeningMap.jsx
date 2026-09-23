@@ -21,12 +21,9 @@ if (!MAPTILER_API_KEY) {
   console.error("Missing VITE_MAPTILER_API_KEY");
 }
 
-// Illinois, padded so a 50-mile search area around a border town can still sit in the
-// middle of the map. Leaflet pushes any view that crosses these bounds back inside,
-// which previously knocked large search areas off-center.
 const MAP_BOUNDS = [
-  [33.9, -95.1],
-  [45.6, -83.95],
+  [22.0, -130.0],
+  [50.0, -63.0],
 ];
 
 const RADIUS_STYLE = {
@@ -149,7 +146,7 @@ export default function ScreeningMap({
         ref={setMap}
         center={center}
         zoom={10}
-        minZoom={6}
+        minZoom={4} // previously 6
         maxZoom={17}
         maxBounds={MAP_BOUNDS}
         maxBoundsViscosity={1.0}

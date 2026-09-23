@@ -10,6 +10,7 @@ export default function SpeciesEntry({ hit, context, defaultOpen = false }) {
   const wikiName = hit.scientific_name.replace(/ /g, "_");
   const wikiUrl = `https://en.wikipedia.org/wiki/${encodeURIComponent(wikiName)}`;
   const gbifUrl = `https://www.gbif.org/species/${encodeURIComponent(hit.taxon_key)}`;
+  const protectedIn = hit.states_endangered_in || [];
 
   useEffect(() => {
     let cancelled = false;
@@ -56,6 +57,20 @@ export default function SpeciesEntry({ hit, context, defaultOpen = false }) {
             {sightings} {sightings === 1 ? "sighting" : "sightings"} on record
             nearby
           </span>
+          {protectedIn.length > 0 && (
+            <span className="species-states" aria-label="Protected in">
+              {protectedIn.map((state) => (
+                <span
+                  key={state}
+                  className={`species-state-badge${
+                    state === "Federal" ? " species-state-badge--federal" : ""
+                  }`}
+                >
+                  {state}
+                </span>
+              ))}
+            </span>
+          )}
           {!context && (
             <span className="species-badge species-badge--unreviewed">
               Not AI-reviewed

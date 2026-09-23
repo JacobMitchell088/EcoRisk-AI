@@ -1,10 +1,13 @@
 name: GBIF_env
 channels:
+  - conda-forge
   - defaults
 dependencies:
   - python=3.11
   - nodejs
   - pip
+  - geopandas>=0.14
+  - shapely>=2.0
   - pip:
     # Production
     - fastapi==0.135.1

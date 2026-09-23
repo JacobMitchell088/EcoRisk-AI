@@ -922,6 +922,13 @@ legend.field-label { margin-bottom: 6px; }
 }
 .figure--flagged dd { color: var(--gold-ink); }
 
+.figure-sub {
+  display: block;
+  font-size: 13px;
+  color: var(--muted, #6b7a76);
+  margin-top: 2px;
+}
+
 .report-bar {
   display: grid;
   gap: 12px;
@@ -1022,6 +1029,30 @@ legend.field-label { margin-bottom: 6px; }
   padding: 4px 16px 18px 84px;
 }
 
+.species-states {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.species-state-badge {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #EEF3EC;
+  color: #4E7A45;
+  border: 1px solid #D6DCD5;
+}
+
+.species-state-badge--federal {
+  background: #F3ECEA;
+  color: #A33A32;
+  border-color: #E3D3D0;
+}
+
 .tags {
   display: flex;
   flex-wrap: wrap;
@@ -1050,6 +1081,7 @@ legend.field-label { margin-bottom: 6px; }
 
 .species-badge--unreviewed {
   background: var(--gold-tint);
+  margin-top: 4px;
   border-color: var(--gold);
   color: var(--gold-ink);
 }
