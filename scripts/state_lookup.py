@@ -18,7 +18,7 @@ from shapely.geometry import Point
 logger = logging.getLogger(__name__)
 
 # Path to the shapefile you downloaded from Census.gov
-STATES_SHP_PATH = pathlib.Path(__file__).parent / "data" / "cb_2022_us_state_20m" / "cb_2022_us_state_20m.shp"
+STATES_SHP_PATH = pathlib.Path(__file__).parent.parent / "data" / "cb_2022_us_state_20m" / "cb_2022_us_state_20m.shp"
 
 # WGS84 = normal lat/lon coordinates (what GBIF and your users use)
 WGS84_CRS = "EPSG:4326"
