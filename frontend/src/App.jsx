@@ -486,6 +486,27 @@ export default function App() {
         throw new Error(invalid);
       }
 
+      // Reject an out-of-US pin here, before it costs a real scan attempt.
+      try {
+        const locResponse = await fetch(
+          `${backendUrl}/scan/check-location?lat=${Number(form.lat)}&lon=${Number(form.lon)}`,
+        );
+        if (locResponse.ok) {
+          const locJson = await locResponse.json();
+          if (!locJson.in_us) {
+            throw new Error(
+              "This location isn't inside a US state, so we don't have species data for it. Move the pin to a site within the United States and run the screening again.",
+            );
+          }
+        }
+        // If the check itself fails (network hiccup, backend waking up), fail
+        // open here — the backend's own check inside run_scan() still catches
+        // it, it just costs an attempt in that edge case.
+      } catch (locErr) {
+        if (locErr.message.includes("isn't inside a US state")) throw locErr;
+        // swallow network errors from the pre-check only
+      }
+
       const token = await getToken();
       if (!token) {
         throw new Error(

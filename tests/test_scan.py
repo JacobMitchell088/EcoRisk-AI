@@ -8,8 +8,10 @@ Unit tests for scan.py covering:
   - verify_turnstile() success/failure/misconfiguration paths
   - POST /scan/start endpoint behavior
   - GET /scan/status/{job_id} endpoint behavior
+  - GET /scan/check-location endpoint behavior (cheap, geometry-only US-state
+    pre-check so an out-of-US pin never costs one of the /scan/start attempts)
 
-All external calls (GBIF, Cloudflare Turnstile) are mocked.
+All external calls (GBIF, Cloudflare Turnstile, state geometry) are mocked.
 The test client uses a minimal app without SlowAPI middleware so endpoints
 can be exercised freely without hitting rate limits.
 """
@@ -67,10 +69,11 @@ def reset_rate_limiter():
     """
     Reset the SlowAPI in-memory storage before each test.
 
-    The rate limiter is a module-level singleton (limiter.py).  Without this
-    fixture, the 1/hour limit on /scan/start would be exhausted after the
-    first test that calls that endpoint, causing subsequent tests to receive
-    429 instead of the response they're asserting on.
+    The rate limiter is a module-level singleton (limiter.py). Without this
+    fixture, /scan/start's 3/hour limit (or /scan/check-location's 30/hour
+    limit) would be exhausted after the first test that calls that endpoint,
+    causing subsequent tests to receive 429 instead of the response they're
+    asserting on.
     """
     from limiter import limiter
     limiter._storage.reset()
@@ -913,7 +916,122 @@ class TestRunScanJobErrorMessages:
     def test_csv_not_found_error_message_stored(self, mocker):
         jid = str(uuid.uuid4())
         self._seed_job(jid)
-        mocker.patch("GBIF.run_scan", side_effect=RuntimeError("Illinois taxon lookup CSV not found"))
+        # GBIF.load_master_taxon_lookup() raises this message for the
+        # multi-state MasterTaxonLookup.csv (superseded the old, single-state
+        # "Illinois taxon lookup CSV not found" message from
+        # load_precomputed_taxon_keys).
+        mocker.patch("GBIF.run_scan", side_effect=RuntimeError("Master taxon lookup CSV not found"))
         run_scan_job(jid, 41.8781, -87.6298, 5.0)
         assert jobs[jid]["status"] == "error"
         assert "csv" in jobs[jid]["error"].lower() or "taxon" in jobs[jid]["error"].lower()
+
+    def test_out_of_us_error_message_stored(self, mocker):
+        """
+        run_scan() rejects a search center outside a US state before making
+        any GBIF/OpenRouter calls (state_lookup.state_containing_point).
+        run_scan_job must surface that message the same way as any other
+        RuntimeError from GBIF.run_scan.
+        """
+        jid = str(uuid.uuid4())
+        self._seed_job(jid)
+        mocker.patch(
+            "GBIF.run_scan",
+            side_effect=RuntimeError(
+                "This location isn't inside a US state, so we don't have "
+                "species data for it. Move the pin to a site within the "
+                "United States and run the screening again."
+            ),
+        )
+        run_scan_job(jid, 19.4326, -99.1332, 5.0)  # Mexico City coordinates
+        assert jobs[jid]["status"] == "error"
+        assert "us state" in jobs[jid]["error"].lower()
+
+
+# ---------------------------------------------------------------------------
+# 12. GET /scan/check-location endpoint
+#
+# Cheap, geometry-only pre-check so the frontend can reject an out-of-US pin
+# before it ever reaches /scan/start — meaning it never costs the user one
+# of their 3/hour real scan attempts and never spends a Turnstile challenge.
+# It calls state_lookup.state_containing_point directly, with no GBIF or
+# OpenRouter calls involved, so it's mocked at that single call site.
+# ---------------------------------------------------------------------------
+
+class TestCheckLocationEndpoint:
+
+    def test_returns_200_for_us_point(self, client, mocker):
+        mocker.patch(
+            "scan.state_containing_point",
+            return_value={"state_name": "Illinois", "state_abbr": "IL"},
+        )
+        resp = client.get("/scan/check-location", params={"lat": 38.792, "lon": -90.002})
+        assert resp.status_code == 200
+
+    def test_in_us_true_for_us_point(self, client, mocker):
+        mocker.patch(
+            "scan.state_containing_point",
+            return_value={"state_name": "Illinois", "state_abbr": "IL"},
+        )
+        body = client.get("/scan/check-location", params={"lat": 38.792, "lon": -90.002}).json()
+        assert body["in_us"] is True
+
+    def test_state_included_for_us_point(self, client, mocker):
+        mocker.patch(
+            "scan.state_containing_point",
+            return_value={"state_name": "Illinois", "state_abbr": "IL"},
+        )
+        body = client.get("/scan/check-location", params={"lat": 38.792, "lon": -90.002}).json()
+        assert body["state"] == {"state_name": "Illinois", "state_abbr": "IL"}
+
+    def test_in_us_false_for_non_us_point(self, client, mocker):
+        """A point outside every US state (e.g. across the Mexican border) must be rejected."""
+        mocker.patch("scan.state_containing_point", return_value=None)
+        body = client.get("/scan/check-location", params={"lat": 19.4326, "lon": -99.1332}).json()
+        assert body["in_us"] is False
+
+    def test_state_null_for_non_us_point(self, client, mocker):
+        mocker.patch("scan.state_containing_point", return_value=None)
+        body = client.get("/scan/check-location", params={"lat": 19.4326, "lon": -99.1332}).json()
+        assert body["state"] is None
+
+    def test_still_200_for_non_us_point(self, client, mocker):
+        """A non-US point is a normal, successful check — not an error response."""
+        mocker.patch("scan.state_containing_point", return_value=None)
+        resp = client.get("/scan/check-location", params={"lat": 19.4326, "lon": -99.1332})
+        assert resp.status_code == 200
+
+    def test_does_not_touch_gbif(self, client, mocker):
+        """This endpoint must never call GBIF — it's pure geometry."""
+        mocker.patch("scan.state_containing_point", return_value=None)
+        mock_gbif = mocker.patch("GBIF.run_scan")
+        client.get("/scan/check-location", params={"lat": 19.4326, "lon": -99.1332})
+        mock_gbif.assert_not_called()
+
+    def test_does_not_create_a_job(self, client, mocker):
+        """This endpoint has nothing to do with the jobs store."""
+        mocker.patch(
+            "scan.state_containing_point",
+            return_value={"state_name": "Illinois", "state_abbr": "IL"},
+        )
+        client.get("/scan/check-location", params={"lat": 38.792, "lon": -90.002})
+        assert len(jobs) == 0
+
+    def test_missing_lat_returns_422(self, client):
+        resp = client.get("/scan/check-location", params={"lon": -90.002})
+        assert resp.status_code == 422
+
+    def test_missing_lon_returns_422(self, client):
+        resp = client.get("/scan/check-location", params={"lat": 38.792})
+        assert resp.status_code == 422
+
+    def test_lat_out_of_range_returns_422(self, client):
+        resp = client.get("/scan/check-location", params={"lat": 999.0, "lon": -90.002})
+        assert resp.status_code == 422
+
+    def test_lon_out_of_range_returns_422(self, client):
+        resp = client.get("/scan/check-location", params={"lat": 38.792, "lon": -999.0})
+        assert resp.status_code == 422
+
+    def test_non_numeric_lat_returns_422(self, client):
+        resp = client.get("/scan/check-location", params={"lat": "not-a-number", "lon": -90.002})
+        assert resp.status_code == 422
