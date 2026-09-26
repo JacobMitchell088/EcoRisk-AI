@@ -176,7 +176,7 @@ def run_scan(lat, lon, radius_miles, progress_callback=None):
 
     logger.info("Found %d protected species in search area", found_species_count)
     for h in hits:
-        logger.info("  - %s (%d occurrences) — endangered in: %s", h["scientific_name"], h["gbif_count"], h["states_endangered_in"])
+        logger.info("  - %s / %s(%d occurrences) — endangered in: %s", h["scientific_name"], h["common_name"], h["gbif_count"], h["states_endangered_in"])
 
     if progress_callback:
         progress_callback("Generating AI ecological context", 85)
@@ -196,7 +196,7 @@ def run_scan(lat, lon, radius_miles, progress_callback=None):
             "states_searched": [s["state_abbr"] for s in touched_states],
         },
         "hits": [
-            {"scientific_name": h["scientific_name"], "gbif_count": h["gbif_count"], "taxon_key": h["taxon_key"]}
+            {"scientific_name": h["scientific_name"], "common_name": h["common_name"], "gbif_count": h["gbif_count"], "taxon_key": h["taxon_key"]}
             for h in ai_hits
         ],
     }
@@ -243,7 +243,7 @@ def main():
     print("\nAI Species Context:\n")
     for item in result["species_context"]:
         print(item["scientific_name"])
-        print(f"Common name: {item.get('common_name')}")
+        print(f"Common name: {item['common_name']}")
         print(f"Tags: {', '.join(item.get('tags', []))}")
         print(f"Overview: {item.get('overview')}")
         print(f"Seasonal concerns: {item.get('seasonal_concerns')}")
