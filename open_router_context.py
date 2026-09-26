@@ -55,10 +55,11 @@ def _build_batch_prompt(gbif_result: Dict[str, Any]) -> str:
     species_lines = []
     for hit in hits:
         scientific_name = hit.get("scientific_name", "Unknown")
+        common_name = hit.get("common_name", "Unknown")
         gbif_count = hit.get("gbif_count", "Unknown")
         taxon_key = hit.get("taxon_key", "Unknown")
         species_lines.append(
-            f"- Scientific name: {scientific_name} | GBIF count: {gbif_count} | taxon key: {taxon_key}"
+            f"- Scientific name: {scientific_name} | Common name: {common_name} | GBIF count: {gbif_count} | taxon key: {taxon_key}"
         )
 
     species_block = "\n".join(species_lines)
