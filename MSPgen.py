@@ -100,7 +100,11 @@ def generateXML(
     project_start: Optional[str] = None,
     ) -> str:
 
-    start_date = date.fromisoformat(project_start) 
+    if project_start is None:
+        project_start = date.today().isoformat()
+    else:
+        start_date = date.fromisoformat(project_start)
+
     year = start_date.year
 
     # Compute finish date = latest window end
@@ -127,8 +131,25 @@ def generateXML(
     for w in critical_windows:
         s = date(year, w["start_month"], w["start_day"])
 
-        last_day = calendar.monthrange(year, w["end_month"])[1]
-        e = date(year, w["end_month"], min(w["end_day"], last_day))
+        if s < start_date:
+            s = date(year + 1, w["start_month"], w["start_day"])
+
+        end_year = s.year
+        last_day = calendar.monthrange(end_year, w["end_month"])[1]
+        e = date(
+            end_year,
+            w["end_month"],
+            min(w["end_day"], last_day),
+        )
+
+        if e < s:
+            end_year += 1
+            last_day = calendar.monthrange(end_year, w["end_month"])[1]
+            e = date(
+                end_year,
+                w["end_month"],
+                min(w["end_day"], last_day),
+            )
 
         if e < s:
             e = date(year + 1, w["end_month"], min(w["end_day"], last_day))
