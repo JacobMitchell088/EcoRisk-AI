@@ -4,11 +4,13 @@ import math
 import pathlib
 import requests
 import time
+import os
 
+from open_router_context import extract_critical_windows
+from MSPgen import saveXML
 from dotenv import load_dotenv
 from scripts.state_lookup import states_touching_circle, state_containing_point
 load_dotenv()
-import os
 
 logger = logging.getLogger(__name__)
 
@@ -214,7 +216,6 @@ def run_scan(lat, lon, radius_miles, progress_callback=None):
         "species_context": enriched["species_context"], # AI writeups, only for the top MAX_SPECIES
     }
 
-
 def main():
     lat, lon = 38.635, -90.179
     radius_miles = 5
@@ -250,6 +251,15 @@ def main():
         print(f"Disruptive activities: {item.get('disruptive_activities')}")
         print(f"Recommendation: {item.get('recommendation')}")
         print()
+
+    critical_windows = extract_critical_windows(result)
+
+    if not critical_windows:
+        print("Warning: returned no critical windows.")
+        critical_windows = []
+
+    out = saveXML(critical_windows, "environmental_constraints.xml")
+    print(f"\nSaved: {out}")
 
 
 if __name__ == "__main__":

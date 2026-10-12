@@ -11,6 +11,11 @@ from dotenv import load_dotenv
 from fastapi import APIRouter, HTTPException, Request, Query
 from pydantic import BaseModel, Field
 
+from datetime import date
+from fastapi.responses import Response
+from MSPgen import generateXML
+from open_router_context import extract_critical_windows
+
 from limiter import limiter
 from scripts.state_lookup import state_containing_point
 import redis_client
@@ -223,3 +228,47 @@ def scan_status(request: Request, job_id: str):
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
     return job
+
+
+@router.get("/scan/download-xml/{job_id}")
+@limiter.limit("10/minute")
+def download_xml(request: Request, job_id: str):
+    with _jobs_lock:
+        job = jobs.get(job_id)
+
+        if not job:
+            raise HTTPException(
+                status_code=404,
+                detail="Scan job not found.",
+            )
+
+        if job.get("status") != "complete":
+            raise HTTPException(
+                status_code=409,
+                detail="Scan is not complete.",
+            )
+
+        result = job.get("result")
+
+    if not result:
+        raise HTTPException(
+            status_code=404,
+            detail="Scan results not found.",
+        )
+
+    critical_windows = extract_critical_windows(result)
+
+    xml_content = generateXML(
+        critical_windows,
+        project_name="Environmental Constraints",
+        project_start=date.today().isoformat(),
+    )
+
+    return Response(
+        content=xml_content,
+        media_type="application/xml",
+        headers={
+            "Content-Disposition":
+                'attachment; filename="environmental_constraints.xml"'
+        },
+    )

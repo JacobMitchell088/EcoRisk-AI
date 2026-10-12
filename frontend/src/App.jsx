@@ -94,6 +94,7 @@ export default function App() {
   const [lookingUpAddress, setLookingUpAddress] = useState(false);
   const [lookingUpCoords, setLookingUpCoords] = useState(false);
   const [scanMeta, setScanMeta] = useState(null);
+  const [scanJobId, setScanJobId] = useState(null);
   const [finalizing, setFinalizing] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [step, setStep] = useState(1);
@@ -456,6 +457,7 @@ export default function App() {
     setScanMeta(null);
     setFinalizing(false);
     setReportOpen(false);
+    setScanJobId(null);
   }
 
   function startOver() {
@@ -537,6 +539,7 @@ export default function App() {
         );
       }
 
+      setScanJobId(startJson.job_id);
       resetTurnstile();
 
       // Polling loop
@@ -1023,6 +1026,16 @@ export default function App() {
           >
             <DownloadIcon size={18} /> Download report
           </button>
+
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={downloadXML}
+            disabled={!scanJobId}
+          >
+            <DownloadIcon size={18} /> Download XML
+          </button>
+
           <button
             type="button"
             className="btn btn-secondary"
@@ -1066,6 +1079,44 @@ export default function App() {
       )}
     </div>
   );
+
+  async function downloadXML() {
+    if (!scanJobId) {
+      notify("No completed scan is available to download.");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${backendUrl}/scan/download-xml/${scanJobId}`
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          await readErrorMessage(
+            response,
+            "Could not download the Microsoft Project XML file."
+          )
+        );
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = "environmental_constraints.xml";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+      notify("Microsoft Project XML downloaded.", "success");
+    } catch (err) {
+      notify(friendlyMessage(err));
+    }
+  }
 
   // Start of page render
   return (

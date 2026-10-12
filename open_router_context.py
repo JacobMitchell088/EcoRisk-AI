@@ -38,7 +38,7 @@ from openai import (
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_MODEL = "liquid/lfm-2.5-2.6b:free"
+DEFAULT_MODEL = "nvidia/nemotron-3-super-120b-a12b:free"
 
 
 # All species go into one prompt — we don't make a separate API call per species
@@ -87,6 +87,12 @@ For EACH species, provide:
 5. seasonal_concerns: a short paragraph on the most relevant seasonal sensitivities (breeding, nesting, migration, roosting, dormancy, spawning, etc.) and approximately when they occur
 6. disruptive_activities: a short paragraph on which construction activities are most likely to cause disturbance (noise, tree clearing, grading, vibration, water disturbance, nighttime lighting, etc.)
 7. recommendation: a cautious 1–2 sentence suggestion for when or how construction might be less disruptive, if reasonable — do not frame this as approval or a guarantee
+8. critical_window: an object with:
+   - start_month: integer (1–12) when the most sensitive period begins
+   - start_day: integer, day of that month
+   - end_month: integer (1–12) when the sensitive period ends
+   - end_day: integer, day of that month
+   Base this on the primary concern (nesting, breeding, migration, etc.).
 
 Important rules:
 - Do not invent legal requirements
@@ -105,7 +111,13 @@ Return ONLY valid JSON in this exact format:
       "overview": "Brief general context here.",
       "seasonal_concerns": "Seasonal sensitivity paragraph here.",
       "disruptive_activities": "Disruptive activities paragraph here.",
-      "recommendation": "Cautious timing suggestion here."
+      "recommendation": "Cautious timing suggestion here.",
+      "critical_window": {{
+        "start_month": 4,
+        "start_day": 1,
+        "end_month": 8,
+        "end_day": 31
+        }}
     }}
   ]
 }}
@@ -260,3 +272,20 @@ def enrich_gbif_results_with_openrouter_batch(
         "species_context": parsed.get("species_context", []),
         "disclaimer": _DISCLAIMER,
     }
+
+def extract_critical_windows(ai_result: Dict[str, Any]) -> List[Dict]:
+    # Convert AI enrichment output into the CRITICAL_WINDOWS format for MSPgen
+    windows = []
+    for species in ai_result.get("species_context", []):
+        cw = species.get("critical_window")
+        name = species.get("common_name") or species.get("scientific_name")
+        if cw and name:
+            windows.append({
+                "name": name,
+                "start_month": cw["start_month"],
+                "start_day":   cw["start_day"],
+                "end_month":   cw["end_month"],
+                "end_day":     cw["end_day"],
+                "seasonal_concerns":    species.get("seasonal_concerns", ""),
+            })
+    return windows
