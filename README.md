@@ -1,6 +1,6 @@
 # EcoRisk AI
-> Authors: Jacob Mitchell, Hayden Shubert    
-> Date: 9/22/26   
+> Authors: Jacob Mitchell, Hayden Shubert, Jenna Huegen    
+> Date: 10/11/26   
 
 > Our servers spin down with inactivity, so please be sure to allow for an additional 60 seconds upon making your first request to our backend.    
 https://environmentscreen.onrender.com     
@@ -178,7 +178,7 @@ major disturbance activities may be less disruptive outside the
 maternity season, typically late fall through winter.    
 ```
 - To ensure performance remains high and reduce costs, only the top `MAX_SPECIES_FOR_AI` detected species (ranked by sighting count) are sent to OpenRouter in a single batched request. All matched species are still returned and shown in the report — species beyond that limit are displayed without AI-generated guidance, alongside links to Wikipedia and GBIF.
-
+- Using the AI ecological context, an .XML file is generated in `MSPgen.py` for construction projects to analyze when the best times are to work. It includes the `MAX_SPECIES_FOR_AI` and each species recommended critical time windows (breeding, migration, etc.) along with some of the species context in the notes section for extra information.
 ---   
 
 # Current Limitations
@@ -217,6 +217,7 @@ Senior-Project/
 ├── open_router_context.py          # OpenRouter batch context analysis
 ├── redis_client.py                 # Redis wrapper (cache_get / cache_set / cache_delete)
 ├── limiter.py                      # SlowAPI rate limiter configuration
+├── MSPgen.py                       # .XML file generator for species critical time windows
 ├── data/
 │   ├── MasterTaxonLookup.csv       # Precomputed scientific name → taxon key → state(s) listed lookup ("All" = federally listed). Generated locally in a separate project — build scripts not yet in this repo.
 │   └── cb_2022_us_state_20m/       # Census Bureau US state boundary shapefile, used by state_lookup.py (geometry only, not species data)
