@@ -1,90 +1,94 @@
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
-const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || "";
-
-const backendUrl = API_BASE_URL ? API_BASE_URL.replace(/\/$/, "") : "";
+import useTurnstile from "./lib/useTurnstile";
+import { backendUrl, isNetworkError, readErrorMessage } from "./lib/api";
+import { AlertIcon, CloseIcon, StarIcon } from "./components/Icons";
 
 const emptyForm = { title: "", body: "", email: "", rating: 0 };
+const RATING_WORDS = ["No rating", "Poor", "Fair", "Good", "Very good", "Excellent"];
+const FOCUSABLE = 'button:not([disabled]), input, textarea, [href], [tabindex]:not([tabindex="-1"])';
 
-export default function FeedbackWidget() {
-  const [open, setOpen] = useState(false);
+export default function FeedbackWidget({ open, onClose, onNotify }) {
   const [form, setForm] = useState(emptyForm);
   const [hoverRating, setHoverRating] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [submitError, setSubmitError] = useState("");
 
-  const turnstileRef = useRef(null);
-  const widgetIdRef = useRef(null);
-  const resolveRef = useRef(null);
-  const rejectRef = useRef(null);
+  const { containerRef, prepare, getToken, reset } = useTurnstile();
+  const sheetRef = useRef(null);
+  const titleRef = useRef(null);
 
-  // Render an invisible Turnstile widget once the modal is open
+  // Open: render verification, move focus in, trap Tab, close on Escape.
+  // Close: hand focus back to whatever opened the sheet.
   useEffect(() => {
-    if (!open || !window.turnstile || !turnstileRef.current || !TURNSTILE_SITE_KEY) return;
-    if (widgetIdRef.current !== null) return;
+    if (!open) return;
 
-    widgetIdRef.current = window.turnstile.render(turnstileRef.current, {
-      sitekey: TURNSTILE_SITE_KEY,
-      execution: "execute",
-      appearance: "interaction-only",
-      callback: (token) => {
-        if (resolveRef.current) {
-          resolveRef.current(token);
-          resolveRef.current = null;
-          rejectRef.current = null;
-        }
-      },
-      "error-callback": () => {
-        if (rejectRef.current) {
-          rejectRef.current(new Error("Human verification failed."));
-          rejectRef.current = null;
-          resolveRef.current = null;
-        }
-      },
-    });
-  }, [open]);
+    const returnFocusTo = document.activeElement;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    toast.dismiss();
+    prepare();
+    const focusTimer = setTimeout(() => titleRef.current?.focus(), 80);
 
-  function getToken() {
-    if (!window.turnstile || widgetIdRef.current === null) {
-      return Promise.reject(new Error("Verification widget is not ready yet. Please wait a moment."));
+    function handleKeyDown(event) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+      if (event.key !== "Tab" || !sheetRef.current) return;
+      const focusable = [...sheetRef.current.querySelectorAll(FOCUSABLE)];
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     }
-    const existing = window.turnstile.getResponse(widgetIdRef.current);
-    if (existing) return Promise.resolve(existing);
-    window.turnstile.reset(widgetIdRef.current);
-    return new Promise((resolve, reject) => {
-      resolveRef.current = resolve;
-      rejectRef.current = reject;
-      window.turnstile.execute(widgetIdRef.current);
-    });
-  }
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      clearTimeout(focusTimer);
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = previousOverflow;
+      returnFocusTo?.focus?.();
+    };
+  }, [open, onClose, prepare]);
 
   function updateField(event) {
     const { name, value } = event.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+    if (fieldErrors[name]) setFieldErrors((prev) => ({ ...prev, [name]: "" }));
   }
 
-  function closeAndReset() {
-    setOpen(false);
-    setForm(emptyForm);
-    setHoverRating(0);
-    if (window.turnstile && widgetIdRef.current !== null) {
-      window.turnstile.reset(widgetIdRef.current);
-    }
+  function validate() {
+    const errors = {};
+    if (form.title.trim().length < 3) errors.title = "Add a short title of at least 3 characters.";
+    if (form.body.trim().length < 5) errors.body = "Add a few more words so we understand your feedback.";
+    const email = form.email.trim();
+    if (email && !/^\S+@\S+\.\S+$/.test(email)) errors.email = "Enter a valid email address, or leave this blank.";
+    return errors;
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
+    setSubmitError("");
+
+    const errors = validate();
+    setFieldErrors(errors);
+    const firstInvalid = Object.keys(errors)[0];
+    if (firstInvalid) {
+      sheetRef.current?.querySelector(`[name="${firstInvalid}"]`)?.focus();
+      return;
+    }
+
     if (!backendUrl) {
-      toast.error("Feedback is unavailable — API not configured.");
-      return;
-    }
-    if (form.title.trim().length < 3) {
-      toast.error("Please add a short title (at least 3 characters).");
-      return;
-    }
-    if (form.body.trim().length < 5) {
-      toast.error("Please add a little more detail in your feedback.");
+      setSubmitError("Feedback is unavailable because the service isn't configured.");
       return;
     }
 
@@ -104,137 +108,164 @@ export default function FeedbackWidget() {
       });
 
       if (!response.ok) {
-        const text = await response.text();
-        throw new Error(text || "Could not submit feedback.");
+        throw new Error(await readErrorMessage(response, "Your feedback didn't send. Try again in a moment."));
       }
 
-      toast.success("Thanks! Your feedback was submitted.");
-      closeAndReset();
+      onNotify("Feedback sent. Thank you for helping improve EcoRisk AI.", "success");
+      setForm(emptyForm);
+      setFieldErrors({});
+      reset();
+      onClose();
     } catch (err) {
-      toast.error(err.message || "Could not submit feedback.");
+      const message = isNetworkError(err)
+        ? "Couldn't reach the feedback service. Check your connection and try again."
+        : err.message || "Your feedback didn't send. Try again in a moment.";
+      setSubmitError(message);
+      onNotify(message, "error", { toast: false });
     } finally {
       setSubmitting(false);
     }
   }
 
-  return (
-    <>
-      {!open && (
-        <button
-          type="button"
-          className="feedback-fab"
-          onClick={() => setOpen(true)}
-          aria-label="Provide feedback"
-        >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path
-              d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8A8.38 8.38 0 0 1 12.5 3 8.38 8.38 0 0 1 21 11.5z"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-          Feedback
-        </button>
-      )}
+  const shownRating = hoverRating || form.rating;
 
-      {open && (
-        <div className="feedback-panel" role="dialog" aria-modal="true" aria-label="Provide feedback">
-          <div className="feedback-head">
-            <div>
-              <span className="feedback-eyebrow">EcoRisk AI</span>
-              <h2 className="feedback-title">Provide Feedback</h2>
-            </div>
-            <button
-              type="button"
-              className="feedback-close"
-              onClick={closeAndReset}
-              aria-label="Close feedback"
-            >
-              ✕
-            </button>
+  return (
+    <div className="feedback" data-open={open} inert={!open}>
+      <div className="sheet-scrim" onClick={onClose} aria-hidden="true" />
+
+      <aside
+        ref={sheetRef}
+        className="sheet"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="feedback-title"
+      >
+        <header className="sheet-head">
+          <div>
+            <h2 id="feedback-title" className="sheet-title">
+              Send feedback
+            </h2>
+            <p className="sheet-lede">
+              Tell us what works, what's confusing, or what you'd like to see next.
+            </p>
+          </div>
+          <button type="button" className="icon-btn" onClick={onClose} aria-label="Close feedback">
+            <CloseIcon size={20} />
+          </button>
+        </header>
+
+        <form id="feedback-form" className="sheet-body" onSubmit={handleSubmit} noValidate>
+          <div className="field">
+            <label className="field-label" htmlFor="feedback-title-input">
+              Title
+            </label>
+            <input
+              ref={titleRef}
+              id="feedback-title-input"
+              className="input"
+              name="title"
+              value={form.title}
+              onChange={updateField}
+              placeholder="A short summary"
+              maxLength={120}
+              aria-invalid={Boolean(fieldErrors.title)}
+              aria-describedby={fieldErrors.title ? "feedback-title-error" : undefined}
+            />
+            {fieldErrors.title && (
+              <p className="field-error" id="feedback-title-error">
+                <AlertIcon size={16} /> {fieldErrors.title}
+              </p>
+            )}
           </div>
 
-          <p className="feedback-intro">
-            Tell us what's good, what's broken, or what you'd like to see next.
-          </p>
+          <div className="field">
+            <label className="field-label" htmlFor="feedback-body">
+              Details
+            </label>
+            <textarea
+              id="feedback-body"
+              className="input textarea"
+              name="body"
+              value={form.body}
+              onChange={updateField}
+              placeholder="What happened, what you expected, or what you'd like added"
+              rows={5}
+              maxLength={5000}
+              aria-invalid={Boolean(fieldErrors.body)}
+              aria-describedby={fieldErrors.body ? "feedback-body-error" : undefined}
+            />
+            {fieldErrors.body && (
+              <p className="field-error" id="feedback-body-error">
+                <AlertIcon size={16} /> {fieldErrors.body}
+              </p>
+            )}
+          </div>
 
-          <form onSubmit={handleSubmit} className="feedback-form">
-            <div className="feedback-field">
-              <label className="feedback-label">Title</label>
-              <input
-                className="feedback-input"
-                name="title"
-                value={form.title}
-                onChange={updateField}
-                placeholder="Short summary"
-                maxLength={120}
-              />
+          <fieldset className="field">
+            <legend className="field-label">
+              How would you rate EcoRisk AI? <span className="optional">Optional</span>
+            </legend>
+            <div className="stars" role="radiogroup" aria-label="Rating" onMouseLeave={() => setHoverRating(0)}>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  type="button"
+                  key={star}
+                  role="radio"
+                  aria-checked={form.rating === star}
+                  aria-label={`${star} of 5, ${RATING_WORDS[star]}`}
+                  className={`star${shownRating >= star ? " is-lit" : ""}`}
+                  onClick={() => setForm((prev) => ({ ...prev, rating: prev.rating === star ? 0 : star }))}
+                  onMouseEnter={() => setHoverRating(star)}
+                >
+                  <StarIcon size={26} strokeWidth={1.6} filled={shownRating >= star} />
+                </button>
+              ))}
+              <span className="star-caption" aria-hidden="true">
+                {RATING_WORDS[shownRating]}
+              </span>
             </div>
+          </fieldset>
 
-            <div className="feedback-field">
-              <label className="feedback-label">Details</label>
-              <textarea
-                className="feedback-textarea"
-                name="body"
-                value={form.body}
-                onChange={updateField}
-                placeholder="What's good, bad, or what you'd like to see…"
-                rows={4}
-                maxLength={5000}
-              />
+          <div className="field">
+            <label className="field-label" htmlFor="feedback-email">
+              Email <span className="optional">Optional, if you'd like a reply</span>
+            </label>
+            <input
+              id="feedback-email"
+              className="input"
+              name="email"
+              type="email"
+              value={form.email}
+              onChange={updateField}
+              placeholder="you@example.com"
+              maxLength={254}
+              autoComplete="email"
+              aria-invalid={Boolean(fieldErrors.email)}
+              aria-describedby={fieldErrors.email ? "feedback-email-error" : undefined}
+            />
+            {fieldErrors.email && (
+              <p className="field-error" id="feedback-email-error">
+                <AlertIcon size={16} /> {fieldErrors.email}
+              </p>
+            )}
+          </div>
+
+          {submitError && (
+            <div className="notice notice--error" role="alert">
+              <AlertIcon size={18} />
+              <p>{submitError}</p>
             </div>
+          )}
 
-            <div className="feedback-field">
-              <label className="feedback-label">
-                Rating <span className="feedback-optional">optional</span>
-              </label>
-              <div className="feedback-stars" role="radiogroup" aria-label="Rating">
-                {[1, 2, 3, 4, 5].map((star) => {
-                  const active = (hoverRating || form.rating) >= star;
-                  return (
-                    <button
-                      type="button"
-                      key={star}
-                      className={`feedback-star${active ? " active" : ""}`}
-                      onClick={() =>
-                        setForm((prev) => ({ ...prev, rating: prev.rating === star ? 0 : star }))
-                      }
-                      onMouseEnter={() => setHoverRating(star)}
-                      onMouseLeave={() => setHoverRating(0)}
-                      aria-label={`${star} star${star > 1 ? "s" : ""}`}
-                    >
-                      {active ? "★" : "☆"}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+          <div ref={containerRef} className="turnstile-slot" />
+        </form>
 
-            <div className="feedback-field">
-              <label className="feedback-label">
-                Contact email <span className="feedback-optional">optional</span>
-              </label>
-              <input
-                className="feedback-input"
-                name="email"
-                type="email"
-                value={form.email}
-                onChange={updateField}
-                placeholder="you@example.com — for a reply"
-                maxLength={254}
-              />
-            </div>
-
-            <button type="submit" className="feedback-submit" disabled={submitting}>
-              {submitting ? "Sending…" : "Send Feedback"}
-            </button>
-
-            <div ref={turnstileRef} className="feedback-captcha" />
-          </form>
-        </div>
-      )}
-    </>
+        <footer className="sheet-foot">
+          <button type="submit" form="feedback-form" className="btn btn-primary btn-block" disabled={submitting}>
+            {submitting ? "Sending…" : "Send feedback"}
+          </button>
+        </footer>
+      </aside>
+    </div>
   );
 }

@@ -8,10 +8,11 @@ import logging
 
 import httpx
 from dotenv import load_dotenv
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, Query
 from pydantic import BaseModel, Field
 
 from limiter import limiter
+from scripts.state_lookup import state_containing_point
 import redis_client
 import GBIF
 
@@ -143,6 +144,16 @@ def run_scan_job(job_id: str, lat: float, lon: float, radius_miles: float):
 
     finally:
         watchdog.cancel()
+
+@router.get("/scan/check-location")
+@limiter.limit("30/hour")
+def check_location(
+    request: Request,
+    lat: float = Query(..., ge=-90, le=90),
+    lon: float = Query(..., ge=-180, le=180),
+):
+    state = state_containing_point(lat, lon)
+    return {"in_us": state is not None, "state": state}
 
 
 @router.post("/scan/start")

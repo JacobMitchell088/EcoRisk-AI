@@ -9,3 +9,5 @@ slowapi==0.1.9
 starlette==0.52.1
 limits==5.8.0
 redis>=5.0
+geopandas>=0.14
+shapely>=2.0
