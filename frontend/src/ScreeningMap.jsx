@@ -21,9 +21,10 @@ if (!MAPTILER_API_KEY) {
   console.error("Missing VITE_MAPTILER_API_KEY");
 }
 
+
 const MAP_BOUNDS = [
-  [22.0, -130.0],
-  [50.0, -63.0],
+  [18.0, -180.0], // SW — south of Hawaii, west edge wraps to cover the Aleutians
+  [72.0, -65.0], // NE — north of Alaska, east of Maine
 ];
 
 const RADIUS_STYLE = {
