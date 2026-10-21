@@ -1033,9 +1033,10 @@ export default function App() {
             onClick={downloadXML}
             disabled={!scanJobId}
           >
-            <DownloadIcon size={18} /> Download XML
+            <DownloadIcon size={18} /> Download Microsoft Project Export
           </button>
-
+        </div>
+        <div className="report-actions">
           <button
             type="button"
             className="btn btn-secondary"
