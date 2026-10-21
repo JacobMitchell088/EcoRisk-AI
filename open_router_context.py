@@ -38,7 +38,7 @@ from openai import (
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_MODEL = "nvidia/nemotron-3-super-120b-a12b:free"
+DEFAULT_MODEL = "minimax/minimax-m3.1-flash:free"
 
 
 # All species go into one prompt — we don't make a separate API call per species
