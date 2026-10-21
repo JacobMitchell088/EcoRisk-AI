@@ -267,6 +267,17 @@ def enrich_gbif_results_with_openrouter_batch(
             raw_text = None
 
     if response is None or raw_text is None:
+        if isinstance(last_error, APIStatusError):
+            return _error_result(
+                f"api_status_{last_error.status_code}",
+                (
+                    f"OpenRouter API returned an error "
+                    f"(HTTP {last_error.status_code}). "
+                    f"All configured models failed. "
+                    f"Last error: {last_error}"
+                ),
+            )
+
         return _error_result(
             "all_models_failed",
             f"All configured models failed. Last error: {last_error}",
