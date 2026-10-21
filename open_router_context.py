@@ -38,7 +38,9 @@ from openai import (
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_MODEL = "minimax/minimax-m3.1-flash:free"
+DEFAULT_MODELS = ["minimax/minimax-m3.1-flash:free","nvidia/nemotron-3-ultra-550b-a55b:free","nvidia/nemotron-3.5-super-vl:free","nvidia/nemotron-3.5-lightning:free","cohere/north-mini-code:free"] 
+
+DEFAULT_MODEL = DEFAULT_MODELS[0]
 
 
 # All species go into one prompt — we don't make a separate API call per species
@@ -129,6 +131,7 @@ def enrich_gbif_results_with_openrouter_batch(
     gbif_result: Dict[str, Any],
     *,
     model: str = DEFAULT_MODEL,
+    models: Optional[List[str]] = None,
     client: Optional[OpenAI] = None,
     api_key: Optional[str] = None,
 ) -> Dict[str, Any]:
@@ -187,42 +190,88 @@ def enrich_gbif_results_with_openrouter_batch(
             "disclaimer": _DISCLAIMER,
         }
 
-    try:
-        response = client.chat.completions.create(
-            model=model,
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt,
-                }
-            ],
-            response_format={"type": "json_object"},
-        )
-    except AuthenticationError:
+    candidate_models = models or list(dict.fromkeys([model, *DEFAULT_MODELS]))
+
+    response = None
+    raw_text = None
+    last_error = None
+
+    for candidate in candidate_models:
+        try:
+            logger.info("Trying OpenRouter model: %s", candidate)
+
+            response = client.chat.completions.create(
+                model=candidate,
+                messages=[
+                    {
+                        "role": "user",
+                        "content": prompt,
+                    }
+                ],
+                response_format={"type": "json_object"},
+            )
+
+            if not response.choices:
+                last_error = "Model returned no choices"
+                logger.warning(
+                    "Model %s returned no choices",
+                    candidate,
+                )
+                response = None
+                continue
+
+            raw_content = response.choices[0].message.content
+
+            if not raw_content or not raw_content.strip():
+                last_error = "Model returned empty content"
+                logger.warning(
+                    "Model %s returned empty content",
+                    candidate,
+                )
+                response = None
+                continue
+
+            raw_text = raw_content.strip()
+            logger.info("OpenRouter succeeded with model: %s", candidate)
+            break
+
+        except AuthenticationError:
+            return _error_result(
+                "auth",
+                "OpenRouter API key is invalid or missing. "
+                "AI ecological context is unavailable.",
+            )
+
+        except (
+            RateLimitError,
+            APITimeoutError,
+            APIConnectionError,
+            APIStatusError,
+        ) as exc:
+            last_error = exc
+            logger.warning(
+                "Model %s failed: %s",
+                candidate,
+                exc,
+            )
+            response = None
+            raw_text = None
+
+        except Exception as exc:
+            last_error = exc
+            logger.exception(
+                "Unexpected error with OpenRouter model %s",
+                candidate,
+            )
+            response = None
+            raw_text = None
+
+    if response is None or raw_text is None:
         return _error_result(
-            "auth",
-            "OpenRouter API key is invalid or missing. AI ecological context is unavailable.",
+            "all_models_failed",
+            f"All configured models failed. Last error: {last_error}",
         )
-    except RateLimitError:
-        return _error_result(
-            "rate_limit",
-            "OpenRouter usage quota exceeded. AI ecological context is temporarily unavailable.",
-        )
-    except APITimeoutError:
-        return _error_result(
-            "timeout",
-            "OpenRouter request timed out. AI ecological context is unavailable for this scan.",
-        )
-    except APIConnectionError:
-        return _error_result(
-            "connection",
-            "Could not reach the OpenRouter API. Check network connectivity. AI ecological context is unavailable.",
-        )
-    except APIStatusError as exc:
-        return _error_result(
-            f"api_status_{exc.status_code}",
-            f"OpenRouter API returned an error (HTTP {exc.status_code}). AI ecological context is unavailable.",
-        )
+
 
     try:
         if not response.choices:
