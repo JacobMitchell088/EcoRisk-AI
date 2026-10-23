@@ -25,6 +25,10 @@ export function buildReportHtml(scanData, meta, site) {
       const ctx = contexts.find((c) => c.scientific_name === hit.scientific_name) || {};
       const sightings = Number(hit.gbif_count) || 0;
       const tags = (ctx.tags || []).map((t) => `<li>${esc(t)}</li>`).join("");
+      const protectedIn = hit.states_endangered_in || [];
+      const states = protectedIn
+        .map((s) => `<li${s === "Federal" ? ' class="federal"' : ""}>${esc(s)}</li>`)
+        .join("");
       const sections = GUIDANCE_SECTIONS.filter(({ key }) => ctx[key])
         .map(({ key, label }) => `<div class="guide"><h3>${esc(label)}</h3><p>${esc(ctx[key])}</p></div>`)
         .join("");
@@ -37,6 +41,7 @@ export function buildReportHtml(scanData, meta, site) {
           </div>
           <p class="sightings">${sightings} ${sightings === 1 ? "sighting" : "sightings"} on record</p>
         </header>
+        ${states ? `<ul class="tags states" aria-label="Protected in">${states}</ul>` : ""}
         ${tags ? `<ul class="tags">${tags}</ul>` : ""}
         ${sections || `<p class="muted">No construction guidance was generated for this species.</p>`}
         <p class="links"><a href="https://www.gbif.org/species/${encodeURIComponent(hit.taxon_key)}">GBIF species record ${esc(hit.taxon_key)}</a></p>
@@ -77,6 +82,9 @@ export function buildReportHtml(scanData, meta, site) {
   .sightings { color: #7C5710; font-weight: 600; font-size: 13px; white-space: nowrap; }
   .tags { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
   .tags li { font-size: 12px; font-weight: 600; padding: 2px 9px; border-radius: 999px; background: #F2F4F0; border: 1px solid #D6DCD5; color: #3C4A45; }
+  .tags.states { margin-bottom: 8px; }
+  .tags.states li { background: #E3EDDD; border-color: #C5D6BC; }
+  .tags.states li.federal { background: #F5EAD2; border-color: #E0CFA3; color: #7C5710; }
   .guide { margin-bottom: 12px; }
   .guide h3 { font-size: 14px; margin-bottom: 2px; }
   .guide p, .muted { color: #3C4A45; max-width: 64ch; }
@@ -110,7 +118,7 @@ export function buildReportHtml(scanData, meta, site) {
   <dl class="figures">
     <div><dt>Protected species</dt><dd>${hits.length}</dd></div>
     <div><dt>Sightings of those species</dt><dd>${totalSightings}</dd></div>
-    <div><dt>All species recorded</dt><dd>${esc(scanData?.found_species_count ?? 0)}</dd></div>
+    <div><dt>All species recorded</dt><dd>${esc(scanData?.total_species_count ?? 0)}</dd></div>
   </dl>
 
   ${speciesHtml}
