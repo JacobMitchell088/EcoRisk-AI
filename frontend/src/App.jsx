@@ -17,7 +17,9 @@ import {
   DownloadIcon,
   FlagIcon,
   PinIcon,
+  UsersIcon,
 } from "./components/Icons";
+import AboutDialog from "./AboutDialog";
 import useTurnstile from "./lib/useTurnstile";
 import usePanelWidth from "./lib/usePanelWidth";
 import { backendUrl, isNetworkError, readErrorMessage, TURNSTILE_SITE_KEY } from "./lib/api";
@@ -100,6 +102,7 @@ export default function App() {
   const [step, setStep] = useState(1);
   const [reportOpen, setReportOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
 
   const lastPickedRef = useRef(null);
   const {
@@ -165,6 +168,7 @@ export default function App() {
 
   const clearNotifications = useCallback(() => setNotifications([]), []);
   const closeFeedback = useCallback(() => setFeedbackOpen(false), []);
+  const closeAbout = useCallback(() => setAboutOpen(false), []);
 
   function reportError(key, message) {
     setError((prev) => ({ ...prev, [key]: message }));
@@ -1165,7 +1169,22 @@ export default function App() {
           <button
             type="button"
             className="btn btn-quiet masthead-feedback"
-            onClick={() => setFeedbackOpen(true)}
+            onClick={() => {
+              setFeedbackOpen(false);
+              setAboutOpen(true);
+            }}
+            aria-haspopup="dialog"
+          >
+            <UsersIcon size={19} />
+            <span className="masthead-feedback-text">About</span>
+          </button>
+          <button
+            type="button"
+            className="btn btn-quiet masthead-feedback"
+            onClick={() => {
+              setAboutOpen(false);
+              setFeedbackOpen(true);
+            }}
             aria-haspopup="dialog"
           >
             <ChatIcon size={19} />
@@ -1259,6 +1278,7 @@ export default function App() {
         onClose={closeFeedback}
         onNotify={notify}
       />
+      <AboutDialog open={aboutOpen} onClose={closeAbout} />
       <ColdStartOverlay />
     </div>
   );

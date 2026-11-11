@@ -97,6 +97,30 @@ export const ExternalIcon = (props) => (
   </Svg>
 );
 
+export const UsersIcon = (props) => (
+  <Svg {...props}>
+    <circle cx="9" cy="8.5" r="3.2" />
+    <path d="M3 19c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5" />
+    <path d="M16 5.6a3.2 3.2 0 010 5.8" />
+    <path d="M18 14c1.8.7 3 2.3 3 5" />
+  </Svg>
+);
+
+export const LinkedInIcon = (props) => (
+  <Svg {...props}>
+    <rect x="3.5" y="3.5" width="17" height="17" rx="2.5" />
+    <path d="M8 10.5V16" />
+    <circle cx="8" cy="7.8" r="0.5" fill="currentColor" />
+    <path d="M11.5 16v-5.5M11.5 13c0-1.6 1-2.6 2.4-2.6s2.1 1 2.1 2.6V16" />
+  </Svg>
+);
+
+export const GitHubIcon = (props) => (
+  <Svg {...props}>
+    <path d="M9 19c-4 1.2-4-2-6-2.5M15 21v-3.2c0-.9.1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 00-1.3-3.2 4.3 4.3 0 00-.1-3.2s-1-.3-3.4 1.3a11.6 11.6 0 00-6.2 0C6.6 2.1 5.600 2.400 5.600 2.400a4.3 4.300 0 00-.1 3.200A4.600 4.600 0 004.200 8.800c0 4.600 2.700 5.700 5.500 6-.6.600-.6 1.200-.5 2V21" />
+  </Svg>
+);
+
 export const CloseIcon = (props) => (
   <Svg {...props}>
     <path d="M6 6l12 12" />
