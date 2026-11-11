@@ -23,8 +23,22 @@ federal = convert_species_csv(
 
 all_species.append(federal)
 
+#
+# Alabama
+#
 
+Alabama = convert_species_csv(
+    input_file="data/Alabama_threatened_animals.csv",
+    #output_file="data/federal_standardized.csv",
 
+    common_name_column="name",
+    scientific_name_column="scientific_name",
+    status_column="status",
+
+    state="Alabama"
+)
+
+all_species.append(Alabama)
 
 #
 # Arizona
@@ -417,6 +431,19 @@ all_species.append(mississippi)
 # Montana
 #
 
+Montana = convert_species_csv(
+     input_file="data/montana_threatened_endangered.csv",
+     #output_file="output/missouri_standardized.csv",
+
+     common_name_column="name",
+     scientific_name_column="scientific_name",
+     status_column="status",
+
+     state="Montana"
+ )
+
+all_species.append(Montana)
+
 #
 # Nebraska
 #
@@ -572,11 +599,45 @@ Oklahoma = convert_species_csv(
 all_species.append(Oklahoma)
 
 #
+# Oregon
+#
+
+Oregon = convert_species_csv(
+    input_file="data/oregon_threatened_endangered.csv",
+    #output_file="data/federal_standardized.csv",
+
+    common_name_column="Name",
+    scientific_name_column="Scientific Name",
+    status_column="Status",
+
+    state="Oregon"
+)
+
+all_species.append(Oregon)
+
+#
+# rhode_island
+#
+
+rhode_island = convert_species_csv(
+    input_file="data/rhode_island_threatened_endangered.csv",
+    #output_file="data/federal_standardized.csv",
+
+    common_name_column="name",
+    scientific_name_column="scientific_name",
+    status_column="status",
+
+    state="rhode_island"
+)
+
+all_species.append(rhode_island)
+
+#
 # Pennsylvania
 #
 
 Pennsylvania = convert_species_csv(
-    input_file="data/Pennsylvania.csv",
+    input_file="data/Pennsylvania_cleaned.csv",
     #output_file="data/federal_standardized.csv",
 
     common_name_column="Common Name",
@@ -604,6 +665,23 @@ South_Dakota = convert_species_csv(
 )
 
 all_species.append(South_Dakota)
+
+#
+# south_carolina
+#
+
+south_carolina = convert_species_csv(
+    input_file="data/south_carolina_endangered_animals.csv",
+    #output_file="data/federal_standardized.csv",
+
+    common_name_column="name",
+    scientific_name_column="scientific_name",
+    status_column="status",
+
+    state="South Carolina"
+)
+
+all_species.append(south_carolina)
 
 #
 # Tennessee
@@ -740,7 +818,7 @@ all_species.append(Wisconsin)
 master_list = pd.concat(all_species, ignore_index=True)
 
 master_list.to_csv(
-    "data/master_species_list.csv",
+    "master_species_list.csv",
     index=False
 )
 
