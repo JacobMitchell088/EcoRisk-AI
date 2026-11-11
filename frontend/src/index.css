@@ -1579,6 +1579,65 @@ legend.field-label { margin-bottom: 6px; }
   border-top: 1px solid var(--line);
 }
 
+.about-heading {
+  color: var(--ink-3);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.about-members {
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+.about-member {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--sunk);
+}
+.about-avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  color: var(--ink-2);
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+.about-info { flex: 1; min-width: 0; }
+.about-name { font-weight: 600; }
+.about-role {
+  color: var(--ink-2);
+  font-size: var(--text-sm);
+}
+.about-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink-2);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-decoration: none;
+}
+.about-link:hover { text-decoration: underline; }
+.about-link--pill {
+  flex: none;
+  padding: 6px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--paper);
+}
+.about-link--pill:hover { background: var(--sunk); text-decoration: none; }
+
 .stars {
   display: flex;
   align-items: center;
