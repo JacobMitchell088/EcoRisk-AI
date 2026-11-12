@@ -1,0 +1,768 @@
+COUNTY,SciName,CommonName,SRANK,GRANK,STSTAT,FEDSTAT
+Adair,Asclepias meadii,Mead's Milkweed,S2,G2,E,T
+Adair,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Adair,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Adair,Rallus elegans,King Rail,S1,G4,E,
+Andrew,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Andrew,Platygobio gracilis,Flathead Chub,S1,G5,E,
+Andrew,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Atchison,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Atchison,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Atchison,Platanthera praeclara,Western Prairie Fringed Orchid,S1,G3,E,T
+Atchison,Platygobio gracilis,Flathead Chub,S1,G5,E,
+Atchison,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Atchison,Spilogale interrupta,Plains Spotted Skunk,S1,G3,E,
+Atchison,Tympanuchus cupido,Greater Prairie-chicken,S1,G4,E,
+Audrain,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Audrain,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Audrain,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Barry,Kinosternon flavescens,Yellow Mud Turtle,S1,G5,E,
+Barry,Lampsilis rafinesqueana,Neosho Mucket,S2,G1,E,E
+Barry,Limnothlypis swainsonii,Swainson's Warbler,S2,G4,E,
+Barry,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Barry,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Barry,Ozark Cavefish Recharge Area,,S2,GNR,E,T
+Barry,Peucaea aestivalis,Bachman's Sparrow,S1,G3,E,
+Barry,Pressodonta viridis,Slippershell Mussel,S1,G4G5,E,
+Barry,Trifolium stoloniferum,Running Buffalo Clover,S1,G3,E,
+Barry,Troglichthys rosae,Ozark Cavefish,S2,G3,E,T
+Barton,Asclepias meadii,Mead's Milkweed,S2,G2,E,T
+Barton,Circus hudsonius,Northern Harrier,S2,G5,E,
+Barton,Etheostoma whipplei,Redfin Darter,S1,G4,E,
+Barton,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Barton,Spilogale interrupta,Plains Spotted Skunk,S1,G3,E,
+Barton,Tympanuchus cupido,Greater Prairie-chicken,S1,G4,E,
+Bates,Asclepias meadii,Mead's Milkweed,S2,G2,E,T
+Bates,Circus hudsonius,Northern Harrier,S2,G5,E,
+Benton,Asclepias meadii,Mead's Milkweed,S2,G2,E,T
+Benton,Etheostoma nianguae,Niangua Darter,S2,G2,E,T
+Benton,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Bollinger,Cyprogenia aberti,Western Fanshell,S2,G1G2,E,T
+Bollinger,Elliptio crassidens,Elephantear,S1,G5,E,
+Bollinger,Epioblasma curtisii,Curtis Pearlymussel,S1,G1,E,E
+Bollinger,Epioblasma triquetra,Snuffbox,S1,G2G3,E,E
+Bollinger,Etheostoma histrio,Harlequin Darter,S2,G5,E,
+Bollinger,Limnothlypis swainsonii,Swainson's Warbler,S2,G4,E,
+Bollinger,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Bollinger,Notropis maculatus,Taillight Shiner,S1,G5,E,
+Bollinger,Spilogale interrupta,Plains Spotted Skunk,S1,G3,E,
+Boone,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Boone,Devil's Icebox Recharge Area,,S1,GNR,E,E
+Boone,Miniellus topeka,Topeka Shiner,S1,G3,E,E
+Boone,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Boone,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Boone,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Boone,Platygobio gracilis,Flathead Chub,S1,G5,E,
+Boone,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Boone,Trifolium stoloniferum,Running Buffalo Clover,S1,G3,E,
+Buchanan,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Buchanan,Platygobio gracilis,Flathead Chub,S1,G5,E,
+Buchanan,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Butler,Crystallaria asprella,Crystal Darter,S1,G3,E,
+Butler,Cyprogenia aberti,Western Fanshell,S2,G1G2,E,T
+Butler,Deirochelys reticularia miaria,Western Chicken Turtle,S1,G5T5,E,
+Butler,Elliptio crassidens,Elephantear,S1,G5,E,
+Butler,Epioblasma curtisii,Curtis Pearlymussel,S1,G1,E,E
+Butler,Etheostoma fusiforme,Swamp Darter,S1,G5,E,
+Butler,Etheostoma histrio,Harlequin Darter,S2,G5,E,
+Butler,Etheostoma parvipinne,Goldstripe Darter,S1,G4G5,E,
+Butler,Lampsilis abrupta,Pink Mucket,S2,G1G2,E,E
+Butler,Limnothlypis swainsonii,Swainson's Warbler,S2,G4,E,
+Butler,Lindera melissifolia,Pondberry,S1,G3,E,E
+Butler,Miniellus sabinae,Sabine Shiner,S1,G4,E,
+Butler,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Butler,Notropis maculatus,Taillight Shiner,S1,G5,E,
+Butler,Noturus eleutherus,Mountain Madtom,S1S2,G4,E,
+Butler,Percina nasuta,Longnose Darter,S1,G3,E,
+Butler,Reginaia ebenus,Ebonyshell,S1,G4G5,E,
+Butler,Theliderma cylindrica,Rabbitsfoot,S1,G3,E,T
+Caldwell,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Callaway,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Callaway,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Callaway,Platygobio gracilis,Flathead Chub,S1,G5,E,
+Callaway,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Callaway,Trifolium stoloniferum,Running Buffalo Clover,S1,G3,E,
+Camden,Cryptobranchus alleganiensis alleganiensis,Eastern Hellbender,S1,G3T2,E,E
+Camden,Etheostoma nianguae,Niangua Darter,S2,G2,E,T
+Camden,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Camden,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Camden,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Camden,Niangua Darter Federal Designated Critical Habitat,,S2,GNR,E,T
+Camden,Niangua Darter Known Range,,S2,GNR,E,T
+Cape Girardeau,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Cape Girardeau,Crystallaria asprella,Crystal Darter,S1,G3,E,
+Cape Girardeau,Etheostoma histrio,Harlequin Darter,S2,G5,E,
+Cape Girardeau,Forbesichthys papilliferus,Shawnee Hills Cavefish,S1,G3,E,
+Cape Girardeau,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Cape Girardeau,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Cape Girardeau,Sterna antillarum athalassos,Interior Least Tern,S2,G4T3Q,E,
+Carroll,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Carroll,Botaurus lentiginosus,American Bittern,S1,G5,E,
+Carroll,Circus hudsonius,Northern Harrier,S2,G5,E,
+Carroll,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Carroll,Platygobio gracilis,Flathead Chub,S1,G5,E,
+Carroll,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Carroll,Sistrurus tergeminus tergeminus,Prairie Massasauga,S1,G3TNR,E,
+Carter,Limnothlypis swainsonii,Swainson's Warbler,S2,G4,E,
+Carter,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Carter,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Carter,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Carter,Pressodonta viridis,Slippershell Mussel,S1,G4G5,E,
+Carter,Spilogale interrupta,Plains Spotted Skunk,S1,G3,E,
+Cass,Asclepias meadii,Mead's Milkweed,S2,G2,E,T
+Cedar,Asclepias meadii,Mead's Milkweed,S2,G2,E,T
+Cedar,Circus hudsonius,Northern Harrier,S2,G5,E,
+Cedar,Cumberlandia monodonta,Spectaclecase,S3,G2,E,E
+Cedar,Elliptio crassidens,Elephantear,S1,G5,E,
+Cedar,Etheostoma nianguae,Niangua Darter,S2,G2,E,T
+Cedar,Geocarpon minimum,Geocarpon,S2,G2,E,T
+Cedar,Lampsilis abrupta,Pink Mucket,S2,G1G2,E,E
+Cedar,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Cedar,Niangua Darter Known Range,,S2,GNR,E,T
+Cedar,Nicrophorus americanus,American Burying Beetle,SH,G3,E,T
+Cedar,Reginaia ebenus,Ebonyshell,S1,G4G5,E,
+Cedar,Tympanuchus cupido,Greater Prairie-chicken,S1,G4,E,
+Chariton,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Chariton,Botaurus lentiginosus,American Bittern,S1,G5,E,
+Chariton,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Chariton,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Chariton,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Chariton,Platygobio gracilis,Flathead Chub,S1,G5,E,
+Chariton,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Chariton,Sistrurus tergeminus tergeminus,Prairie Massasauga,S1,G3TNR,E,
+Chariton,Sterna antillarum athalassos,Interior Least Tern,S2,G4T3Q,E,
+Christian,Helenium virginicum,Virginia Sneezeweed,S3,G3,E,"T, PDL"
+Christian,Lepus californicus,Black-tailed Jackrabbit,S1,G5,E,
+Christian,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Christian,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Christian,Ozark Cavefish Recharge Area,,S2,GNR,E,T
+Christian,Physaria filiformis,Missouri Bladderpod,S3,G3,E,T
+Christian,Pressodonta viridis,Slippershell Mussel,S1,G4G5,E,
+Christian,Spilogale interrupta,Plains Spotted Skunk,S1,G3,E,
+Christian,Troglichthys rosae,Ozark Cavefish,S2,G3,E,T
+Clark,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Clark,Emydoidea blandingii,Blanding's Turtle,S1,G4,E,
+Clark,Kinosternon flavescens,Yellow Mud Turtle,S1,G5,E,
+Clark,Miniellus topeka,Topeka Shiner,S1,G3,E,E
+Clark,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Clark,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Clark,Potamilus capax,Fat Pocketbook,S1,G3,E,E
+Clark,Reginaia ebenus,Ebonyshell,S1,G4G5,E,
+Clark,Umbra limi,Central Mudminnow,S1,G5,E,
+Clay,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Clay,Circus hudsonius,Northern Harrier,S2,G5,E,
+Clay,Kinosternon flavescens,Yellow Mud Turtle,S1,G5,E,
+Clay,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Clay,Spilogale interrupta,Plains Spotted Skunk,S1,G3,E,
+Clinton,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Clinton,Sistrurus tergeminus tergeminus,Prairie Massasauga,S1,G3TNR,E,
+Cole,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Cole,Cumberlandia monodonta,Spectaclecase,S3,G2,E,E
+Cole,Lampsilis abrupta,Pink Mucket,S2,G1G2,E,E
+Cole,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Cole,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Cole,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Cole,Platygobio gracilis,Flathead Chub,S1,G5,E,
+Cole,Reginaia ebenus,Ebonyshell,S1,G4G5,E,
+Cole,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Cooper,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Cooper,Elliptio crassidens,Elephantear,S1,G5,E,
+Cooper,Miniellus topeka,Topeka Shiner,S1,G3,E,E
+Cooper,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Cooper,Platygobio gracilis,Flathead Chub,S1,G5,E,
+Cooper,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Cooper,Topeka Shiner Known Range,,S1,GNR,E,E
+Crawford,Cryptobranchus alleganiensis alleganiensis,Eastern Hellbender,S1,G3T2,E,E
+Crawford,Crystallaria asprella,Crystal Darter,S1,G3,E,
+Crawford,Cumberlandia monodonta,Spectaclecase,S3,G2,E,E
+Crawford,Hine's Emerald Federal Designated Critical Habitat,,S2,GNR,E,E
+Crawford,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Crawford,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Crawford,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Crawford,Plethobasus cyphyus,Sheepnose,S2,G2G3,E,E
+Crawford,Potamilus leptodon,Scaleshell,S1,G1G2,E,E
+Crawford,Trifolium stoloniferum,Running Buffalo Clover,S1,G3,E,
+Dade,Asclepias meadii,Mead's Milkweed,S2,G2,E,T
+Dade,Circus hudsonius,Northern Harrier,S2,G5,E,
+Dade,Geocarpon minimum,Geocarpon,S2,G2,E,T
+Dade,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Dade,Physaria filiformis,Missouri Bladderpod,S3,G3,E,T
+Dade,Tympanuchus cupido,Greater Prairie-chicken,S1,G4,E,
+Dallas,Cumberlandia monodonta,Spectaclecase,S3,G2,E,E
+Dallas,Etheostoma nianguae,Niangua Darter,S2,G2,E,T
+Dallas,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Dallas,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Dallas,Niangua Darter Federal Designated Critical Habitat,,S2,GNR,E,T
+Dallas,Niangua Darter Known Range,,S2,GNR,E,T
+Dallas,Pressodonta viridis,Slippershell Mussel,S1,G4G5,E,
+Daviess,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Dekalb,Circus hudsonius,Northern Harrier,S2,G5,E,
+Dent,Circus hudsonius,Northern Harrier,S2,G5,E,
+Dent,Cryptobranchus alleganiensis bishopi,Ozark Hellbender,S1,G3T1,E,E
+Dent,Helenium virginicum,Virginia Sneezeweed,S3,G3,E,"T, PDL"
+Dent,Hine's Emerald Federal Designated Critical Habitat,,S2,GNR,E,E
+Dent,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Dent,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Dent,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Dent,Pressodonta viridis,Slippershell Mussel,S1,G4G5,E,
+Dent,Somatochlora hineana,Hine's Emerald,S2,G2G3,E,E
+Douglas,Cryptobranchus alleganiensis bishopi,Ozark Hellbender,S1,G3T1,E,E
+Douglas,Limnothlypis swainsonii,Swainson's Warbler,S2,G4,E,
+Douglas,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Douglas,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Douglas,Pressodonta viridis,Slippershell Mussel,S1,G4G5,E,
+Douglas,Spilogale interrupta,Plains Spotted Skunk,S1,G3,E,
+Dunklin,Etheostoma histrio,Harlequin Darter,S2,G5,E,
+Dunklin,Hybognathus hayi,Cypress Minnow,S1,G4G5,E,
+Dunklin,Potamilus capax,Fat Pocketbook,S1,G3,E,E
+Franklin,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Franklin,Boltonia decurrens,Decurrent False Aster,S1,G2G3,E,T
+Franklin,Crystallaria asprella,Crystal Darter,S1,G3,E,
+Franklin,Cumberlandia monodonta,Spectaclecase,S3,G2,E,E
+Franklin,Elliptio crassidens,Elephantear,S1,G5,E,
+Franklin,Epioblasma triquetra,Snuffbox,S1,G2G3,E,E
+Franklin,Lampsilis abrupta,Pink Mucket,S2,G1G2,E,E
+Franklin,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Franklin,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Franklin,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Franklin,Platygobio gracilis,Flathead Chub,S1,G5,E,
+Franklin,Plethobasus cyphyus,Sheepnose,S2,G2G3,E,E
+Franklin,Potamilus leptodon,Scaleshell,S1,G1G2,E,E
+Franklin,Quadrula fragosa,Winged Mapleleaf,S1,G1,E,E
+Franklin,Reginaia ebenus,Ebonyshell,S1,G4G5,E,
+Franklin,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Franklin,Spilogale interrupta,Plains Spotted Skunk,S1,G3,E,
+Gasconade,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Gasconade,Crystallaria asprella,Crystal Darter,S1,G3,E,
+Gasconade,Cumberlandia monodonta,Spectaclecase,S3,G2,E,E
+Gasconade,Elliptio crassidens,Elephantear,S1,G5,E,
+Gasconade,Epioblasma triquetra,Snuffbox,S1,G2G3,E,E
+Gasconade,Lampsilis abrupta,Pink Mucket,S2,G1G2,E,E
+Gasconade,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Gasconade,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Gasconade,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Gasconade,Plethobasus cyphyus,Sheepnose,S2,G2G3,E,E
+Gasconade,Potamilus leptodon,Scaleshell,S1,G1G2,E,E
+Gasconade,Reginaia ebenus,Ebonyshell,S1,G4G5,E,
+Gasconade,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Gentry,Botaurus lentiginosus,American Bittern,S1,G5,E,
+Gentry,Circus hudsonius,Northern Harrier,S2,G5,E,
+Greene,Etheostoma nianguae,Niangua Darter,S2,G2,E,T
+Greene,Geocarpon minimum,Geocarpon,S2,G2,E,T
+Greene,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Greene,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Greene,Ozark Cavefish Recharge Area,,S2,GNR,E,T
+Greene,Physaria filiformis,Missouri Bladderpod,S3,G3,E,T
+Greene,Troglichthys rosae,Ozark Cavefish,S2,G3,E,T
+Grundy,Miniellus topeka,Topeka Shiner,S1,G3,E,E
+Grundy,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Grundy,Platanthera leucophaea,Eastern Prairie Fringed Orchid,S1,G2G3,E,T
+Harrison,Asclepias meadii,Mead's Milkweed,S2,G2,E,T
+Harrison,Circus hudsonius,Northern Harrier,S2,G5,E,
+Harrison,Miniellus topeka,Topeka Shiner,S1,G3,E,E
+Harrison,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Harrison,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Harrison,Platanthera praeclara,Western Prairie Fringed Orchid,S1,G3,E,T
+Harrison,Topeka Shiner Known Range,,S1,GNR,E,E
+Harrison,Tympanuchus cupido,Greater Prairie-chicken,S1,G4,E,
+Henry,Asclepias meadii,Mead's Milkweed,S2,G2,E,T
+Henry,Epioblasma triquetra,Snuffbox,S1,G2G3,E,E
+Henry,Geocarpon minimum,Geocarpon,S2,G2,E,T
+Henry,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Henry,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Hickory,Cumberlandia monodonta,Spectaclecase,S3,G2,E,E
+Hickory,Etheostoma nianguae,Niangua Darter,S2,G2,E,T
+Hickory,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Hickory,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Hickory,Niangua Darter Known Range,,S2,GNR,E,T
+Holt,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Holt,Botaurus lentiginosus,American Bittern,S1,G5,E,
+Holt,Emydoidea blandingii,Blanding's Turtle,S1,G4,E,
+Holt,Platanthera praeclara,Western Prairie Fringed Orchid,S1,G3,E,T
+Holt,Platygobio gracilis,Flathead Chub,S1,G5,E,
+Holt,Rallus elegans,King Rail,S1,G4,E,
+Holt,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Holt,Sistrurus tergeminus tergeminus,Prairie Massasauga,S1,G3TNR,E,
+Howard,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Howard,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Howard,Platygobio gracilis,Flathead Chub,S1,G5,E,
+Howard,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Howell,Boltonia decurrens,Decurrent False Aster,S1,G2G3,E,T
+Howell,Helenium virginicum,Virginia Sneezeweed,S3,G3,E,"T, PDL"
+Howell,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Howell,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Howell,Spilogale interrupta,Plains Spotted Skunk,S1,G3,E,
+Iron,Asclepias meadii,Mead's Milkweed,S2,G2,E,T
+Iron,Cyprogenia aberti,Western Fanshell,S2,G1G2,E,T
+Iron,Faxonius peruncus,Big Creek Crayfish,S2,G1G2,E,T
+Iron,Faxonius quadruncus,St. Francis River Crayfish,S2,G1G2,E,T
+Iron,Hine's Emerald Federal Designated Critical Habitat,,S2,GNR,E,E
+Iron,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Iron,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Iron,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Iron,Peucaea aestivalis,Bachman's Sparrow,S1,G3,E,
+Iron,Somatochlora hineana,Hine's Emerald,S2,G2G3,E,E
+Jackson,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Jackson,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Jasper,Botaurus lentiginosus,American Bittern,S1,G5,E,
+Jasper,Circus hudsonius,Northern Harrier,S2,G5,E,
+Jasper,Cyprogenia aberti,Western Fanshell,S2,G1G2,E,T
+Jasper,Etheostoma whipplei,Redfin Darter,S1,G4,E,
+Jasper,Lampsilis rafinesqueana,Neosho Mucket,S2,G1,E,E
+Jasper,Lepus californicus,Black-tailed Jackrabbit,S1,G5,E,
+Jasper,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Jasper,Neosho Madtom Known Range,,S1,GNR,E,T
+Jasper,Neosho Mucket Federal Designated Critical Habitat,,S2,GNR,E,E
+Jasper,Noturus placidus,Neosho Madtom,S1,G2,E,T
+Jasper,Ozark Cavefish Recharge Area,,S2,GNR,E,T
+Jasper,Rabbitsfoot Federal Designated Critical Habitat,,S1,GNR,E,T
+Jasper,Theliderma cylindrica,Rabbitsfoot,S1,G3,E,T
+Jasper,Troglichthys rosae,Ozark Cavefish,S2,G3,E,T
+Jasper,Tympanuchus cupido,Greater Prairie-chicken,S1,G4,E,
+Jefferson,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Jefferson,Cryptobranchus alleganiensis alleganiensis,Eastern Hellbender,S1,G3T2,E,E
+Jefferson,Crystallaria asprella,Crystal Darter,S1,G3,E,
+Jefferson,Cumberlandia monodonta,Spectaclecase,S3,G2,E,E
+Jefferson,Elliptio crassidens,Elephantear,S1,G5,E,
+Jefferson,Lampsilis abrupta,Pink Mucket,S2,G1G2,E,E
+Jefferson,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Jefferson,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Jefferson,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Jefferson,Plethobasus cyphyus,Sheepnose,S2,G2G3,E,E
+Jefferson,Potamilus leptodon,Scaleshell,S1,G1G2,E,E
+Jefferson,Pressodonta viridis,Slippershell Mussel,S1,G4G5,E,
+Jefferson,Reginaia ebenus,Ebonyshell,S1,G4G5,E,
+Jefferson,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Knox,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Laclede,Cryptobranchus alleganiensis alleganiensis,Eastern Hellbender,S1,G3T2,E,E
+Laclede,Cumberlandia monodonta,Spectaclecase,S3,G2,E,E
+Laclede,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Laclede,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Laclede,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Laclede,Plethobasus cyphyus,Sheepnose,S2,G2G3,E,E
+Laclede,Potamilus leptodon,Scaleshell,S1,G1G2,E,E
+Laclede,Spilogale interrupta,Plains Spotted Skunk,S1,G3,E,
+Lafayette,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Lafayette,Platygobio gracilis,Flathead Chub,S1,G5,E,
+Lafayette,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Lawrence,Etheostoma whipplei,Redfin Darter,S1,G4,E,
+Lawrence,Geocarpon minimum,Geocarpon,S2,G2,E,T
+Lawrence,Lampsilis rafinesqueana,Neosho Mucket,S2,G1,E,E
+Lawrence,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Lawrence,Ozark Cavefish Recharge Area,,S2,GNR,E,T
+Lawrence,Physaria filiformis,Missouri Bladderpod,S3,G3,E,T
+Lawrence,Pressodonta viridis,Slippershell Mussel,S1,G4G5,E,
+Lawrence,Troglichthys rosae,Ozark Cavefish,S2,G3,E,T
+Lawrence,Tympanuchus cupido,Greater Prairie-chicken,S1,G4,E,
+Lewis,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Lewis,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Lewis,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Lewis,Plethobasus cyphyus,Sheepnose,S2,G2G3,E,E
+Lewis,Reginaia ebenus,Ebonyshell,S1,G4G5,E,
+Lincoln,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Lincoln,Boltonia decurrens,Decurrent False Aster,S1,G2G3,E,T
+Lincoln,Botaurus lentiginosus,American Bittern,S1,G5,E,
+Lincoln,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Lincoln,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Lincoln,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Lincoln,Potamilus capax,Fat Pocketbook,S1,G3,E,E
+Lincoln,Rallus elegans,King Rail,S1,G4,E,
+Lincoln,Reginaia ebenus,Ebonyshell,S1,G4G5,E,
+Lincoln,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Lincoln,Trifolium stoloniferum,Running Buffalo Clover,S1,G3,E,
+Linn,Botaurus lentiginosus,American Bittern,S1,G5,E,
+Linn,Circus hudsonius,Northern Harrier,S2,G5,E,
+Linn,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Linn,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Linn,Sistrurus tergeminus tergeminus,Prairie Massasauga,S1,G3TNR,E,
+Livingston,Circus hudsonius,Northern Harrier,S2,G5,E,
+Livingston,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Livingston,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Livingston,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Macon,Botaurus lentiginosus,American Bittern,S1,G5,E,
+Macon,Circus hudsonius,Northern Harrier,S2,G5,E,
+Macon,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Macon,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Madison,Cyprogenia aberti,Western Fanshell,S2,G1G2,E,T
+Madison,Epioblasma triquetra,Snuffbox,S1,G2G3,E,E
+Madison,Faxonius peruncus,Big Creek Crayfish,S2,G1G2,E,T
+Madison,Faxonius quadruncus,St. Francis River Crayfish,S2,G1G2,E,T
+Madison,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Madison,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Madison,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Madison,Percina nasuta,Longnose Darter,S1,G3,E,
+Madison,Peucaea aestivalis,Bachman's Sparrow,S1,G3,E,
+Madison,Rabbitsfoot Federal Designated Critical Habitat,,S1,GNR,E,T
+Madison,Spilogale interrupta,Plains Spotted Skunk,S1,G3,E,
+Madison,Theliderma cylindrica,Rabbitsfoot,S1,G3,E,T
+Madison,Trifolium stoloniferum,Running Buffalo Clover,S1,G3,E,
+Madison,Western Fanshell Federal Designated Critical Habitat,,S2,GNR,E,T
+Maries,Crystallaria asprella,Crystal Darter,S1,G3,E,
+Maries,Cumberlandia monodonta,Spectaclecase,S3,G2,E,E
+Maries,Elliptio crassidens,Elephantear,S1,G5,E,
+Maries,Etheostoma nianguae,Niangua Darter,S2,G2,E,T
+Maries,Lampsilis abrupta,Pink Mucket,S2,G1G2,E,E
+Maries,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Maries,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Maries,Potamilus leptodon,Scaleshell,S1,G1G2,E,E
+Maries,Reginaia ebenus,Ebonyshell,S1,G4G5,E,
+Maries,Trifolium stoloniferum,Running Buffalo Clover,S1,G3,E,
+Marion,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Marion,Cumberlandia monodonta,Spectaclecase,S3,G2,E,E
+Marion,Hybognathus hayi,Cypress Minnow,S1,G4G5,E,
+Marion,Lampsilis higginsii,Higgins Eye,S1,G1G2,E,E
+Marion,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Marion,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Marion,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Marion,Plethobasus cyphyus,Sheepnose,S2,G2G3,E,E
+Marion,Potamilus capax,Fat Pocketbook,S1,G3,E,E
+Marion,Reginaia ebenus,Ebonyshell,S1,G4G5,E,
+McDonald,Lampsilis rafinesqueana,Neosho Mucket,S2,G1,E,E
+McDonald,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+McDonald,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+McDonald,Neosho Mucket Federal Designated Critical Habitat,,S2,GNR,E,E
+McDonald,Pressodonta viridis,Slippershell Mussel,S1,G4G5,E,
+Mercer,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Miller,Cumberlandia monodonta,Spectaclecase,S3,G2,E,E
+Miller,Elliptio crassidens,Elephantear,S1,G5,E,
+Miller,Etheostoma nianguae,Niangua Darter,S2,G2,E,T
+Miller,Lampsilis abrupta,Pink Mucket,S2,G1G2,E,E
+Miller,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Miller,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Miller,Niangua Darter Federal Designated Critical Habitat,,S2,GNR,E,T
+Miller,Niangua Darter Known Range,,S2,GNR,E,T
+Miller,Platygobio gracilis,Flathead Chub,S1,G5,E,
+Mississippi,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Mississippi,Boltonia decurrens,Decurrent False Aster,S1,G2G3,E,T
+Mississippi,Egretta thula,Snowy Egret,S1,G5,E,
+Mississippi,Etheostoma histrio,Harlequin Darter,S2,G5,E,
+Mississippi,Notropis maculatus,Taillight Shiner,S1,G5,E,
+Mississippi,Platygobio gracilis,Flathead Chub,S1,G5,E,
+Mississippi,Reginaia ebenus,Ebonyshell,S1,G4G5,E,
+Mississippi,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Mississippi,Sterna antillarum athalassos,Interior Least Tern,S2,G4T3Q,E,
+Mississippi,Umbra limi,Central Mudminnow,S1,G5,E,
+Moniteau,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Moniteau,Miniellus topeka,Topeka Shiner,S1,G3,E,E
+Moniteau,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Moniteau,Platygobio gracilis,Flathead Chub,S1,G5,E,
+Moniteau,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Monroe,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Montgomery,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Montgomery,Cryptobranchus alleganiensis alleganiensis,Eastern Hellbender,S1,G3T2,E,E
+Montgomery,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Montgomery,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Montgomery,Platygobio gracilis,Flathead Chub,S1,G5,E,
+Montgomery,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Montgomery,Trifolium stoloniferum,Running Buffalo Clover,S1,G3,E,
+Morgan,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+New Madrid,Etheostoma histrio,Harlequin Darter,S2,G5,E,
+New Madrid,Hybognathus hayi,Cypress Minnow,S1,G4G5,E,
+New Madrid,Limnothlypis swainsonii,Swainson's Warbler,S2,G4,E,
+New Madrid,Notropis maculatus,Taillight Shiner,S1,G5,E,
+New Madrid,Sterna antillarum athalassos,Interior Least Tern,S2,G4T3Q,E,
+New Madrid,Umbra limi,Central Mudminnow,S1,G5,E,
+Newton,Circus hudsonius,Northern Harrier,S2,G5,E,
+Newton,Lampsilis rafinesqueana,Neosho Mucket,S2,G1,E,E
+Newton,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Newton,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Newton,Neosho Mucket Federal Designated Critical Habitat,,S2,GNR,E,E
+Newton,Ozark Cavefish Recharge Area,,S2,GNR,E,T
+Newton,Pressodonta viridis,Slippershell Mussel,S1,G4G5,E,
+Newton,Theliderma cylindrica,Rabbitsfoot,S1,G3,E,T
+Newton,Troglichthys rosae,Ozark Cavefish,S2,G3,E,T
+Newton,Tympanuchus cupido,Greater Prairie-chicken,S1,G4,E,
+Nodaway,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Nodaway,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Nodaway,Sistrurus tergeminus tergeminus,Prairie Massasauga,S1,G3TNR,E,
+Oregon,Cryptobranchus alleganiensis bishopi,Ozark Hellbender,S1,G3T1,E,E
+Oregon,Faxonius eupunctus,Coldwater Crayfish,S1,G1,E,
+Oregon,Helenium virginicum,Virginia Sneezeweed,S3,G3,E,"T, PDL"
+Oregon,Limnothlypis swainsonii,Swainson's Warbler,S2,G4,E,
+Oregon,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Oregon,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Oregon,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Oregon,Peucaea aestivalis,Bachman's Sparrow,S1,G3,E,
+Oregon,Spilogale interrupta,Plains Spotted Skunk,S1,G3,E,
+Osage,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Osage,Crystallaria asprella,Crystal Darter,S1,G3,E,
+Osage,Cumberlandia monodonta,Spectaclecase,S3,G2,E,E
+Osage,Elliptio crassidens,Elephantear,S1,G5,E,
+Osage,Etheostoma nianguae,Niangua Darter,S2,G2,E,T
+Osage,Lampsilis abrupta,Pink Mucket,S2,G1G2,E,E
+Osage,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Osage,Niangua Darter Known Range,,S2,GNR,E,T
+Osage,Potamilus leptodon,Scaleshell,S1,G1G2,E,E
+Osage,Reginaia ebenus,Ebonyshell,S1,G4G5,E,
+Osage,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Ozark,Cryptobranchus alleganiensis bishopi,Ozark Hellbender,S1,G3T1,E,E
+Ozark,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Ozark,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Ozark,Orconectes stygocaneyi,Caney Mountain Cave Crayfish,S1,G1,E,
+Ozark,Peucaea aestivalis,Bachman's Sparrow,S1,G3,E,
+Ozark,Pressodonta viridis,Slippershell Mussel,S1,G4G5,E,
+Ozark,Spilogale interrupta,Plains Spotted Skunk,S1,G3,E,
+Pemiscot,Egretta thula,Snowy Egret,S1,G5,E,
+Pemiscot,Hybognathus hayi,Cypress Minnow,S1,G4G5,E,
+Pemiscot,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Pemiscot,Sterna antillarum athalassos,Interior Least Tern,S2,G4T3Q,E,
+Perry,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Perry,Cottus specus,Grotto Sculpin,S1,G2,E,E
+Perry,Crystallaria asprella,Crystal Darter,S1,G3,E,
+Perry,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Perry,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Perry,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Perry,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Perry,Sterna antillarum athalassos,Interior Least Tern,S2,G4T3Q,E,
+Pettis,Asclepias meadii,Mead's Milkweed,S2,G2,E,T
+Pettis,Circus hudsonius,Northern Harrier,S2,G5,E,
+Pettis,Miniellus topeka,Topeka Shiner,S1,G3,E,E
+Phelps,Cryptobranchus alleganiensis alleganiensis,Eastern Hellbender,S1,G3T2,E,E
+Phelps,Crystallaria asprella,Crystal Darter,S1,G3,E,
+Phelps,Cumberlandia monodonta,Spectaclecase,S3,G2,E,E
+Phelps,Epioblasma triquetra,Snuffbox,S1,G2G3,E,E
+Phelps,Hine's Emerald Federal Designated Critical Habitat,,S2,GNR,E,E
+Phelps,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Phelps,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Phelps,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Phelps,Somatochlora hineana,Hine's Emerald,S2,G2G3,E,E
+Phelps,Spilogale interrupta,Plains Spotted Skunk,S1,G3,E,
+Phelps,Trifolium stoloniferum,Running Buffalo Clover,S1,G3,E,
+Pike,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Pike,Boltonia decurrens,Decurrent False Aster,S1,G2G3,E,T
+Pike,Botaurus lentiginosus,American Bittern,S1,G5,E,
+Pike,Lampsilis higginsii,Higgins Eye,S1,G1G2,E,E
+Pike,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Pike,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Pike,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Pike,Plethobasus cyphyus,Sheepnose,S2,G2G3,E,E
+Pike,Potamilus capax,Fat Pocketbook,S1,G3,E,E
+Pike,Rallus elegans,King Rail,S1,G4,E,
+Pike,Reginaia ebenus,Ebonyshell,S1,G4G5,E,
+Platte,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Platte,Botaurus lentiginosus,American Bittern,S1,G5,E,
+Platte,Platygobio gracilis,Flathead Chub,S1,G5,E,
+Platte,Rallus elegans,King Rail,S1,G4,E,
+Platte,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Polk,Asclepias meadii,Mead's Milkweed,S2,G2,E,T
+Polk,Etheostoma nianguae,Niangua Darter,S2,G2,E,T
+Polk,Geocarpon minimum,Geocarpon,S2,G2,E,T
+Polk,Niangua Darter Known Range,,S2,GNR,E,T
+Pulaski,Crystallaria asprella,Crystal Darter,S1,G3,E,
+Pulaski,Cumberlandia monodonta,Spectaclecase,S3,G2,E,E
+Pulaski,Elliptio crassidens,Elephantear,S1,G5,E,
+Pulaski,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Pulaski,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Pulaski,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Pulaski,Potamilus leptodon,Scaleshell,S1,G1G2,E,E
+Pulaski,Pressodonta viridis,Slippershell Mussel,S1,G4G5,E,
+Pulaski,Spilogale interrupta,Plains Spotted Skunk,S1,G3,E,
+Putnam,Miniellus topeka,Topeka Shiner,S1,G3,E,E
+Putnam,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Putnam,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Ralls,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Ralls,Cumberlandia monodonta,Spectaclecase,S3,G2,E,E
+Ralls,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Ralls,Plethobasus cyphyus,Sheepnose,S2,G2G3,E,E
+Ralls,Potamilus capax,Fat Pocketbook,S1,G3,E,E
+Ralls,Reginaia ebenus,Ebonyshell,S1,G4G5,E,
+Randolph,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Randolph,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Randolph,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Ray,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Ray,Botaurus lentiginosus,American Bittern,S1,G5,E,
+Ray,Kinosternon flavescens,Yellow Mud Turtle,S1,G5,E,
+Ray,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Reynolds,Asclepias meadii,Mead's Milkweed,S2,G2,E,T
+Reynolds,Hine's Emerald Federal Designated Critical Habitat,,S2,GNR,E,E
+Reynolds,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Reynolds,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Reynolds,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Reynolds,Somatochlora hineana,Hine's Emerald,S2,G2G3,E,E
+Reynolds,Spilogale interrupta,Plains Spotted Skunk,S1,G3,E,
+Ripley,Cyprogenia aberti,Western Fanshell,S2,G1G2,E,T
+Ripley,Deirochelys reticularia miaria,Western Chicken Turtle,S1,G5T5,E,
+Ripley,Elliptio crassidens,Elephantear,S1,G5,E,
+Ripley,Epioblasma curtisii,Curtis Pearlymussel,S1,G1,E,E
+Ripley,Etheostoma histrio,Harlequin Darter,S2,G5,E,
+Ripley,Hine's Emerald Federal Designated Critical Habitat,,S2,GNR,E,E
+Ripley,Lampsilis abrupta,Pink Mucket,S2,G1G2,E,E
+Ripley,Lindera melissifolia,Pondberry,S1,G3,E,E
+Ripley,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Ripley,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Ripley,Pressodonta viridis,Slippershell Mussel,S1,G4G5,E,
+Ripley,Reginaia ebenus,Ebonyshell,S1,G4G5,E,
+Ripley,Somatochlora hineana,Hine's Emerald,S2,G2G3,E,E
+Ripley,Spilogale interrupta,Plains Spotted Skunk,S1,G3,E,
+Saline,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Saline,Botaurus lentiginosus,American Bittern,S1,G5,E,
+Saline,Platygobio gracilis,Flathead Chub,S1,G5,E,
+Saline,Rallus elegans,King Rail,S1,G4,E,
+Saline,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Schuyler,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Schuyler,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Scotland,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Scotland,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Scott,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Scott,Botaurus lentiginosus,American Bittern,S1,G5,E,
+Scott,Egretta thula,Snowy Egret,S1,G5,E,
+Scott,Etheostoma histrio,Harlequin Darter,S2,G5,E,
+Scott,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Scott,Sterna antillarum athalassos,Interior Least Tern,S2,G4T3Q,E,
+Shannon,Cryptobranchus alleganiensis bishopi,Ozark Hellbender,S1,G3T1,E,E
+Shannon,Helenium virginicum,Virginia Sneezeweed,S3,G3,E,"T, PDL"
+Shannon,Limnothlypis swainsonii,Swainson's Warbler,S2,G4,E,
+Shannon,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Shannon,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Shannon,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Shannon,Pressodonta viridis,Slippershell Mussel,S1,G4G5,E,
+Shannon,Spilogale interrupta,Plains Spotted Skunk,S1,G3,E,
+Shelby,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Shelby,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Shelby,Spilogale interrupta,Plains Spotted Skunk,S1,G3,E,
+Saint Charles,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Saint Charles,Boltonia decurrens,Decurrent False Aster,S1,G2G3,E,T
+Saint Charles,Botaurus lentiginosus,American Bittern,S1,G5,E,
+Saint Charles,Emydoidea blandingii,Blanding's Turtle,S1,G4,E,
+Saint Charles,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Saint Charles,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Saint Charles,Platygobio gracilis,Flathead Chub,S1,G5,E,
+Saint Charles,Rallus elegans,King Rail,S1,G4,E,
+Saint Charles,Reginaia ebenus,Ebonyshell,S1,G4G5,E,
+Saint Charles,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Saint Charles,Sterna antillarum athalassos,Interior Least Tern,S2,G4T3Q,E,
+Saint Charles,Umbra limi,Central Mudminnow,S1,G5,E,
+Saint Clair,American Burying Beetle Reintroduced Population Boundary,,SH,GNR,E,T
+Saint Clair,Asclepias meadii,Mead's Milkweed,S2,G2,E,T
+Saint Clair,Circus hudsonius,Northern Harrier,S2,G5,E,
+Saint Clair,Cumberlandia monodonta,Spectaclecase,S3,G2,E,E
+Saint Clair,Etheostoma nianguae,Niangua Darter,S2,G2,E,T
+Saint Clair,Geocarpon minimum,Geocarpon,S2,G2,E,T
+Saint Clair,Lampsilis abrupta,Pink Mucket,S2,G1G2,E,E
+Saint Clair,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Saint Clair,Niangua Darter Federal Designated Critical Habitat,,S2,GNR,E,T
+Saint Clair,Niangua Darter Known Range,,S2,GNR,E,T
+Saint Clair,Nicrophorus americanus,American Burying Beetle,SH,G3,E,T
+Saint Clair,Tympanuchus cupido,Greater Prairie-chicken,S1,G4,E,
+Saint Francois,Faxonius peruncus,Big Creek Crayfish,S2,G1G2,E,T
+Saint Francois,Faxonius quadruncus,St. Francis River Crayfish,S2,G1G2,E,T
+Saint Francois,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Saint Francois,Pressodonta viridis,Slippershell Mussel,S1,G4G5,E,
+Saint Francois,Spilogale interrupta,Plains Spotted Skunk,S1,G3,E,
+Saint Louis,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Saint Louis,Boltonia decurrens,Decurrent False Aster,S1,G2G3,E,T
+Saint Louis,Botaurus lentiginosus,American Bittern,S1,G5,E,
+Saint Louis,Cryptobranchus alleganiensis alleganiensis,Eastern Hellbender,S1,G3T2,E,E
+Saint Louis,Crystallaria asprella,Crystal Darter,S1,G3,E,
+Saint Louis,Cumberlandia monodonta,Spectaclecase,S3,G2,E,E
+Saint Louis,Elliptio crassidens,Elephantear,S1,G5,E,
+Saint Louis,Epioblasma triquetra,Snuffbox,S1,G2G3,E,E
+Saint Louis,Lampsilis abrupta,Pink Mucket,S2,G1G2,E,E
+Saint Louis,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Saint Louis,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Saint Louis,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Saint Louis,Platygobio gracilis,Flathead Chub,S1,G5,E,
+Saint Louis,Plethobasus cyphyus,Sheepnose,S2,G2G3,E,E
+Saint Louis,Potamilus leptodon,Scaleshell,S1,G1G2,E,E
+Saint Louis,Pressodonta viridis,Slippershell Mussel,S1,G4G5,E,
+Saint Louis,Reginaia ebenus,Ebonyshell,S1,G4G5,E,
+Saint Louis,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Saint Louis,Simpsonaias ambigua,Salamander Mussel,S1,G1G2,E,PE
+Saint Louis,Trifolium stoloniferum,Running Buffalo Clover,S1,G3,E,
+Saint Louis City,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Sainte Genevieve,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Sainte Genevieve,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Sainte Genevieve,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Sainte Genevieve,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Sainte Genevieve,Platygobio gracilis,Flathead Chub,S1,G5,E,
+Sainte Genevieve,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Sainte Genevieve,Spilogale interrupta,Plains Spotted Skunk,S1,G3,E,
+Stoddard,Botaurus lentiginosus,American Bittern,S1,G5,E,
+Stoddard,Cyprogenia aberti,Western Fanshell,S2,G1G2,E,T
+Stoddard,Etheostoma histrio,Harlequin Darter,S2,G5,E,
+Stoddard,Etheostoma parvipinne,Goldstripe Darter,S1,G4G5,E,
+Stoddard,Lampsilis abrupta,Pink Mucket,S2,G1G2,E,E
+Stoddard,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Stoddard,Notropis maculatus,Taillight Shiner,S1,G5,E,
+Stoddard,Potamilus capax,Fat Pocketbook,S1,G3,E,E
+Stoddard,Theliderma cylindrica,Rabbitsfoot,S1,G3,E,T
+Stone,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Stone,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Stone,Ozark Cavefish Recharge Area,,S2,GNR,E,T
+Stone,Pressodonta viridis,Slippershell Mussel,S1,G4G5,E,
+Stone,Spilogale interrupta,Plains Spotted Skunk,S1,G3,E,
+Stone,Troglichthys rosae,Ozark Cavefish,S2,G3,E,T
+Sullivan,Asclepias meadii,Mead's Milkweed,S2,G2,E,T
+Sullivan,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Sullivan,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Sullivan,Spilogale interrupta,Plains Spotted Skunk,S1,G3,E,
+Taney,Antrobia culveri,Tumbling Creek Cavesnail,S1,G1,E,E
+Taney,Limnothlypis swainsonii,Swainson's Warbler,S2,G4,E,
+Taney,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Taney,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Taney,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Taney,Peucaea aestivalis,Bachman's Sparrow,S1,G3,E,
+Taney,Pressodonta viridis,Slippershell Mussel,S1,G4G5,E,
+Taney,Spilogale interrupta,Plains Spotted Skunk,S1,G3,E,
+Taney,Tumbling Creek Cavesnail Federal Designated Critical Habitat,,S1,GNR,E,E
+Texas,Cryptobranchus alleganiensis bishopi,Ozark Hellbender,S1,G3T1,E,E
+Texas,Cumberlandia monodonta,Spectaclecase,S3,G2,E,E
+Texas,Helenium virginicum,Virginia Sneezeweed,S3,G3,E,"T, PDL"
+Texas,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Texas,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Texas,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Texas,Peucaea aestivalis,Bachman's Sparrow,S1,G3,E,
+Texas,Pressodonta viridis,Slippershell Mussel,S1,G4G5,E,
+Texas,Spilogale interrupta,Plains Spotted Skunk,S1,G3,E,
+Vernon,Asclepias meadii,Mead's Milkweed,S2,G2,E,T
+Vernon,Circus hudsonius,Northern Harrier,S2,G5,E,
+Vernon,Spilogale interrupta,Plains Spotted Skunk,S1,G3,E,
+Vernon,Tympanuchus cupido,Greater Prairie-chicken,S1,G4,E,
+Warren,Acipenser fulvescens,Lake Sturgeon,S1,G3G4,E,
+Warren,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Warren,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Warren,Platygobio gracilis,Flathead Chub,S1,G5,E,
+Warren,Scaphirhynchus albus,Pallid Sturgeon,S1,G2,E,E
+Warren,Trifolium stoloniferum,Running Buffalo Clover,S1,G3,E,
+Washington,Big Creek Crayfish Federal Designated Critical Habitat,,S2,GNR,E,T
+Washington,Cumberlandia monodonta,Spectaclecase,S3,G2,E,E
+Washington,Hine's Emerald Federal Designated Critical Habitat,,S2,GNR,E,E
+Washington,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Washington,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Washington,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Washington,Pressodonta viridis,Slippershell Mussel,S1,G4G5,E,
+Washington,St. Francis River Crayfish Federal Designated Critical Habitat,,S2,GNR,E,T
+Wayne,Botaurus lentiginosus,American Bittern,S1,G5,E,
+Wayne,Crystallaria asprella,Crystal Darter,S1,G3,E,
+Wayne,Cyprogenia aberti,Western Fanshell,S2,G1G2,E,T
+Wayne,Deirochelys reticularia miaria,Western Chicken Turtle,S1,G5T5,E,
+Wayne,Elliptio crassidens,Elephantear,S1,G5,E,
+Wayne,Epioblasma curtisii,Curtis Pearlymussel,S1,G1,E,E
+Wayne,Epioblasma triquetra,Snuffbox,S1,G2G3,E,E
+Wayne,Faxonius peruncus,Big Creek Crayfish,S2,G1G2,E,T
+Wayne,Faxonius quadruncus,St. Francis River Crayfish,S2,G1G2,E,T
+Wayne,Hine's Emerald Federal Designated Critical Habitat,,S2,GNR,E,E
+Wayne,Lampsilis abrupta,Pink Mucket,S2,G1G2,E,E
+Wayne,Limnothlypis swainsonii,Swainson's Warbler,S2,G4,E,
+Wayne,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Wayne,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Wayne,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Wayne,Notropis maculatus,Taillight Shiner,S1,G5,E,
+Wayne,Noturus eleutherus,Mountain Madtom,S1S2,G4,E,
+Wayne,Percina nasuta,Longnose Darter,S1,G3,E,
+Wayne,Reginaia ebenus,Ebonyshell,S1,G4G5,E,
+Wayne,Theliderma cylindrica,Rabbitsfoot,S1,G3,E,T
+Wayne,Trifolium stoloniferum,Running Buffalo Clover,S1,G3,E,
+Webster,Etheostoma nianguae,Niangua Darter,S2,G2,E,T
+Webster,Helenium virginicum,Virginia Sneezeweed,S3,G3,E,"T, PDL"
+Webster,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Webster,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Webster,Niangua Darter Known Range,,S2,GNR,E,T
+Webster,Pressodonta viridis,Slippershell Mussel,S1,G4G5,E,
+Worth,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Worth,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Wright,Helenium virginicum,Virginia Sneezeweed,S3,G3,E,"T, PDL"
+Wright,Myotis grisescens,Gray Myotis,S3,G3G4,E,E
+Wright,Myotis septentrionalis,Northern Long-eared Myotis,S1,G2G3,E,E
+Wright,Myotis sodalis,Indiana Myotis,S1,G2,E,E
+Wright,Potamilus leptodon,Scaleshell,S1,G1G2,E,E
