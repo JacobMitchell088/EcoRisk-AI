@@ -1,9 +1,10 @@
 # EcoRisk AI
-> Authors: Jacob Mitchell, Hayden Shubert, Jenna Huegen    
-> Date: 10/11/26   
+> Authors: Jacob Mitchell, Hayden Shubert, Jenna Huegen, Matthew Wolden    
+> Date: 11/12/26   
 
 > Our servers spin down with inactivity, so please be sure to allow for an additional 60 seconds upon making your first request to our backend.    
 https://environmentscreen.onrender.com     
+> The frontend and backend are both hosted on [Render.com](https://render.com).
 
 
 This program is a prototype application designed to help construction planners identify potential environmental risks **before** beginning a project. The system analyzes biodiversity data from the **Global Biodiversity Information Facility (GBIF)** and cross references it with **state and federal endangered and threatened species lists** to identify protected species near a proposed construction site.    
@@ -31,7 +32,7 @@ This version focuses on the **data pipeline / detection logic / additional ecolo
 # System Workflow
 ### Precomputed
 1. Build the multi-state endangered/threatened species dataset into `data/MasterTaxonLookup.csv` — one row per species per state it's listed in, plus a federal row (`State` = `All`) for species with federal protection
-   - This file was generated locally in a separate project. The scripts that produce it (an update to `scripts/unfiltered_species.py` and `scripts/build_taxon_lookup.py`, or their replacements) will be added to this repo in a future commit — for now, `data/MasterTaxonLookup.csv` should be treated as a precomputed asset checked in on its own.
+   - Rebuilt from the per-state lists with `scripts/create_master_list.py` and `scripts/taxon_lookup.py`. See [`data/README.md`](data/README.md) for the full steps, including the GBIF `Taxon.tsv` download.
 2. Download the Census Bureau's `cb_2022_us_state_20m` state boundary shapefile into `data/cb_2022_us_state_20m/` — this is geometry only (state outlines), not species data, and is used solely to answer "which state(s) is this point/circle in."
 
 ### User Interface
@@ -60,15 +61,11 @@ GBIF API endpoints used:
 Occurrence Search  
 https://api.gbif.org/v1/occurrence/search   
 
-Species Name Matching  
-- Only used during precomputed `MasterTaxonLookup.csv` build   
-https://api.gbif.org/v1/species/match   
-
 ---   
 
 ## State & Federal Endangered Species Data
 - Local CSV mapping each species to the state(s) it's listed as endangered/threatened in, with a separate row for a federal listing (`State` = `All`): `data/MasterTaxonLookup.csv`.
-- This file was built locally in a separate project rather than from the scripts currently checked into this repo. The generation scripts will be added here in a future update.
+- Built from the per-state lists in `data/state_lists/` by the scripts in `scripts/`. How to rebuild or extend it is in [`data/README.md`](data/README.md).
 
 Example structure:
 
@@ -76,7 +73,7 @@ Example structure:
 
 **Example entries:**
 
-- Yellow Mud Turtle, Kinosternon flavescens, Threatened, IL, 2442437
+- Yellow Mud Turtle, Kinosternon flavescens, Threatened, Illinois, 2442437
 - Indiana Bat, Myotis sodalis, Endangered, All, 2435099
 
 A species can appear on multiple rows — once per state it's listed in, plus possibly a federal row. The program precomputes taxon keys ahead of time so a scan doesn't need a GBIF name-lookup call per species.
@@ -198,9 +195,6 @@ In these cases the species level occurrence is used
 > [!WARNING]
 > Only species lists for the states currently included in `data/MasterTaxonLookup.csv` are checked. If a state hasn't been added to that file yet, GBIF sightings there still count toward the total species figure, but nothing in that state will be flagged as protected.
 
-> [!WARNING]
-> `data/MasterTaxonLookup.csv` was generated locally in a separate project. The build scripts that produce it are not yet part of this repo, so the file currently can't be regenerated from source here — it should be treated as a static precomputed asset until that tooling is added.
-
 This tool is intended for **early stage environmental screening**, not regulatory compliance, as we **cannot guarantee** the absence of false positives or false negatives.
 
 ---   
@@ -219,11 +213,16 @@ Senior-Project/
 ├── limiter.py                      # SlowAPI rate limiter configuration
 ├── MSPgen.py                       # .XML file generator for species critical time windows
 ├── data/
-│   ├── MasterTaxonLookup.csv       # Precomputed scientific name → taxon key → state(s) listed lookup ("All" = federally listed). Generated locally in a separate project — build scripts not yet in this repo.
+│   ├── MasterTaxonLookup.csv       # Precomputed scientific name → taxon key → state(s) listed lookup ("All" = federally listed). Built by `scripts/taxon_lookup.py` from `master_species_list.csv`.
+│   ├── README.md                   # How the species data is built, rebuilt and extended
+│   ├── state_lists/                # Raw per-state (and federal) endangered/threatened species lists, one or more CSVs per state
+│   ├── master_species_list.csv     # All state lists combined into one standardized file (Common Name, Scientific Name, Status, State). Built by scripts/create_master_list.py
 │   └── cb_2022_us_state_20m/       # Census Bureau US state boundary shapefile, used by state_lookup.py (geometry only, not species data)
 ├── scripts/
 │   ├── state_lookup.py                 # US state-boundary geometry: confirms the search center is inside a US state, and finds every state the search radius overlaps
-│   └── build_taxon_lookup.py       # Legacy: regenerated the old Illinois-only taxon lookup. Superseded by MasterTaxonLookup.csv for scans; kept for reference until the multi-state build scripts are added.
+│   ├── create_master_list.py       # Standardizes every file in data/state_lists/, drops blank-name and duplicate rows, and writes data/master_species_list.csv
+│   ├── normalize_func.py           # Helper used by create_master_list.py to standardize each state's columns and status labels
+│   └── taxon_lookup.py             # Matches master_species_list.csv against GBIF's Taxon.tsv dump to produce MasterTaxonLookup.csv
 ├── frontend/                       # React + Vite frontend (see frontend/README.md)
 │   ├── index.html                  # Fonts, Turnstile script, favicon
 │   ├── public/favicon.svg          # EcoRisk AI mark
@@ -267,7 +266,7 @@ pip install -r requirements-dev.txt   # for development / testing
 
 Before running scans locally, download the Census Bureau's [`cb_2022_us_state_20m`](https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html) cartographic boundary shapefile and unzip it into `data/cb_2022_us_state_20m/`. `state_lookup.py` reads this file to determine which state(s) a point or search circle falls in — it isn't fetched at runtime.
 
-You will also need `data/MasterTaxonLookup.csv` present locally to run a scan (see [Current Limitations](#current-limitations) — this file isn't yet buildable from scripts in this repo).
+You will also need `data/MasterTaxonLookup.csv` present locally to run a scan. It's checked into the repo. To rebuild or extend it, see [`data/README.md`](data/README.md).
 
 ---
 
@@ -315,25 +314,28 @@ A GitHub Actions CI workflow (`.github/workflows/test.yml`) runs the non-integra
 
 | Variable | Description | Default |
 |---|---|---|
-| `OPENAI_API_KEY` | OpenAI API key for ecological context analysis | — |
-| `OPENROUTER_API_KEY` | OpenRouter API key for ecological context analysis | — |
+| `OPENAI_API_KEY` | OpenAI API key for ecological context analysis (a private key; get your own) | — |
+| `OPENROUTER_API_KEY` | OpenRouter API key for ecological context analysis (a private key; get your own) | — |
 | `MAX_SPECIES_FOR_AI` | Max species sent to OpenRouter per scan | `3` |
-| `MAPTILER_API_KEY` | MapTiler API key for geocoding | — |
-| `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile secret for bot protection | — |
+| `MAPTILER_API_KEY` | MapTiler API key for geocoding (a private key; get your own) | — |
+| `GEOCODER_PROVIDER` | Which geocoding provider to use | `maptiler` |
+| `APP_USER_AGENT` | User-Agent sent on geocoding requests | `EnvScreeningApp` |
+| `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile secret for bot protection (a private key; get your own) | — |
 | `FRONTEND_ORIGIN` | Allowed CORS origin | `http://localhost:5173` |
 | `REDIS_URL` | Redis connection URL | `redis://localhost:6379` |
-| `GITHUB_FEEDBACK_PAT` | Fine-grained GitHub PAT used **server-side** to open feedback issues (scope: Issues → Read and write, on the target repo only) | — |
+| `GITHUB_FEEDBACK_PAT` | Fine-grained GitHub PAT (a private key; create your own) used **server-side** to open feedback issues (scope: Issues → Read and write, on the target repo only) | — |
 | `GITHUB_FEEDBACK_REPO` | Target repo for feedback issues, in `owner/repo` form | — |
 
-> For Render.com deployments, set `REDIS_URL` to the **internal** Redis URL provided by your Render Redis service — `localhost` will not work in a hosted environment.
+> The API keys and tokens above are private and aren't included in the repo. Each developer (team) creates their own and puts them in their own `.env`.
+
+> The backend is deployed on Render.com. For Render.com deployments, set `REDIS_URL` to the **internal** Redis URL provided by your Render Redis service — `localhost` will not work in a hosted environment.
 
 ---
 
 # Future Improvements
 
-- Bring the `data/MasterTaxonLookup.csv` build scripts into this repo so the dataset can be regenerated and extended without relying on the separate local project it was built in
 - Add remaining US states' endangered/threatened species data to `data/MasterTaxonLookup.csv` — multi-state screening logic is in place (`state_lookup.py`, `GBIF.py`), but coverage depends on which states are populated in that file
-- Schedule daily/periodic runs of the (future) build scripts to keep `MasterTaxonLookup.csv` current
+- Schedule daily/periodic runs of the build scripts to keep `MasterTaxonLookup.csv` current
 - Export construction timeline recommendations
 - Improve AI ecological analysis using external species data sources (Wikipedia, species databases)
 

@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 GBIF_OCC_SEARCH = "https://api.gbif.org/v1/occurrence/search"
-MAX_SPECIES = int(os.getenv("MAX_SPECIES_FOR_AI", 50))   # caps how many species get AI context (cost control)
+MAX_SPECIES = int(os.getenv("MAX_SPECIES_FOR_AI", 3))   # caps how many species get AI context (cost control)
 
 DATA_DIR = pathlib.Path(__file__).parent / "data"
 MASTER_TAXON_LOOKUP_PATH = DATA_DIR / "MasterTaxonLookup.csv"
@@ -45,7 +45,7 @@ def load_master_taxon_lookup(path: pathlib.Path) -> dict[int, list[dict]]:
     except FileNotFoundError:
         raise RuntimeError(
             f"Master taxon lookup CSV not found at '{path}'. "
-            "Run scripts/build_taxon_lookup.py to generate it before running a scan."
+            "Run scripts/create_master_list.py then scripts/taxon_lookup.py to generate it before running a scan."
         )
     except OSError as exc:
         raise RuntimeError(f"Could not open master taxon lookup CSV '{path}': {exc}") from exc
