@@ -75,6 +75,143 @@ Status values are standardized by `normalize_status` in `scripts/normalize_func.
 
 ---
 
+<<<<<<< HEAD
+=======
+## Current Data
+
+Use the following data and links if they are still active to easily retreive the necassary data
+
+
+  ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  State                   Source                                                                                                                                                                   Notes
+  ----------------------- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ -----------------------
+  Alabama                 [Alabama Administrative Code 220-2-.92](https://admincode.legislature.state.al.us/administrative-code/220-2-.92)                                                         
+
+  Alaska                  [Alaska Department of Fish and Game --- ESA-listed species](https://www.adfg.alaska.gov/index.cfm?adfg=wildlifediversity.esalisted&id=esa-general-information)           
+
+  Arizona                 [Arizona Game and Fish --- Species List](https://hdms.azgfd.com/species-list/species/)                                                                                   
+
+  Arkansas                [Arkansas Game and Fish Commission --- Code of                                                                                                                           
+                          Regulations](https://www.agfc.com/resources/code-of-regulations/browse/collections/e097609a-4ef1-459f-98e2-5532730099f6/policies/e48bd3be-33ce-4706-ab1e-ebde973779e9)   
+
+  California              [California Endangered Species Act](https://wildlife.ca.gov/Conservation/CESA)                                                                                           
+
+  Colorado                [Colorado Parks and Wildlife --- Threatened and Endangered Wildlife](https://cpw.state.co.us/threatened-and-endangered-wildlife)                                         Source was marked as
+                                                                                                                                                                                                   uncertain.
+
+  Connecticut             [Connecticut DEEP --- Endangered Species Listings](https://portal.ct.gov/DEEP/Endangered-Species/Endangered-Species-Listings?utm_source=chatgpt.com&archived=true)       
+
+  Delaware                [Delaware DNREC species data](https://dnrec.delaware.gov/dewap/data/species?$top=100&$skip=0)                                                                            
+
+  Florida                 [Florida Fish and Wildlife --- State Listing](https://myfwc.com/wildlifehabitats/wildlife/state-listing/)                                                                
+
+  Georgia                 [Georgia Rules and Regulations 391-4-10-.09](https://rules.sos.ga.gov/gac/391-4-10-.09)                                                                                  
+
+  Hawaii                  ---                                                                                                                                                                      No suitable source was
+                                                                                                                                                                                                   found.
+
+  Idaho                   Federal list                                                                                                                                                             Use the federal list.
+
+  Illinois                [Illinois Endangered and Threatened Species Program](https://naturalheritage.illinois.gov/speciesconservation/endangeredandthreatenedspeciesprogram.html)                
+
+  Indiana                 [Indiana DNR --- Endangered Plant and Animal Species](https://www.in.gov/dnr/nature-preserves/heritage-data-center/endangered-plant-and-animal-species/)                 
+
+  Indiana (additional     [Indiana endangered, threatened, and rare plants PDF](https://www.in.gov/dA/02bd3906ef/np-etrplants.pdf?language_id=1)                                                   Additional source.
+  plant source)                                                                                                                                                                                    
+
+  Iowa                    [Iowa DNR --- Threatened and Endangered Wildlife](https://www.iowadnr.gov/programs-services/iowas-wildlife/threatened-endangered-wildlife)                               
+
+  Kansas                  [Kansas Threatened and Endangered                                                                                                                                        
+                          Species](https://www.ksoutdoors.gov/programs-services/conservation-ecological-services/threatened-endangered-species-in-need-of-conservation)                            
+
+  Kentucky                [Kentucky species database](https://app.fw.ky.gov/speciesOb)                                                                                                             
+
+  Louisiana               [Louisiana --- Rare Species and Natural Communities by Parish](https://www.wlf.louisiana.gov/page/rare-species-and-natural-communities-by-parish)                        
+
+  Maine                   [Maine --- Listed Species](https://www.maine.gov/ifw/fish-wildlife/wildlife/endangered-threatened-species/listed-species.html)                                           
+
+  Maryland                [Maryland DNR --- Rare, Threatened, and Endangered Animals](https://dnr.maryland.gov/wildlife/Pages/plants_wildlife/rte/rteanimals.aspx)                                 
+
+  Massachusetts           [Massachusetts --- Endangered, Threatened, and Special Concern Species](https://www.mass.gov/info-details/list-of-endangered-threatened-and-special-concern-species)     
+
+  Michigan                [Michigan --- Threatened and Endangered Species                                                                                                                          
+                          List](https://www.michigan.gov/dnr/managing-resources/wildlife/wildlife-permits/threatened-endangered-species/threatened-and-endangered-species-list)                    
+
+  Minnesota               [Minnesota DNR --- Endangered, Threatened, and Special Concern Species](https://www.dnr.state.mn.us/ets/index.html)                                                      
+
+  Mississippi             [Mississippi Endangered Species](https://www.mdwfp.com/museum-natural-science/mississippi-endangered-species)                                                            
+
+  Missouri                [Missouri Natural Heritage Program](https://mdc.mo.gov/your-property/responsible-construction/missouri-natural-heritage-program)                                         State endangered
+                                                                                                                                                                                                   species source.
+
+  Montana                 [Montana Natural Heritage Program --- Species of Concern](https://mtnhp.org/SpeciesOfConcern/)                                                                           G1/S1 and G2/S2 ranks
+                                                                                                                                                                                                   were treated as
+                                                                                                                                                                                                   endangered because of
+                                                                                                                                                                                                   the associated risk
+                                                                                                                                                                                                   levels.
+
+  Nebraska                [Nebraska Natural Heritage Program](https://outdoornebraska.gov/conservation/conservation-efforts/natural-heritage-program/)                                             
+
+  Nevada (source 1)       [Nevada Administrative Code 527](https://www.leg.state.nv.us/Division/Legal/LawLibrary/NAC/NAC-527.html)                                                                 
+
+  Nevada (source 2)       [Nevada Administrative Code 503](https://www.leg.state.nv.us/nac/nac-503.html?utm_source=chatgpt.com)                                                                    
+
+  New Hampshire           [New Hampshire --- Endangered and Threatened                                                                                                                             
+                          Wildlife](https://www.wildlife.nh.gov/wildlife-and-habitat/nongame-and-endangered-species/endangered-and-threatened-wildlife-nh)                                         
+
+  New Jersey              [New Jersey Fish and Wildlife --- Endangered, Threatened, and Special Concern                                                                                            
+                          Species](https://dep.nj.gov/njfw/wildlife/endangered-threatened-and-special-concern-species/)                                                                            
+
+  New Mexico              [New Mexico --- Threatened and Endangered Species](https://wildlife.dgf.nm.gov/conservation/wildlife-species-information/threatened-and-endangered-species/)             
+
+  New York                [New York DEC --- Endangered Species List](https://dec.ny.gov/nature/animals-fish-plants/biodiversity-species-conservation/endangered-species/list)                      
+
+  North Carolina          [North Carolina --- Species Conservation Plans](https://www.ncwildlife.gov/wildlife-habitat/species-conservation-plans)                                                  
+
+  North Dakota            [North Dakota Game and Fish --- Endangered Species](https://gf.nd.gov/ecology/endangered)                                                                                Use the federal list.
+
+  Ohio                    [Ohio DNR --- State-listed Species](https://ohiodnr.gov/discover-and-learn/safety-conservation/about-ODNR/wildlife/state-listed-species)                                 
+
+  Oklahoma                [Oklahoma --- Threatened and Endangered Species](https://www.wildlifedepartment.com/wildlife/threatened-and-endangered)                                                  Source was marked as
+                                                                                                                                                                                                   uncertain.
+
+  Oregon                  [Oregon --- Threatened, Endangered, and Candidate Species](https://www.dfw.state.or.us/wildlife/diversity/species/threatened_endangered_candidate_list.asp)              
+
+  Pennsylvania            [Pennsylvania Game Commission --- Endangered and Threatened Species](https://www.pa.gov/agencies/pgc/wildlife/discover-pa-wildlife/endangered-and-threatened)            
+
+  Rhode Island            [Rhode Island Natural History Survey --- Rare Species](https://rinhs.org/species/rare-species/)                                                                          
+
+  South Carolina (source  [South Carolina Regulation 123-150-2](https://regulations.justia.com/states/south-carolina/chapter-123/article-5/section-123-150-2/)                                     
+  1)                                                                                                                                                                                               
+
+  South Carolina (source  [South Carolina Regulation R. 123-150](https://www.law.cornell.edu/regulations/south-carolina/R-123-150)                                                                 
+  2)                                                                                                                                                                                               
+
+  South Dakota            [South Dakota --- Threatened and Endangered Species](https://gfp.sd.gov/threatened-endangered/)                                                                          
+
+  Tennessee (source 1)    [Tennessee Secretary of State --- Rules](https://publications.tnsosfiles.com/rules/1660/1660.htm)                                                                        
+
+  Tennessee (source 2)    [Tennessee Wildlife Resources Agency --- Wildlife](https://www.tn.gov/content/tn/twra/wildlife.html)                                                                     
+
+  Texas                   [Texas Parks and Wildlife --- Listed Species](https://tpwd.texas.gov/wildlife/wildlife-diversity/nongame/listed-species/)                                                
+
+  Utah                    [Utah Species Protection](https://wildlife.utah.gov/speciesprotection)                                                                                                   Use the federal list.
+
+  Vermont                 [Vermont Fish and Wildlife --- Endangered and Threatened Species](https://www.vtfishandwildlife.com/conserve/endangered-and-threatened-species)                          
+
+  Virginia                [Virginia Administrative Code --- 2VAC5-320-10](https://law.lis.virginia.gov/admincode/title2/agency5/chapter320/section10/)                                             
+
+  Washington              [Washington Department of Fish and Wildlife --- Listed Species](https://wdfw.wa.gov/species-habitats/at-risk/listed)                                                     
+
+  West Virginia           [West Virginia DNR --- Rare, Threatened, and Endangered Species](https://wvdnr.gov/plants-animals/rare-threatened-endangered-species/)                                   Use the federal list.
+
+  Wisconsin               [Wisconsin DNR --- Wisconsin Natural Heritage Inventory](https://dnr.wisconsin.gov/topic/NHI/WList)                                                                      
+
+  Wyoming                 [BLM --- Wyoming Threatened and Endangered Species Data](https://www.blm.gov/programs/fish-and-wildlife/threatened-and-endangered/state-te-data/wyoming)                 Use the federal list.
+  
+  ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+>>>>>>> f1486682b6d3a62535ff1b7b252190b01422f960
 ## Known issues and open items
 
 - `state_lists/Indiana_anim.csv` is not used. Its scientific names have the spaces stripped (`Megachileintegra`), so none of them could match GBIF. It needs a corrected export.
